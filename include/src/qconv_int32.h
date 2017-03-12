@@ -235,3 +235,19 @@ enum qconv_status qconv_int32_direct_1D_circular_convolution (
         const qconv_int32_mod input[static const size],
         const qconv_int32_mod kernel[static const size],
         qconv_int32_mod output[static size]);
+
+enum qconv_status qconv_int32_direct_2D_linear_convolution (
+        size_t input_size_x,
+        size_t input_size_y,
+        size_t kernel_size_x,
+        size_t kernel_size_y,
+        const qconv_int32_mod input[static const input_size_x][input_size_y],
+        const qconv_int32_mod kernel[static const kernel_size_x][kernel_size_y],
+        qconv_int32_mod output[static input_size_x + kernel_size_x - 1][input_size_y + kernel_size_y - 1]);
+
+enum qconv_status qconv_int32_direct_2D_circular_convolution (
+        size_t size_x,
+        size_t size_y,
+        const qconv_int32_mod input[static const size_x][size_y],
+        const qconv_int32_mod kernel[static const size_x][size_y],
+        qconv_int32_mod output[static size_x][size_y]);
