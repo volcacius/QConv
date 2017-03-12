@@ -9,11 +9,11 @@ extern inline qconv_mod_m_8 qconv_reduce_mod_m_8(qconv_mod_m_8 x);
 const qconv_int16_mod qconv_const_m_8 = {.mod_m_8.value = QCONV_M_8};
 
 enum qconv_status qconv_int16_direct_1D_linear_convolution (
-        size_t input_size,
-        size_t kernel_size,
-        const qconv_int16 input[static 1],
-        const qconv_int16 kernel[static 1],
-        qconv_int16 output[static 1]) {
+        const size_t input_size,
+        const size_t kernel_size,
+        const qconv_int16 input[static const input_size],
+        const qconv_int16 kernel[static const kernel_size],
+        qconv_int16 output[static input_size + kernel_size - 1]) {
     size_t output_size = input_size + kernel_size - 1;
     for (int o = 0; o < output_size; o++) {
         output[o].value = 0;
@@ -28,10 +28,10 @@ enum qconv_status qconv_int16_direct_1D_linear_convolution (
 }
 
 enum qconv_status qconv_int16_direct_1D_circular_convolution (
-        size_t size,
-        const qconv_int16 input[static 1],
-        const qconv_int16 kernel[static 1],
-        qconv_int16 output[static 1]) {
+        const size_t size,
+        const qconv_int16 input[static const size],
+        const qconv_int16 kernel[static const size],
+        qconv_int16 output[static size]) {
     for (int o = 0; o < size; o++) {
         output[o].value = 0;
         for (int i = 0; i < size; i++) {
@@ -48,7 +48,7 @@ enum qconv_status qconv_int16_direct_1D_circular_convolution (
 
 
 
-qconv_mod_m_8 qconv_power_mod_m_8(qconv_mod_m_8 base, unsigned int exp) {
+qconv_mod_m_8 qconv_power_mod_m_8(qconv_mod_m_8 base, int exp) {
         qconv_mod_m_8 res = {.value = (qconv_inner_int16) 1};
         while(exp > 0) {
             if (exp % 2 == 1) {

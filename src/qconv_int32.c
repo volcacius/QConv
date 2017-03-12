@@ -3,33 +3,34 @@
 //
 #include "qconv_int32.h"
 
-extern inline void qconv_int32_smul(qconv_int32_mod a[static 1], qconv_int32 scalar, unsigned int N);
+extern inline void qconv_int32_smul(const size_t size, qconv_int32_mod a[static size], const qconv_int32 scalar);
 
 extern inline qconv_mod_f_8 qconv_reduce_mod_f_8(qconv_mod_f_8 x);
 
 extern inline qconv_mod_m_13 qconv_reduce_mod_m_13(qconv_mod_m_13 x);
 
-extern inline qconv_mod_f_8 qconv_mul_mod_f_8(qconv_mod_f_8 x, qconv_mod_f_8 y);
+extern inline qconv_mod_f_8 qconv_mul_mod_f_8(const qconv_mod_f_8 x, const qconv_mod_f_8 y);
 
-extern inline qconv_mod_m_13 qconv_mul_mod_m_13(qconv_mod_m_13 x, qconv_mod_m_13 y);
+extern inline qconv_mod_m_13 qconv_mul_mod_m_13(const qconv_mod_m_13 x, const qconv_mod_m_13 y);
 
 extern inline qconv_mod_12289 qconv_reduce_mod_12289(qconv_inner_int64 a);
 
 extern inline qconv_mod_12289 qconv_two_merged_reduce_mod_12289(qconv_inner_int64 a);
 
-extern inline void qconv_two_reduce_mod_12289(qconv_int32_mod a[static 1], unsigned int N);
+extern inline void qconv_two_reduce_mod_12289(const size_t size, qconv_int32_mod a[static size]);
 
-extern inline void qconv_pmul_mod_12289(qconv_int32_mod a[static 1],
-                                        qconv_int32_mod b[static 1],
-                                        qconv_int32_mod *c,
-                                        unsigned int N);
+extern inline void qconv_pmul_mod_12289(const size_t size,
+                                        const qconv_int32_mod a[static const size],
+                                        const qconv_int32_mod b[static const size],
+                                        qconv_int32_mod c[static size]);
 
-extern inline void qconv_pmuladd_mod_12289(qconv_mod_12289 a[static 1],
-                                           qconv_mod_12289 b[static 1],
-                                           qconv_mod_12289 c[static 1],
-                                           qconv_mod_12289* d, unsigned int N);
+extern inline void qconv_pmuladd_mod_12289(const size_t size,
+                                           const qconv_mod_12289 a[static const size],
+                                           const qconv_mod_12289 b[static const size],
+                                           const qconv_mod_12289 c[static const size],
+                                           qconv_mod_12289 d[static size]);
 
-extern inline void qconv_correction_mod_12289(qconv_int32_mod a[static 1], unsigned int N);
+extern inline void qconv_correction_mod_12289(const size_t size, qconv_int32_mod a[static size]);
 
 //Declare the useful constants as const structs as well
 const qconv_int32_mod qconv_const_f_8 = {.mod_f_8.value = QCONV_F_8};
@@ -62,10 +63,10 @@ qconv_mod_m_13 qconv_power_mod_m_13(qconv_mod_m_13 base, int exp) {
     return res;
 }
 
-void qconv_NTT_CT_std2rev_mod_12289(qconv_int32_mod a[static 1],
-                                    const qconv_inner_int32 psi_rev[static 1],
-                                    unsigned int N) {
-    unsigned int m, i, j, j1, j2, k = N;
+void qconv_NTT_CT_std2rev_mod_12289(size_t size,
+                                    qconv_int32_mod a[static size],
+                                    const qconv_inner_int32 psi_rev[static size]) {
+    size_t m, i, j, j1, j2, k = size;
     qconv_int32_mod S, U, V;
 
     for (m = 1; m < 128; m = 2*m) {
@@ -96,7 +97,7 @@ void qconv_NTT_CT_std2rev_mod_12289(qconv_int32_mod a[static 1],
         }
     }
 
-    for (m = 256; m < N; m = 2*m) {
+    for (m = 256; m < size; m = 2*m) {
         k = k >> 1;
         for (i = 0; i < m; i++) {
             j1 = 2*i*k;
@@ -113,16 +114,16 @@ void qconv_NTT_CT_std2rev_mod_12289(qconv_int32_mod a[static 1],
     return;
 }
 
-void qconv_INTT_GS_rev2std_mod_12289(qconv_int32_mod a[static 1],
-                                     const qconv_inner_int32 omegainv_rev[static 1],
+void qconv_INTT_GS_rev2std_mod_12289(const size_t size,
+                                     qconv_int32_mod a[static size],
+                                     const qconv_inner_int32 omegainv_rev[static const size],
                                      const qconv_int32 omegainv1N_rev,
-                                     const qconv_int32 Ninv,
-                                     unsigned int N) {
-    unsigned int m, h, i, j, j1, j2, k = 1;
+                                     const qconv_int32 Ninv) {
+    size_t m, h, i, j, j1, j2, k = 1;
     qconv_int32_mod S, U, V;
     int64_t temp;
 
-    for (m = N; m > 2; m >>= 1) {
+    for (m = size; m > 2; m >>= 1) {
         j1 = 0;
         h = m >> 1;
         for (i = 0; i < h; i++) {
@@ -154,11 +155,11 @@ void qconv_INTT_GS_rev2std_mod_12289(qconv_int32_mod a[static 1],
 }
 
 enum qconv_status qconv_int32_direct_1D_linear_convolution (
-        size_t input_size,
-        size_t kernel_size,
-        const qconv_int32_mod input[static 1],
-        const qconv_int32_mod kernel[static 1],
-        qconv_int32_mod* output) {
+        const size_t input_size,
+        const size_t kernel_size,
+        const qconv_int32_mod input[static input_size],
+        const qconv_int32_mod kernel[static kernel_size],
+        qconv_int32_mod output[input_size + kernel_size - 1]) {
     size_t output_size = input_size + kernel_size - 1;
     for (int o = 0; o < output_size; o++) {
         output[o].int32.value = 0;
@@ -173,10 +174,10 @@ enum qconv_status qconv_int32_direct_1D_linear_convolution (
 }
 
 enum qconv_status qconv_int32_direct_1D_circular_convolution (
-        size_t size,
-        const qconv_int32_mod input[static 1],
-        const qconv_int32_mod kernel[static 1],
-        qconv_int32_mod* output) {
+        const size_t size,
+        const qconv_int32_mod input[static const size],
+        const qconv_int32_mod kernel[static const size],
+        qconv_int32_mod output[static size]) {
     for (int o = 0; o < size; o++) {
         output[o].int32.value = 0;
         for (int i = 0; i < size; i++) {
@@ -189,5 +190,3 @@ enum qconv_status qconv_int32_direct_1D_circular_convolution (
     }
     return status_success;
 }
-
-

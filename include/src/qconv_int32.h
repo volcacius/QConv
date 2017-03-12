@@ -80,7 +80,7 @@ inline qconv_mod_m_13 qconv_reduce_mod_m_13(qconv_mod_m_13 x) {
 /*
  * @brief Fast multiplication modulo M_13 = 2^13 - 1
  */
-inline qconv_mod_m_13 qconv_mul_mod_m_13(qconv_mod_m_13 x, qconv_mod_m_13 y) {
+inline qconv_mod_m_13 qconv_mul_mod_m_13(const qconv_mod_m_13 x, const qconv_mod_m_13 y) {
     qconv_mod_m_13 z = {.value = x.value * y.value};
     z = qconv_reduce_mod_m_13(z);
     return z;
@@ -89,7 +89,7 @@ inline qconv_mod_m_13 qconv_mul_mod_m_13(qconv_mod_m_13 x, qconv_mod_m_13 y) {
 /*
  * @brief Fast multiplication modulo F_8 = 2^8 + 1
  */
-inline qconv_mod_f_8 qconv_mul_mod_f_8(qconv_mod_f_8 x, qconv_mod_f_8 y) {
+inline qconv_mod_f_8 qconv_mul_mod_f_8(const qconv_mod_f_8 x, const qconv_mod_f_8 y) {
     qconv_mod_f_8 z = {.value = x.value * y.value};
     z = qconv_reduce_mod_f_8(z);
     return z;
@@ -99,7 +99,7 @@ inline qconv_mod_f_8 qconv_mul_mod_f_8(qconv_mod_f_8 x, qconv_mod_f_8 y) {
  * @brief Reduction modulo 12289
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-inline qconv_mod_12289 qconv_reduce_mod_12289(qconv_inner_int64 a) {
+inline qconv_mod_12289 qconv_reduce_mod_12289(const qconv_inner_int64 a) {
     qconv_mod_12289 c0, c1;
     qconv_mod_12289 output;
 
@@ -114,9 +114,8 @@ inline qconv_mod_12289 qconv_reduce_mod_12289(qconv_inner_int64 a) {
  * @brief Two consecutive reductions modulo 12289
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-inline void qconv_two_reduce_mod_12289(qconv_int32_mod a[static 1], unsigned int N) {
-    unsigned int i;
-    for (i = 0; i < N; i++) {
+inline void qconv_two_reduce_mod_12289(const size_t size, qconv_int32_mod a[static size]) {
+    for (size_t i = 0; i < size; i++) {
         a[i].mod_12289 = qconv_reduce_mod_12289((qconv_inner_int64) a[i].mod_12289.value);
         a[i].mod_12289 = qconv_reduce_mod_12289((qconv_inner_int64) a[i].mod_12289.value);
     }
@@ -126,7 +125,7 @@ inline void qconv_two_reduce_mod_12289(qconv_int32_mod a[static 1], unsigned int
  * @brief Two merged reductions modulo 12289
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-inline qconv_mod_12289 qconv_two_merged_reduce_mod_12289(qconv_inner_int64 a) {
+inline qconv_mod_12289 qconv_two_merged_reduce_mod_12289(const qconv_inner_int64 a) {
     qconv_mod_12289 c0, c1, c2;
     qconv_mod_12289 output;
 
@@ -142,11 +141,10 @@ inline qconv_mod_12289 qconv_two_merged_reduce_mod_12289(qconv_inner_int64 a) {
  * @brief Correction modulo 12289
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-inline void qconv_correction_mod_12289(qconv_int32_mod a[static 1], unsigned int N) {
-    unsigned int i;
+inline void qconv_correction_mod_12289(const size_t size, qconv_int32_mod a[static size]) {
     qconv_inner_int32 mask;
 
-    for (i = 0; i < N; i++) {
+    for (size_t i = 0; i < size; i++) {
         mask = a[i].mod_12289.value >> (4 * sizeof(qconv_inner_int32) - 1);
         a[i].mod_12289.value += (qconv_const_12289.mod_12289.value & mask) - qconv_const_12289.mod_12289.value;
         mask = a[i].mod_12289.value >> (4 * sizeof(qconv_inner_int32) - 1);
@@ -158,12 +156,11 @@ inline void qconv_correction_mod_12289(qconv_int32_mod a[static 1], unsigned int
  * @brief Component-wise multiplication
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-inline void qconv_pmul_mod_12289(qconv_int32_mod a[static 1],
-                                 qconv_int32_mod b[static 1],
-                                 qconv_int32_mod *c,
-                                 unsigned int N) {
-    unsigned int i;
-    for (i = 0; i < N; i++) {
+inline void qconv_pmul_mod_12289(const size_t size,
+                                 const qconv_int32_mod a[static const size],
+                                 const qconv_int32_mod b[static const size],
+                                 qconv_int32_mod c[static size]) {
+    for (size_t i = 0; i < size; i++) {
         c[i].mod_12289 = qconv_reduce_mod_12289((int64_t) a[i].mod_12289.value * b[i].mod_12289.value);
         c[i].mod_12289 = qconv_reduce_mod_12289((int64_t) c[i].mod_12289.value);
     }
@@ -173,12 +170,12 @@ inline void qconv_pmul_mod_12289(qconv_int32_mod a[static 1],
  * @brief Component-wise multiplication and addition
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-inline void qconv_pmuladd_mod_12289(qconv_mod_12289 a[static 1],
-                                    qconv_mod_12289 b[static 1],
-                                    qconv_mod_12289 c[static 1],
-                                    qconv_mod_12289* d, unsigned int N) {
-    unsigned int i;
-    for (i = 0; i < N; i++) {
+inline void qconv_pmuladd_mod_12289(const size_t size,
+                                    const qconv_mod_12289 a[static const size],
+                                    const qconv_mod_12289 b[static const size],
+                                    const qconv_mod_12289 c[static const size],
+                                    qconv_mod_12289 d[static size]) {
+    for (size_t i = 0; i < size; i++) {
         d[i] = qconv_reduce_mod_12289((int64_t) a[i].value * b[i].value + c[i].value);
         d[i] = qconv_reduce_mod_12289((int64_t) d[i].value);
     }
@@ -188,49 +185,53 @@ inline void qconv_pmuladd_mod_12289(qconv_mod_12289 a[static 1],
  * @brief Fast exponentiation modulo F_8 = 2^8 + 1
  * Credits: https://discuss.codechef.com/questions/20451/a-tutorial-on-fast-modulo-multiplication-exponential-squaring
  */
-qconv_mod_f_8 qconv_power_mod_f_8(qconv_mod_f_8 base, int exp);
+qconv_mod_f_8 qconv_power_mod_f_8(const qconv_mod_f_8 base, const int exp);
 
 /*
  * @brief Fast exponentiation modulo M_13 = 2^13- 1
  * Credits: https://discuss.codechef.com/questions/20451/a-tutorial-on-fast-modulo-multiplication-exponential-squaring
  */
-qconv_mod_m_13 qconv_power_mod_m_13(qconv_mod_m_13 base, int exp);
+qconv_mod_m_13 qconv_power_mod_m_13(const qconv_mod_m_13 base, const int exp);
 
 /*
  * @brief Forward NTT
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-void qconv_NTT_CT_std2rev_mod_12289(qconv_int32_mod a[static 1],
-                                    const qconv_inner_int32 psi_rev[static 1],
-                                    unsigned int N);
+void qconv_NTT_CT_std2rev_mod_12289(const size_t size,
+                                    qconv_int32_mod a[static size],
+                                    const qconv_inner_int32 psi_rev[static const size]);
 
 /*
  * @brief Inverse NTT
  * Copyright (c) Microsoft Corporation. All rights reserved.
  */
-void qconv_INTT_GS_rev2std_mod_12289(qconv_int32_mod a[static 1],
-                                     const qconv_inner_int32 omegainv_rev[static 1],
+void qconv_INTT_GS_rev2std_mod_12289(const size_t size,
+                                     qconv_int32_mod a[static size],
+                                     const qconv_inner_int32 omegainv_rev[static const size],
                                      const qconv_int32 omegainv1N_rev,
-                                     const qconv_int32 Ninv,
-                                     unsigned int N);
+                                     const qconv_int32 Ninv);
 
-// Component-wise multiplication with scalar
-inline void qconv_int32_smul(qconv_int32_mod a[static 1], qconv_int32 scalar, unsigned int N) {
-    unsigned int i;
-    for (i = 0; i < N; i++) {
+/*
+ * @brief Component-wise multiplication with scalar
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ */
+inline void qconv_int32_smul(const size_t size,
+                             qconv_int32_mod a[static size],
+                             const qconv_int32 scalar) {
+    for (size_t i = 0; i < size; i++) {
         a[i].int32.value = a[i].int32.value * scalar.value;
     }
 }
 
 enum qconv_status qconv_int32_direct_1D_linear_convolution (
-        size_t input_size,
-        size_t kernel_size,
-        const qconv_int32_mod input[static 1],
-        const qconv_int32_mod kernel[static 1],
-        qconv_int32_mod* output);
+        const size_t input_size,
+        const size_t kernel_size,
+        const qconv_int32_mod input[static const kernel_size],
+        const qconv_int32_mod kernel[static const input_size],
+        qconv_int32_mod output[static input_size + kernel_size - 1]);
 
 enum qconv_status qconv_int32_direct_1D_circular_convolution (
-        size_t size,
-        const qconv_int32_mod input[static 1],
-        const qconv_int32_mod kernel[static 1],
-        qconv_int32_mod* output);
+        const size_t size,
+        const qconv_int32_mod input[static const size],
+        const qconv_int32_mod kernel[static const size],
+        qconv_int32_mod output[static size]);

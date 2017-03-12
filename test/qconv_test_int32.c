@@ -67,23 +67,27 @@ void qconv_test_mul_mod_m_13_union() {
 void qconv_test_ntt_12289() {
     for (int k = 0; k < 1000; k++) {
         qconv_int32_mod a[PARAMETER_N], b[PARAMETER_N], c[PARAMETER_N], d[PARAMETER_N], e[PARAMETER_N];
-        unsigned int bit_size = 2;
+        unsigned int bit_size = 3;
 
         qconv_test_util_random_poly(PARAMETER_N, a, bit_size);
         qconv_test_util_random_poly(PARAMETER_N, b, bit_size);
         qconv_int32_direct_1D_circular_convolution(PARAMETER_N, a, b, c);
         qconv_test_util_poly_mul(PARAMETER_N, a, b, e, qconv_const_12289);
 
-        qconv_NTT_CT_std2rev_mod_12289(a, psi_rev_ntt1024_12289, PARAMETER_N);
-        qconv_NTT_CT_std2rev_mod_12289(b, psi_rev_ntt1024_12289, PARAMETER_N);
-        qconv_pmul_mod_12289(a, b, d, PARAMETER_N);
-        qconv_correction_mod_12289(d, PARAMETER_N);
+        qconv_NTT_CT_std2rev_mod_12289(PARAMETER_N, a, psi_rev_ntt1024_12289);
+        qconv_NTT_CT_std2rev_mod_12289(PARAMETER_N, b, psi_rev_ntt1024_12289);
+        qconv_pmul_mod_12289(PARAMETER_N, a, b, d);
+        qconv_correction_mod_12289(PARAMETER_N, d);
 
-        qconv_INTT_GS_rev2std_mod_12289(d, omegainv_rev_ntt1024_12289, omegainv7N_rev_ntt1024_12289.int32, Ninv8_ntt1024_12289.int32, PARAMETER_N);
-        qconv_two_reduce_mod_12289(d, PARAMETER_N);
-        qconv_correction_mod_12289(d, PARAMETER_N);
+        qconv_INTT_GS_rev2std_mod_12289(PARAMETER_N,
+                                        d,
+                                        omegainv_rev_ntt1024_12289,
+                                        omegainv7N_rev_ntt1024_12289.int32,
+                                        Ninv8_ntt1024_12289.int32);
+        qconv_two_reduce_mod_12289(PARAMETER_N, d);
+        qconv_correction_mod_12289(PARAMETER_N, d);
 
-        assert(qconv_test_util_compare_poly(c, e, PARAMETER_N) == 0);
+        assert(qconv_test_util_compare_poly(PARAMETER_N, c, e));
     }
 
 }
