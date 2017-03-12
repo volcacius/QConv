@@ -65,20 +65,32 @@ void qconv_test_mul_mod_m_13_union() {
 }
 
 void qconv_test_ntt_12289() {
-    for (int k = 0; k < 1000; k++) {
+    for (int k = 0; k < TEST_ITERATIONS; k++) {
         qconv_int32_mod a[PARAMETER_N], b[PARAMETER_N], c[PARAMETER_N], d[PARAMETER_N], e[PARAMETER_N];
         unsigned int bit_size = 3;
 
+        //generate input and kernel
         qconv_test_util_random_poly(PARAMETER_N, a, bit_size);
         qconv_test_util_random_poly(PARAMETER_N, b, bit_size);
-        qconv_int32_direct_1D_circular_convolution(PARAMETER_N, a, b, c);
-        qconv_test_util_poly_mul(PARAMETER_N, a, b, e, qconv_const_12289);
 
+        //direct convolution
+        float direct_start_time = (float) clock() / CLOCKS_PER_SEC;
+        qconv_int32_direct_1D_circular_convolution(PARAMETER_N, a, b, c);
+        float direct_end_time = (float) clock() / CLOCKS_PER_SEC;
+        float direct_time = direct_end_time - direct_start_time;
+
+        //schoolbook convolution
+        float school_start_time = (float) clock() / CLOCKS_PER_SEC;
+        qconv_test_util_poly_mul(PARAMETER_N, a, b, e, qconv_const_12289);
+        float school_end_time = (float) clock() / CLOCKS_PER_SEC;
+        float school_time = school_end_time - school_start_time;
+
+        //ntt convolution
+        float ntt_start_time = (float) clock() / CLOCKS_PER_SEC;
         qconv_NTT_CT_std2rev_mod_12289(PARAMETER_N, a, psi_rev_ntt1024_12289);
         qconv_NTT_CT_std2rev_mod_12289(PARAMETER_N, b, psi_rev_ntt1024_12289);
         qconv_pmul_mod_12289(PARAMETER_N, a, b, d);
         qconv_correction_mod_12289(PARAMETER_N, d);
-
         qconv_INTT_GS_rev2std_mod_12289(PARAMETER_N,
                                         d,
                                         omegainv_rev_ntt1024_12289,
@@ -86,8 +98,14 @@ void qconv_test_ntt_12289() {
                                         Ninv8_ntt1024_12289.int32);
         qconv_two_reduce_mod_12289(PARAMETER_N, d);
         qconv_correction_mod_12289(PARAMETER_N, d);
+        float ntt_end_time = (float) clock() / CLOCKS_PER_SEC;
+        float ntt_time = ntt_end_time - ntt_start_time;
 
-        assert(qconv_test_util_compare_poly(PARAMETER_N, c, e));
+        printf("Direct: %fs, Schoolbook: %fs, NTT %fs, Speed ratio over direct: %f, Speed ratio over Schoolbook: %f\n",
+               direct_time, school_time, ntt_time, direct_time/ntt_time, school_time/ntt_time);
+
+        assert(qconv_test_util_compare_poly(PARAMETER_N, c, d));
+        assert(qconv_test_util_compare_poly(PARAMETER_N, d, e));
     }
 
 }
