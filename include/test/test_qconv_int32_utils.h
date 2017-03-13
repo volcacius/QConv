@@ -23,9 +23,9 @@ void qconv_test_util_random_poly(size_t size,
                                  qconv_int32_mod a[static size],
                                  size_t bit_size);
 
-bool qconv_test_util_compare_poly(const size_t size,
-                                  const qconv_int32_mod a[static const size],
-                                  const qconv_int32_mod b[static const size]);
+bool qconv_test_util_compare_1D(const size_t size,
+                                const qconv_int32_mod a[static const size],
+                                const qconv_int32_mod b[static const size]);
 
 int qconv_test_util_reduce(int a, const int p);
 

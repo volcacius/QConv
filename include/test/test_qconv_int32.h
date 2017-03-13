@@ -12,6 +12,7 @@
 #include "test_qconv_int32_utils.h"
 #include "qconv_int32_ntt_constants.h"
 #include "qconv.h"
+#include "time.h"
 
 #define TEST_ITERATIONS 100000
 
