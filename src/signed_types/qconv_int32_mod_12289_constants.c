@@ -8,19 +8,19 @@
 *
 *****************************************************************************************/
 
-#include "qconv_int32_ntt_constants.h"
+#include "qconv_int32_mod_12289_constants.h"
 
 // N^-1 * prime_scale^-8
-const qconv_int32_mod Ninv8_ntt1024_12289 = {.int32.value = 8350};
+const qconv_int32_mod_12289 Ninv8_ntt1024_12289 = {.value = 8350};
 
 // N^-1 * prime_scale^-7 * omegainv_rev_ntt1024_12289[1]
-const qconv_int32_mod omegainv7N_rev_ntt1024_12289 = {.int32.value = 795};
+const qconv_int32_mod_12289 omegainv7N_rev_ntt1024_12289 = {.value = 795};
 
 // N^-1 * prime_scale^-11
-const qconv_int32_mod Ninv11_ntt1024_12289 = {.int32.value = 2585};
+const qconv_int32_mod_12289 Ninv11_ntt1024_12289 = {.value = 2585};
 
 // N^-1 * prime_scale^-10 * omegainv_rev_ntt1024_12289[1]
-const qconv_int32_mod omegainv10N_rev_ntt1024_12289 = {.int32.value = 10953};
+const qconv_int32_mod_12289 omegainv10N_rev_ntt1024_12289 = {.value = 10953};
 
 
 // Index-reversed matrices containing powers of psi (psi_rev_nttxxx_yyy) and inverse powers of omega (omegainv_rev_nttxxx_yyy),

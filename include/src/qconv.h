@@ -5,7 +5,7 @@
 #pragma once
 
 #include <stddef.h>
-#include <event.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 /*

@@ -3,7 +3,7 @@ project(QConv)
 
 #Set C language requirements
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 99)
 
 #Set build type
 set(CMAKE_BUILD_TYPE DEBUG)
@@ -15,11 +15,11 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 #Define executable src files
-set(QCONV_EXE_SRC main.c include/src/qconv_int64.h)
+set(QCONV_EXE_SRC main.c)
 
 #Define output executable
 add_executable(qconv_exe ${QCONV_EXE_SRC})
 
 #Link against the library dependencies
 target_link_libraries(qconv_exe
-        PRIVATE qconv_lib)
+        PUBLIC qconv_lib)
