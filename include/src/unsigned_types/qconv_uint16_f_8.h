@@ -21,7 +21,7 @@
 extern const qconv_uint16_mod qconv_const_f_8;
 
 inline qconv_uint16_mod_f_8 qconv_reduce_uint32_mod_f_8(qconv_uint32 x) {
-    qconv_uint16_mod_f_8 y = {.value = (qconv_inner_uint16) x.value % qconv_const_f_8.mod_f_8.value};
+    qconv_uint16_mod_f_8 y = {.value = x.value % qconv_const_f_8.mod_f_8.value};
     return y;
 }
 

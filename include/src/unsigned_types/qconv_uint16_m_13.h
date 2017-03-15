@@ -25,11 +25,10 @@ extern const qconv_uint16_mod qconv_const_m_13;
  * Credits: http://www.mersenneforum.org/showthread.php?t=1955
  */
 inline qconv_uint16_mod_m_13 qconv_reduce_uint32_mod_m_13(qconv_uint32 x) {
-    qconv_uint32 z;
-    z.value = (qconv_inner_uint32) ((z.value & qconv_const_m_13.mod_m_13.value) + (z.value >> QCONV_EXP_M_13));
-    z.value = (qconv_inner_uint32) ((z.value & qconv_const_m_13.mod_m_13.value) + (z.value >> QCONV_EXP_M_13));
+    x.value = ((x.value & ((qconv_inner_uint32) qconv_const_m_13.mod_m_13.value)) + (x.value >> QCONV_EXP_M_13));
+    x.value = ((x.value & ((qconv_inner_uint32) qconv_const_m_13.mod_m_13.value)) + (x.value >> QCONV_EXP_M_13));
     qconv_uint16_mod_m_13 reduced;
-    reduced.value = (qconv_inner_uint16) ((z.value == qconv_const_m_13.mod_m_13.value) ? 0 : z.value);
+    reduced.value = (((qconv_inner_uint16) x.value) == qconv_const_m_13.mod_m_13.value) ? 0 : x.value;
     return reduced;
 }
 

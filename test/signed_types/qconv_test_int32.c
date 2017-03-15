@@ -158,6 +158,6 @@ void qconv_test_ntt_identity_12289_2D() {
 }
 
 void qconv_test_int32_mod_runall() {
-   qconv_test_ntt_identity_12289_2D();
+   qconv_test_ntt_12289();
 }
 

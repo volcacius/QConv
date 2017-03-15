@@ -10,6 +10,7 @@ void qconv_test_mul_mod_f_8() {
         qconv_uint16_mod_f_8 b = {.value = (qconv_inner_uint16) (rand() % qconv_const_f_8.mod_f_8.value)};
         qconv_uint16_mod_f_8 correct = {.value = (qconv_inner_uint16) (a.value * b.value % qconv_const_f_8.mod_f_8.value)};
         qconv_uint16_mod_f_8 test = qconv_mul_uint16_mod_f_8(a, b);
+        printf("%d, %d, %d %d\n", a.value, b.value, test.value, correct.value);
         assert(test.value == correct.value);
     }
 }
@@ -40,6 +41,7 @@ void qconv_test_mul_mod_m_13() {
         qconv_uint16_mod_m_13 b = {.value = (qconv_inner_uint16) (rand() % qconv_const_m_13.mod_m_13.value)};
         qconv_uint16_mod_m_13 correct = {.value = (qconv_inner_uint16) (a.value * b.value % qconv_const_m_13.mod_m_13.value)};
         qconv_uint16_mod_m_13 test = qconv_mul_uint16_mod_m_13(a, b);
+        printf("%d, %d, %d %d\n", a.value, b.value, test.value, correct.value);
         assert(test.value == correct.value);
     }
 }
@@ -64,7 +66,7 @@ void qconv_test_mul_mod_m_13_union() {
     }
 }
 
-void qconv_uint16_mod__runall() {
+void qconv_test_uint16_mod_runall() {
     qconv_test_mul_mod_f_8();
     qconv_test_mul_mod_f_8_union();
     qconv_test_mul_mod_m_13();

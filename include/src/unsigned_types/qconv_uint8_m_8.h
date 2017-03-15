@@ -26,10 +26,10 @@ extern const qconv_uint8_mod qconv_const_m_8;
  */
 inline qconv_uint8_mod_m_8 qconv_reduce_uint16_mod_m_8(qconv_uint16 x) {
     qconv_uint16 z;
-    z.value = (qconv_inner_uint16) ((z.value & qconv_const_m_8.uint8.value) + (z.value >> QCONV_EXP_M_8));
-    z.value = (qconv_inner_uint16) ((z.value & qconv_const_m_8.uint8.value) + (z.value >> QCONV_EXP_M_8));
+    z.value = ((z.value & ((qconv_inner_uint16) qconv_const_m_8.uint8.value)) + (z.value >> QCONV_EXP_M_8));
+    z.value = ((z.value & ((qconv_inner_uint16) qconv_const_m_8.uint8.value)) + (z.value >> QCONV_EXP_M_8));
     qconv_uint8_mod_m_8 reduced;
-    reduced.value = (qconv_inner_uint8) ((z.value == qconv_const_m_8.uint8.value) ? 0 : z.value);
+    reduced.value = ((((qconv_inner_uint8) z.value) == qconv_const_m_8.uint8.value) ? 0 : z.value);
     return reduced;
 }
 
