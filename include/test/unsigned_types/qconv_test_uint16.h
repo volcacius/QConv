@@ -27,4 +27,9 @@ void qconv_test_power_mod_m_13();
 
 void qconv_test_mul_mod_m_13_union();
 
+void qconv_test_NTT_identity_len_16_mod_f_8();
+
+void qconv_test_NTT_circular_convolution_len_16_mod_f_8();
+
 void qconv_test_uint16_mod_runall();
+

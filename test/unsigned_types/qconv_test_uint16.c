@@ -25,6 +25,46 @@ void qconv_test_power_mod_f_8() {
     }
 }
 
+void qconv_test_NTT_identity_len_16_mod_f_8() {
+    for (int i = 0; i < TEST_ITERATIONS; i++) {
+        unsigned int bit_size = 2;
+        qconv_uint16_mod a[QCONV_LEN_16], original[QCONV_LEN_16];
+        qconv_test_util_random_uint16_poly(QCONV_LEN_16, a, bit_size);
+        for (size_t k = 0; k < QCONV_LEN_16; k++) {
+            original[k].mod_f_8.value = a[k].mod_f_8.value;
+        }
+        qconv_NTT_len_16_mod_f_8(a);
+        qconv_INTT_len_16_mod_f_8(a);
+        assert(qconv_test_util_compare_uint16_1D_array(QCONV_LEN_16, a, original));
+    }
+}
+
+void qconv_test_NTT_circular_convolution_len_16_mod_f_8() {
+    for (int i = 0; i < 1; i++) {
+        unsigned int bit_size = 2;
+        qconv_uint16_mod a[QCONV_LEN_16], b[QCONV_LEN_16], ntt[QCONV_LEN_16], poly[QCONV_LEN_16], conv[QCONV_LEN_16];
+
+        //Generate input
+        qconv_test_util_random_uint16_poly(QCONV_LEN_16, a, bit_size);
+        qconv_test_util_random_uint16_poly(QCONV_LEN_16, b, bit_size);
+
+        //Naive convolution
+        qconv_uint16_direct_1D_circular_convolution(QCONV_LEN_16, a, b, conv);
+        qconv_test_util_uint16_poly_mul(QCONV_LEN_16, a, b, poly, qconv_const_f_8);
+
+        //NTT of input
+        qconv_NTT_len_16_mod_f_8(a);
+        qconv_NTT_len_16_mod_f_8(b);
+
+        //Point to point product
+        qconv_pmul_mod_f_8(QCONV_LEN_16, a, b, ntt);
+
+        //INTT of output
+        qconv_INTT_len_16_mod_f_8(ntt);
+        qconv_test_util_compare_uint16_1D_array(QCONV_LEN_16, ntt, conv);
+    }
+}
+
 void qconv_test_mul_mod_f_8_union() {
     for (int i = 0; i < TEST_ITERATIONS; i++) {
         qconv_uint16_mod a = {.mod_f_8.value = (qconv_inner_uint16) (rand() % qconv_const_f_8.mod_f_8.value)};
@@ -67,11 +107,12 @@ void qconv_test_mul_mod_m_13_union() {
 }
 
 void qconv_test_uint16_mod_runall() {
-    qconv_test_mul_mod_f_8();
+    qconv_test_NTT_circular_convolution_len_16_mod_f_8();
+    /*qconv_test_mul_mod_f_8();
     qconv_test_mul_mod_f_8_union();
     qconv_test_mul_mod_m_13();
     qconv_test_mul_mod_m_13_union();
     qconv_test_power_mod_f_8();
-    qconv_test_power_mod_m_13();
+    qconv_test_power_mod_m_13();*/
 }
 

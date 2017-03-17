@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 #include "qconv_uint16.h"
+#include "qconv_uint16_f_8.h"
 
 qconv_uint16_mod qconv_test_util_naive_power_uint16_mod(const qconv_uint16_mod base, const unsigned int exp, const qconv_uint16_mod module);
 

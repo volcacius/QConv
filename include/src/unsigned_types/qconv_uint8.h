@@ -24,5 +24,6 @@ struct qconv_uint8_mod_m_8 {
 //Overlay the various unsigned 64bit struct representation since they share the same inner unsigned 64bit representation
 typedef union qconv_uint8_mod qconv_uint8_mod;
 union qconv_uint8_mod {
+    qconv_uint8_mod_m_8 mod_m_8;
     qconv_uint8 uint8;
 };

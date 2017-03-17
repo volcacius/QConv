@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 #include "qconv.h"
 #include "qconv_uint8.h"
@@ -26,10 +27,10 @@ extern const qconv_uint8_mod qconv_const_m_8;
  */
 inline qconv_uint8_mod_m_8 qconv_reduce_uint16_mod_m_8(qconv_uint16 x) {
     qconv_uint16 z;
-    z.value = ((z.value & ((qconv_inner_uint16) qconv_const_m_8.uint8.value)) + (z.value >> QCONV_EXP_M_8));
-    z.value = ((z.value & ((qconv_inner_uint16) qconv_const_m_8.uint8.value)) + (z.value >> QCONV_EXP_M_8));
+    z.value = ((z.value & ((qconv_inner_uint16) qconv_const_m_8.mod_m_8.value)) + (z.value >> QCONV_EXP_M_8));
+    z.value = ((z.value & ((qconv_inner_uint16) qconv_const_m_8.mod_m_8.value)) + (z.value >> QCONV_EXP_M_8));
     qconv_uint8_mod_m_8 reduced;
-    reduced.value = ((((qconv_inner_uint8) z.value) == qconv_const_m_8.uint8.value) ? 0 : z.value);
+    reduced.value = ((((qconv_inner_uint8) z.value) == qconv_const_m_8.mod_m_8.value) ? 0 : z.value);
     return reduced;
 }
 
@@ -38,8 +39,7 @@ inline qconv_uint8_mod_m_8 qconv_reduce_uint16_mod_m_8(qconv_uint16 x) {
  */
 inline qconv_uint8_mod_m_8 qconv_mul_uint8_mod_m_8(const qconv_uint8_mod_m_8 x, const qconv_uint8_mod_m_8 y) {
     qconv_uint16 z = {.value = (qconv_inner_uint16) x.value * y.value};
-    qconv_uint8_mod_m_8 reduced = {.value = qconv_reduce_uint8_mod_m_8(z)};
-    return reduced;
+    return qconv_reduce_uint16_mod_m_8(z);
 }
 
 /*
@@ -47,3 +47,4 @@ inline qconv_uint8_mod_m_8 qconv_mul_uint8_mod_m_8(const qconv_uint8_mod_m_8 x, 
  * Credits: https://discuss.codechef.com/questions/20451/a-tutorial-on-fast-modulo-multiplication-exponential-squaring
  */
 qconv_uint8_mod_m_8 qconv_power_uint8_mod_m_8(qconv_uint8_mod_m_8 base, unsigned int exp);
+

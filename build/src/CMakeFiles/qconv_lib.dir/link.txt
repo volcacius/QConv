@@ -1,0 +1,2 @@
+/usr/bin/ar qc libqconv_lib.a  CMakeFiles/qconv_lib.dir/unsigned_types/qconv_uint32.c.o CMakeFiles/qconv_lib.dir/signed_types/qconv_int32.c.o CMakeFiles/qconv_lib.dir/signed_types/qconv_int32_mod_12289.c.o CMakeFiles/qconv_lib.dir/signed_types/qconv_int32_mod_12289_constants.c.o
+/usr/bin/ranlib libqconv_lib.a

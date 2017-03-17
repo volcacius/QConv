@@ -6,7 +6,7 @@
 extern inline qconv_uint8_mod_m_8 qconv_reduce_uint16_mod_m_8(qconv_uint16 x);
 
 //Declare the useful constants as const structs as well
-const qconv_uint8_mod qconv_const_m_8 = {.uint8.value = QCONV_M_8};
+const qconv_uint8_mod qconv_const_m_8 = {.mod_m_8.value = QCONV_M_8};
 
 qconv_uint8_mod_m_8 qconv_power_uint8_mod_m_8(qconv_uint8_mod_m_8 base, unsigned int exp) {
         qconv_uint8_mod_m_8 res = {.value = (qconv_inner_uint8) 1};

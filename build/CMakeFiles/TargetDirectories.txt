@@ -1,0 +1,9 @@
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/CMakeFiles/rebuild_cache.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/CMakeFiles/edit_cache.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/CMakeFiles/qconv_exe.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/src/CMakeFiles/rebuild_cache.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/src/CMakeFiles/edit_cache.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/src/CMakeFiles/qconv_lib.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/test/CMakeFiles/rebuild_cache.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/test/CMakeFiles/edit_cache.dir
+/home/alessandro/Dropbox/Universita/Tesi/Software/QConv/build/test/CMakeFiles/qconv_test.dir

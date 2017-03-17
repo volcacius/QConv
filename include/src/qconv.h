@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define QCONV_LEN_8 8
+#define QCONV_LEN_16 16
+
 /*
  * @brief Status code for QConv function calls.
  */

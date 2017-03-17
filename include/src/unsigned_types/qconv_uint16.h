@@ -50,3 +50,9 @@ enum qconv_status qconv_uint16_direct_1D_circular_convolution (
         const qconv_uint16_mod kernel[static const size],
         qconv_uint16_mod output[static size]);
 
+/*
+ * @brief Scramble array
+ */
+void qconv_bit_reverse_uint16_array_order(const size_t size, qconv_uint16_mod a[static size]);
+
+qconv_uint16 qconv_uint16_gcd(qconv_uint16 a, qconv_uint16 b);
