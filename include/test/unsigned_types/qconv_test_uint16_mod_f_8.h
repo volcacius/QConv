@@ -36,5 +36,7 @@ void qconv_test_NTT_1D_linear_convolution_mod_f_8(size_t input_size,
 
 void qconv_test_NTT_1D_linear_convolution_mod_f_8_runall();
 
+void qconv_test_NTT_2D_identity_mod_f_8_runall();
+
 void qconv_test_uint16_mod_f_8_runall();
 

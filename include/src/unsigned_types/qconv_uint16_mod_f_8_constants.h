@@ -15,14 +15,15 @@
 
 #define QCONV_EXP_F_8 8
 #define QCONV_MAX_F_8_NTT_IDENTITY_BITSIZE 4
-#define QCONV_F_8_CONV_SIZES 6
+#define QCONV_F_8_1D_CONV_SIZES 6
+#define QCONV_F_8_2D_CONV_SIZES 5
 
 //Access the following values through the const variables so that their representation is consisted with the global inner one
 #define QCONV_F_8 257
 #define QCONV_P_ROOT_F_8_LEN_UP_TO_16 3
 #define QCONV_P_ROOT_F_8_LEN_UP_TO_256 3
 
-extern const size_t qconv_test_NTT_1D_circular_convolution_uint16_mod_f_8_sizes[QCONV_F_8_CONV_SIZES];
+extern const size_t qconv_test_NTT_circular_convolution_uint16_mod_f_8_sizes[];
 
 //Declare the useful constants as const structs
 //Global structs must be declared extern in header and put in source

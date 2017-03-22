@@ -34,8 +34,8 @@ void qconv_test_util_uint16_poly_mul(const size_t size,
 }
 
 void qconv_test_util_random_uint16_1D_array(const size_t size,
-                                 qconv_uint16_mod a[static size],
-                                 const size_t bit_size) {
+                                            qconv_uint16_mod a[static size],
+                                            const size_t bit_size) {
     unsigned int mask = (unsigned int) ((1 << bit_size));
     for (int i = 0; i < size; i++) {
         a[i].uint16.value = (qconv_inner_uint16) (rand() % mask);
@@ -74,30 +74,18 @@ void qconv_test_util_clone_uint16_1D_array(size_t size,
 }
 
 void qconv_test_util_random_uint16_2D_array(const size_t size_x,
-                                           const size_t size_y,
-                                           qconv_uint16_mod a[size_x * size_y],
-                                           const size_t bit_size) {
-    unsigned int mask = (unsigned int) 1 << bit_size;
-    for (size_t i = 0; i < size_x; i++) {
-       for (size_t j = 0; j < size_y; j++) {
-           a[i * size_x + j].uint16.value = (rand() % mask);
-       }
-    }
+                                            const size_t size_y,
+                                            qconv_uint16_mod a[size_x * size_y],
+                                            const size_t bit_size) {
+    qconv_test_util_random_uint16_1D_array(size_x * size_y, a, bit_size);
 }
+
 
 bool qconv_test_util_compare_uint16_2D_array(const size_t size_x,
                                              const size_t size_y,
                                              qconv_uint16_mod a[static size_x * size_y],
                                              qconv_uint16_mod b[static size_x * size_y]) {
-    for (size_t i = 0; i < size_x; i++) {
-        for (size_t j = 0; j < size_y; j++) {
-            if (a[i * size_x + j].uint16.value != b[i * size_x + j].uint16.value) {
-                printf("Error with %d %d\n", a[i * size_x + j].uint16.value, b[i * size_x + j].uint16.value);
-                return false;
-            }
-        }
-    }
-    return true;
+    return qconv_test_util_compare_uint16_1D_array(size_x * size_y, a, b);
 }
 
 bool qconv_test_util_compare_uint16_1D_array(const size_t size,
@@ -111,6 +99,20 @@ bool qconv_test_util_compare_uint16_1D_array(const size_t size,
         }
     }
     return true;
+}
+
+void qconv_test_util_max_uint16_2D_array(const size_t size_width,
+                                         const size_t size_height,
+                                         qconv_uint16_mod a[static size_width * size_height],
+                                         const size_t bit_size) {
+    qconv_test_util_max_uint16_1D_array(size_width * size_height, a, bit_size);
+}
+
+void qconv_test_util_clone_uint16_2D_array(size_t size_width,
+                                           size_t size_height,
+                                           qconv_uint16_mod source[static size_width * size_height],
+                                           qconv_uint16_mod destination[static size_width * size_height]) {
+    qconv_test_util_clone_uint16_1D_array(size_width * size_height, source, destination);
 }
 
 qconv_inner_uint16 qconv_test_util_reduce_inner_uint16(qconv_inner_uint16 a, qconv_inner_uint16 p) {

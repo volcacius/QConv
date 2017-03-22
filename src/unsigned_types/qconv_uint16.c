@@ -31,7 +31,7 @@ enum qconv_status qconv_uint16_direct_1D_circular_convolution (
         output[o].uint16.value = 0;
         for (int i = 0; i < size; i++) {
             int k = o - i;
-            while (k < 0 || k >= size) {
+            while (k < 0) {
                 k += size;
             }
             output[o].uint16.value += input[i].uint16.value * kernel[k].uint16.value;
@@ -93,6 +93,63 @@ enum qconv_status qconv_slice_uint16_1D_array(size_t outer_size,
     }
     for (size_t i = starting_index; i < inner_size + starting_index; i++) {
         output[i].uint16.value = input[i].uint16.value;
+    }
+    return status_success;
+}
+
+enum qconv_status qconv_uint16_direct_2D_linear_convolution (
+        size_t input_size_width,
+        size_t input_size_height,
+        size_t kernel_size_width,
+        size_t kernel_size_height,
+        const qconv_uint16_mod input[static const input_size_width * input_size_height],
+        const qconv_uint16_mod kernel[static const kernel_size_width * kernel_size_height],
+        qconv_uint16_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]) {
+
+    size_t output_size_width = input_size_width + kernel_size_width - 1;
+    size_t output_size_height = input_size_height + kernel_size_height - 1;
+
+    for (size_t o_row = 0; o_row < output_size_height; o_row++) {
+        for (size_t o_column = 0; o_column < output_size_width; o_column++) {
+            output[o_row * output_size_width + o_column].uint16.value = 0;
+            for (int i_row = 0; i_row < input_size_height; i_row++) {
+                for (size_t i_column = 0; i_column < input_size_width; i_column++) {
+                    int k_row = o_row - i_row;
+                    int k_column = o_column - i_column;
+                    if (k_row >= 0 && k_column >= 0 && k_row < kernel_size_height && k_column < kernel_size_width) {
+                        output[o_row * output_size_width + o_column].uint16.value += input[i_row * input_size_width + i_column].uint16.value * kernel[k_row * kernel_size_width + k_column].uint16.value;
+                    }
+                }
+            }
+        }
+    }
+    return status_success;
+}
+
+enum qconv_status qconv_uint16_direct_2D_circular_convolution (
+        size_t size_width,
+        size_t size_height,
+        const qconv_uint16_mod input[static const size_width * size_height],
+        const qconv_uint16_mod kernel[static const size_width * size_height],
+        qconv_uint16_mod output[static size_width * size_height]) {
+
+    for (size_t o_row = 0; o_row < size_height; o_row++) {
+        for (size_t o_column = 0; o_column < size_width; o_column++) {
+            output[o_row * size_width + o_column].uint16.value = 0;
+            for (int i_row = 0; i_row < size_height; i_row++) {
+                for (size_t i_column = 0; i_column < size_width; i_column++) {
+                    int k_row = o_row - i_row;
+                    int k_column = o_column - i_column;
+                    while (k_row < 0) {
+                        k_row += size_height;
+                    }
+                    while (k_column < 0) {
+                        k_column += size_width;
+                    }
+                    output[o_row * size_width + o_column].uint16.value += input[i_row * size_width + i_column].uint16.value * kernel[k_row * size_width + k_column].uint16.value;
+                }
+            }
+        }
     }
     return status_success;
 }

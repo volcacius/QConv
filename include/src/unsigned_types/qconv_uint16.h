@@ -76,3 +76,19 @@ enum qconv_status qconv_slice_uint16_1D_array(size_t outer_size,
                                               size_t starting_index,
                                               qconv_uint16_mod input[static outer_size],
                                               qconv_uint16_mod output[static inner_size]);
+
+enum qconv_status qconv_uint16_direct_2D_circular_convolution (
+        size_t size_width,
+        size_t size_height,
+        const qconv_uint16_mod input[static const size_width * size_height],
+        const qconv_uint16_mod kernel[static const size_width * size_height],
+        qconv_uint16_mod output[static size_width * size_height]);
+
+enum qconv_status qconv_uint16_direct_2D_linear_convolution (
+        size_t input_size_width,
+        size_t input_size_height,
+        size_t kernel_size_width,
+        size_t kernel_size_height,
+        const qconv_uint16_mod input[static const input_size_width * input_size_height],
+        const qconv_uint16_mod kernel[static const kernel_size_width * kernel_size_height],
+        qconv_uint16_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]);

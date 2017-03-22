@@ -3,7 +3,7 @@
 //
 #include "qconv_uint16_mod_f_8_constants.h"
 
-const size_t qconv_test_NTT_1D_circular_convolution_uint16_mod_f_8_sizes[QCONV_F_8_CONV_SIZES] = {
+const size_t qconv_test_NTT_circular_convolution_uint16_mod_f_8_sizes[] = {
         QCONV_LEN_8,
         QCONV_LEN_16,
         QCONV_LEN_32,
