@@ -9,6 +9,8 @@
 
 #include "qconv.h"
 
+#define QCONV_MAX_UINT16_BITSIZE 8
+
 //Typedef a 16bit unsigned data type to a project wide inner unsigned 16bit representation
 typedef uint16_t qconv_inner_uint16;
 
@@ -56,3 +58,21 @@ enum qconv_status qconv_uint16_direct_1D_circular_convolution (
 void qconv_bit_reverse_uint16_array_order(const size_t size, qconv_uint16_mod a[static size]);
 
 qconv_uint16 qconv_uint16_gcd(qconv_uint16 a, qconv_uint16 b);
+
+/*
+ * @brief Zero pad input array of size inner_size to output array of size outer_size
+ */
+enum qconv_status qconv_zero_pad_uint16_1D_array(size_t outer_size,
+                                                 size_t inner_size,
+                                                 qconv_uint16_mod input[static inner_size],
+                                                 qconv_uint16_mod output[static outer_size]);
+
+/*
+ * @brief Slice input array of size outer_size to output_array of size inner_size,
+ * starting from index starting_index of the input array
+ */
+enum qconv_status qconv_slice_uint16_1D_array(size_t outer_size,
+                                              size_t inner_size,
+                                              size_t starting_index,
+                                              qconv_uint16_mod input[static outer_size],
+                                              qconv_uint16_mod output[static inner_size]);

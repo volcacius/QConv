@@ -33,12 +33,22 @@ void qconv_test_util_uint16_poly_mul(const size_t size,
     }
 }
 
-void qconv_test_util_random_uint16_poly(const size_t size,
+void qconv_test_util_random_uint16_1D_array(const size_t size,
                                  qconv_uint16_mod a[static size],
                                  const size_t bit_size) {
-    unsigned int mask = (unsigned int) ((1 << bit_size) - 1);
+    unsigned int mask = (unsigned int) ((1 << bit_size));
     for (int i = 0; i < size; i++) {
-        if (i < size/2) {
+        a[i].uint16.value = (qconv_inner_uint16) (rand() % mask);
+    }
+}
+
+void qconv_test_util_random_zero_padded_uint16_1D_array(const size_t outer_size,
+                                                        const size_t inner_size,
+                                                        qconv_uint16_mod a[static outer_size],
+                                            const size_t bit_size) {
+    unsigned int mask = (unsigned int) ((1 << bit_size));
+    for (int i = 0; i < outer_size; i++) {
+        if (i < inner_size) {
             a[i].uint16.value = (qconv_inner_uint16) (rand() % mask);
         } else {
             a[i].uint16.value = 0;
@@ -46,30 +56,58 @@ void qconv_test_util_random_uint16_poly(const size_t size,
     }
 }
 
+void qconv_test_util_max_uint16_1D_array(const size_t size,
+                                     qconv_uint16_mod a[static size],
+                                     const size_t bit_size) {
+    unsigned int mask = (unsigned int) ((1 << bit_size));
+    for (int i = 0; i < size; i++) {
+        a[i].uint16.value = mask - 1;
+    }
+}
+
+void qconv_test_util_clone_uint16_1D_array(size_t size,
+                                           qconv_uint16_mod source[static size],
+                                           qconv_uint16_mod destination[static size]) {
+    for (size_t k = 0; k < size; k++) {
+        destination[k].uint16.value = source[k].uint16.value;
+    }
+}
+
 void qconv_test_util_random_uint16_2D_array(const size_t size_x,
                                            const size_t size_y,
-                                           qconv_uint16_mod a[size_x][size_y],
+                                           qconv_uint16_mod a[size_x * size_y],
                                            const size_t bit_size) {
-    unsigned int mask = ((unsigned int) 1 << bit_size) - 1;
+    unsigned int mask = (unsigned int) 1 << bit_size;
     for (size_t i = 0; i < size_x; i++) {
        for (size_t j = 0; j < size_y; j++) {
-           if (i < size_x/2 && j < size_y/2) {
-               a[i][j].uint16.value = (rand() % mask);
-           } else {
-               a[i][j].uint16.value = 0;
-           }
+           a[i * size_x + j].uint16.value = (rand() % mask);
        }
     }
+}
+
+bool qconv_test_util_compare_uint16_2D_array(const size_t size_x,
+                                             const size_t size_y,
+                                             qconv_uint16_mod a[static size_x * size_y],
+                                             qconv_uint16_mod b[static size_x * size_y]) {
+    for (size_t i = 0; i < size_x; i++) {
+        for (size_t j = 0; j < size_y; j++) {
+            if (a[i * size_x + j].uint16.value != b[i * size_x + j].uint16.value) {
+                printf("Error with %d %d\n", a[i * size_x + j].uint16.value, b[i * size_x + j].uint16.value);
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool qconv_test_util_compare_uint16_1D_array(const size_t size,
                                 const qconv_uint16_mod a[static const size],
                                 const qconv_uint16_mod b[static const size]) {
     for (size_t i = 0; i < size; i++) {
-        printf("%d %d\n", a[i].uint16.value, b[i].uint16.value);
+        //printf("%d %d\n", a[i].uint16.value, b[i].uint16.value);
         if (a[i].uint16.value != b[i].uint16.value) {
             printf("Error with %d %d\n", a[i].uint16.value, b[i].uint16.value);
-            //return false;
+            return false;
         }
     }
     return true;
@@ -77,6 +115,8 @@ bool qconv_test_util_compare_uint16_1D_array(const size_t size,
 
 qconv_inner_uint16 qconv_test_util_reduce_inner_uint16(qconv_inner_uint16 a, qconv_inner_uint16 p) {
     a %= p;
-    if (a < 0) a += p;
+    if (a < 0) {
+        a += p;
+    }
     return a;
 }

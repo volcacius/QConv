@@ -12,17 +12,7 @@
 #include "qconv.h"
 #include "qconv_uint16.h"
 #include "qconv_uint32.h"
-
-#define QCONV_EXP_F_8 8
-
-//Access the following values through the const variables so that their representation is consisted with the global inner one
-#define QCONV_F_8 257
-#define QCONV_P_ROOT_F_8_LEN_16 2
-
-//Declare the useful constants as const structs
-//Global structs must be declared extern in header and put in source
-extern const qconv_uint16_mod qconv_const_f_8;
-extern const qconv_uint16_mod qconv_const_p_root_f_8_len_16;
+#include "qconv_uint16_mod_f_8_constants.h"
 
 inline qconv_uint16_mod_f_8 qconv_reduce_uint32_mod_f_8(qconv_uint32 x) {
     qconv_uint16_mod_f_8 y = {.value = x.value % qconv_const_f_8.mod_f_8.value};
@@ -89,14 +79,14 @@ inline void qconv_pmul_mod_f_8(const size_t size,
 void qconv_CT_mod_f_8(size_t size, qconv_uint16_mod a[static size], qconv_uint16_mod p_root, bool inverse);
 
 /*
- * @brief NTT of length 16 mod F_8
+ * @brief NTT of length up to 256 mod F_8
  */
-void qconv_NTT_len_16_mod_f_8(qconv_uint16_mod a[static QCONV_LEN_16]);
+enum qconv_status qconv_NTT_mod_f_8(const size_t size, qconv_uint16_mod a[static size]);
 
 /*
- * @brief INTT of length 16 mod F_8, including normalization at the end so that a = INTT(NTT(a))
+ * @brief INTT of length up to 256 mod F_8, including normalization at the end so that a = INTT(NTT(a))
  */
-void qconv_INTT_len_16_mod_f_8(qconv_uint16_mod a[static QCONV_LEN_16]);
+enum qconv_status qconv_INTT_mod_f_8(const size_t size, qconv_uint16_mod a[static size]);
 
 /*
  * @brief a^-1 mod CONV_F_8
@@ -107,5 +97,22 @@ qconv_uint16_mod_f_8 qconv_inverse_mod_f_8(qconv_uint16_mod a);
  * @brief Normalization of an array based on its length, to be performed at the end of INTT
  */
 void qconv_INTT_len_norm_mod_f_8(const size_t size, qconv_uint16_mod a[static size]);
+
+/*
+ * @brief NTT 1D circular convolution of length up to 256, mod F_8
+ */
+enum qconv_status qconv_NTT_1D_circular_convolution_uint16_mod_f_8(size_t size,
+                                                                   qconv_uint16_mod a[static size],
+                                                                   qconv_uint16_mod b[static size],
+                                                                   qconv_uint16_mod ntt[size]);
+
+/*
+ * @brief NTT 1D linear convolution of output length up to 256, mod F_8
+ */
+enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_8(size_t input_size,
+                                                                 size_t kernel_size,
+                                                                 qconv_uint16_mod a[static input_size],
+                                                                 qconv_uint16_mod b[static kernel_size],
+                                                                 qconv_uint16_mod ntt[input_size + kernel_size - 1]);
 
 

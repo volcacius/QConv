@@ -9,27 +9,18 @@
 #include <stdio.h>
 
 #include "qconv_uint16.h"
-#include "qconv_uint16_f_8.h"
-#include "qconv_uint16_m_13.h"
+#include "qconv_uint16_mod_f_8.h"
+#include "qconv_uint16_mod_m_13.h"
 #include "qconv_test_utils_uint16.h"
 
-#define TEST_ITERATIONS 100000
+const size_t qconv_test_convolution_uint16_sizes[QCONV_CONV_SIZES];
 
-void qconv_test_mul_mod_f_8();
+void qconv_test_lin_circ_convolution_uint16(size_t input_size,
+                                            size_t kernel_size,
+                                            size_t input_bit_size,
+                                            size_t kernel_bit_size);
 
-void qconv_test_power_mod_f_8();
+void qconv_test_convolution_uint16_runall();
 
-void qconv_test_mul_mod_f_8_union();
-
-void qconv_test_mul_mod_m_13();
-
-void qconv_test_power_mod_m_13();
-
-void qconv_test_mul_mod_m_13_union();
-
-void qconv_test_NTT_identity_len_16_mod_f_8();
-
-void qconv_test_NTT_circular_convolution_len_16_mod_f_8();
-
-void qconv_test_uint16_mod_runall();
+void qconv_test_uint16_runall();
 

@@ -9,7 +9,9 @@
 
 #include "qconv_int32.h"
 
-qconv_int32_mod qconv_test_util_naive_power_int32_mod(const qconv_int32_mod base, const unsigned int exp, const qconv_int32_mod module);
+qconv_int32_mod qconv_test_util_naive_power_int32_mod(const qconv_int32_mod base,
+                                                      const unsigned int exp,
+                                                      const qconv_int32_mod module);
 
 /*
  * @brief Polynomial multiplication using the schoolbook method, c[x] = a[x]*b[x]

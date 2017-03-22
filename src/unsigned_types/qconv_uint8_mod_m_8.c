@@ -1,7 +1,7 @@
 //
 // Created by alessandro on 3/4/17.
 //
-#include "qconv_uint8_m_8.h"
+#include "qconv_uint8_mod_m_8.h"
 
 extern inline qconv_uint8_mod_m_8 qconv_reduce_uint16_mod_m_8(qconv_uint16 x);
 

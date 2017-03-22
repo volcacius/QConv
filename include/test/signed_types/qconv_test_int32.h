@@ -15,8 +15,6 @@
 #include "qconv.h"
 #include "time.h"
 
-#define TEST_ITERATIONS 100000
-
 void qconv_test_ntt_identity_12289();
 
 void qconv_test_ntt_identity_12289_2D();
