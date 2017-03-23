@@ -51,7 +51,7 @@ qconv_uint16_mod_f_8 qconv_inverse_uint16_mod_f_8(qconv_uint16_mod a) {
     return qconv_power_uint16_mod_f_8(a.mod_f_8, (unsigned int) (qconv_const_f_8.mod_f_8.value - 2));
 }
 
-void qconv_CT_1D_mod_f_8(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse) {
+enum qconv_status qconv_CT_1D_mod_f_8(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse) {
     size_t m, i, j, istep, mmax;
     qconv_uint16_mod w, wt, wr, wtemp;
     qconv_bit_reverse_uint16_array_order(size, a);
@@ -87,6 +87,7 @@ void qconv_CT_1D_mod_f_8(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_ro
         }
         mmax = istep;
     }
+    return status_success;
 }
 
 enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mod a[static size]) {
@@ -194,9 +195,11 @@ enum qconv_status qconv_CT_2D_uint16_mod_f_8(size_t size_width,
                                              qconv_uint16_mod *a,
                                              qconv_uint16_mod p_root,
                                              bool inverse) {
+    enum qconv_status status;
     //row transform
     for (size_t a_row = 0; a_row < size_height; a_row++) {
-        qconv_CT_1D_mod_f_8(size_width, &a[a_row * size_width], p_root, inverse);
+        status = qconv_CT_1D_mod_f_8(size_width, &a[a_row * size_width], p_root, inverse);
+        CHECK_STATUS(status);
     }
     //transpose
     qconv_uint16_mod a_transpose[size_width * size_height];
@@ -207,7 +210,8 @@ enum qconv_status qconv_CT_2D_uint16_mod_f_8(size_t size_width,
     }
     //column transform
     for (size_t a_transpose_column = 0; a_transpose_column < size_width; a_transpose_column++) {
-        qconv_CT_1D_mod_f_8(size_height, &a_transpose[a_transpose_column * size_height], p_root, inverse);
+        status = qconv_CT_1D_mod_f_8(size_height, &a_transpose[a_transpose_column * size_height], p_root, inverse);
+        CHECK_STATUS(status);
     }
     //transpose back
     for (size_t a_row = 0; a_row < size_height; a_row++) {
@@ -215,6 +219,7 @@ enum qconv_status qconv_CT_2D_uint16_mod_f_8(size_t size_width,
             a[a_row * size_width + a_column].mod_f_8.value = a_transpose[a_column * size_height + a_row].mod_f_8.value;
         }
     }
+    return status_success;
 }
 
 enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
@@ -226,6 +231,33 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
                 case QCONV_LEN_8:
                     qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_8,
                                                QCONV_LEN_8,
+                                               a,
+                                               qconv_const_p_root_f_8_len_up_to_16,
+                                               false);
+                    return status_success;
+                case QCONV_LEN_16:
+                    qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_8,
+                                               QCONV_LEN_16,
+                                               a,
+                                               qconv_const_p_root_f_8_len_up_to_16,
+                                               false);
+                    return status_success;
+                default:
+                    return status_invalid_input_size;
+
+            }
+        case QCONV_LEN_16:
+            switch(size_height) {
+                case QCONV_LEN_8:
+                    qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                                               QCONV_LEN_8,
+                                               a,
+                                               qconv_const_p_root_f_8_len_up_to_16,
+                                               false);
+                    return status_success;
+                case QCONV_LEN_16:
+                    qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                                               QCONV_LEN_16,
                                                a,
                                                qconv_const_p_root_f_8_len_up_to_16,
                                                false);
@@ -251,7 +283,37 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_8(const size_t size_width,
                                                a,
                                                qconv_const_p_root_f_8_len_up_to_16,
                                                true);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(size_width * size_height, a);
+                    qconv_INTT_2D_size_norm_uint16_mod_f_8(size_width, size_height, a);
+                    return status_success;
+                case QCONV_LEN_16:
+                    qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_8,
+                                               QCONV_LEN_16,
+                                               a,
+                                               qconv_const_p_root_f_8_len_up_to_16,
+                                               true);
+                    qconv_INTT_2D_size_norm_uint16_mod_f_8(size_width, size_height, a);
+                    return status_success;
+                default:
+                    return status_invalid_input_size;
+
+            }
+        case QCONV_LEN_16:
+            switch(size_height) {
+                case QCONV_LEN_8:
+                    qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                                               QCONV_LEN_8,
+                                               a,
+                                               qconv_const_p_root_f_8_len_up_to_16,
+                                               true);
+                    qconv_INTT_2D_size_norm_uint16_mod_f_8(size_width, size_height, a);
+                    return status_success;
+                case QCONV_LEN_16:
+                    qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                                               QCONV_LEN_16,
+                                               a,
+                                               qconv_const_p_root_f_8_len_up_to_16,
+                                               true);
+                    qconv_INTT_2D_size_norm_uint16_mod_f_8(size_width, size_height, a);
                     return status_success;
                 default:
                     return status_invalid_input_size;
@@ -285,7 +347,39 @@ enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_8(size_t input_si
                                                                  qconv_uint16_mod kernel[static kernel_size_width * kernel_size_height],
                                                                  qconv_uint16_mod ntt[(input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]) {
     enum qconv_status status;
-    //TODO
+    size_t size_width, size_height;
+    if (input_size_width >= kernel_size_width) {
+        size_width = input_size_width * 2;
+    } else {
+        size_width = kernel_size_width * 2;
+    }
+    if (input_size_height >= kernel_size_height) {
+        size_height = input_size_height * 2;
+    } else {
+        size_height = kernel_size_height * 2;
+    }
+    qconv_uint16_mod input_padded[size_width * size_height];
+    qconv_uint16_mod kernel_padded[size_width * size_height];
+    qconv_uint16_mod ntt_padded[size_width * size_height];
+    status = qconv_zero_pad_uint16_2D_array(size_width, size_height, input_size_width, input_size_height, input, input_padded);
+    CHECK_STATUS(status);
+    status = qconv_zero_pad_uint16_2D_array(size_width, size_height, kernel_size_width, kernel_size_height, kernel, kernel_padded);
+    CHECK_STATUS(status);
+    status = qconv_NTT_2D_uint16_mod_f_8(size_width, size_height, input_padded);
+    CHECK_STATUS(status);
+    status = qconv_NTT_2D_uint16_mod_f_8(size_width, size_height, kernel_padded);
+    CHECK_STATUS(status);
+    qconv_pmul_mod_f_8(size_width * size_height, input_padded, kernel_padded, ntt_padded);
+    status = qconv_INTT_2D_uint16_mod_f_8(size_width, size_height, ntt_padded);
+    CHECK_STATUS(status);
+    status = qconv_slice_uint16_2D_array(size_width,
+                                         size_height,
+                                         input_size_width + kernel_size_width - 1,
+                                         input_size_height + kernel_size_height - 1,
+                                         0,
+                                         0,
+                                         ntt_padded,
+                                         ntt);
     return status;
 }
 

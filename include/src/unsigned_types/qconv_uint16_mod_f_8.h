@@ -76,7 +76,7 @@ inline void qconv_pmul_mod_f_8(const size_t size,
 /*
  * @brief CT butterfly with input scrambling
  */
-void qconv_CT_1D_mod_f_8(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse);
+enum qconv_status qconv_CT_1D_mod_f_8(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse);
 
 /*
  * @brief NTT of length up to 256 mod F_8

@@ -3,12 +3,11 @@
 //
 #include "qconv_uint16.h"
 
-enum qconv_status qconv_uint16_direct_1D_linear_convolution (
-        const size_t input_size,
-        const size_t kernel_size,
-        const qconv_uint16_mod input[static const input_size],
-        const qconv_uint16_mod kernel[static const kernel_size],
-        qconv_uint16_mod output[input_size + kernel_size - 1]) {
+enum qconv_status qconv_uint16_direct_1D_linear_convolution(const size_t input_size,
+                                                            const size_t kernel_size,
+                                                            const qconv_uint16_mod input[static const input_size],
+                                                            const qconv_uint16_mod kernel[static const kernel_size],
+                                                            qconv_uint16_mod output[input_size + kernel_size - 1]) {
     size_t output_size = input_size + kernel_size - 1;
     for (int o = 0; o < output_size; o++) {
         output[o].uint16.value = 0;
@@ -22,11 +21,10 @@ enum qconv_status qconv_uint16_direct_1D_linear_convolution (
     return status_success;
 }
 
-enum qconv_status qconv_uint16_direct_1D_circular_convolution (
-        const size_t size,
-        const qconv_uint16_mod input[static const size],
-        const qconv_uint16_mod kernel[static const size],
-        qconv_uint16_mod output[static size]) {
+enum qconv_status qconv_uint16_direct_1D_circular_convolution(const size_t size,
+                                                              const qconv_uint16_mod input[static const size],
+                                                              const qconv_uint16_mod kernel[static const size],
+                                                              qconv_uint16_mod output[static size]) {
     for (int o = 0; o < size; o++) {
         output[o].uint16.value = 0;
         for (int i = 0; i < size; i++) {
@@ -66,9 +64,9 @@ qconv_uint16 qconv_uint16_gcd(qconv_uint16 a, qconv_uint16 b) {
     return qconv_uint16_gcd(c, a);
 }
 
-enum qconv_status qconv_zero_pad_uint16_1D_array(size_t outer_size,
-                                                 size_t inner_size,
-                                                 qconv_uint16_mod input[static inner_size],
+enum qconv_status qconv_zero_pad_uint16_1D_array(const size_t outer_size,
+                                                 const size_t inner_size,
+                                                 const qconv_uint16_mod input[static const inner_size],
                                                  qconv_uint16_mod output[static outer_size]) {
     if (inner_size > outer_size) {
         return status_invalid_padding_size;
@@ -83,28 +81,68 @@ enum qconv_status qconv_zero_pad_uint16_1D_array(size_t outer_size,
     return status_success;
 }
 
-enum qconv_status qconv_slice_uint16_1D_array(size_t outer_size,
-                                              size_t inner_size,
-                                              size_t starting_index,
-                                              qconv_uint16_mod input[static outer_size],
-                                              qconv_uint16_mod output[static inner_size]) {
-    if (inner_size + starting_index > outer_size) {
-        return status_invalid_slicing_size;
+enum qconv_status qconv_zero_pad_uint16_2D_array(const size_t outer_size_width,
+                                                 const size_t outer_size_height,
+                                                 const size_t inner_size_width,
+                                                 const size_t inner_size_height,
+                                                 const qconv_uint16_mod input[static const inner_size_width * inner_size_height],
+                                                 qconv_uint16_mod output[static outer_size_width * outer_size_height]) {
+    if (inner_size_height > outer_size_height || inner_size_width > outer_size_width) {
+        return status_invalid_padding_size;
     }
-    for (size_t i = starting_index; i < inner_size + starting_index; i++) {
-        output[i].uint16.value = input[i].uint16.value;
+    for (size_t row = 0; row < outer_size_height; row++) {
+        if (row < inner_size_height) {
+            qconv_zero_pad_uint16_1D_array(outer_size_width, inner_size_width, &input[row * inner_size_width], &output[row * outer_size_width]);
+        } else {
+            for (size_t i = 0; i < outer_size_width; i++) {
+                output[row * outer_size_width + i].uint16.value = 0;
+            }
+        }
     }
     return status_success;
 }
 
-enum qconv_status qconv_uint16_direct_2D_linear_convolution (
-        size_t input_size_width,
-        size_t input_size_height,
-        size_t kernel_size_width,
-        size_t kernel_size_height,
-        const qconv_uint16_mod input[static const input_size_width * input_size_height],
-        const qconv_uint16_mod kernel[static const kernel_size_width * kernel_size_height],
-        qconv_uint16_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]) {
+enum qconv_status qconv_slice_uint16_1D_array(const size_t outer_size,
+                                              const size_t inner_size,
+                                              const size_t starting_index,
+                                              const qconv_uint16_mod input[static const outer_size],
+                                              qconv_uint16_mod output[static inner_size]) {
+    if (inner_size + starting_index > outer_size) {
+        return status_invalid_slicing_size;
+    }
+    for (size_t i = 0; i < inner_size; i++) {
+        output[i].uint16.value = input[i + starting_index].uint16.value;
+    }
+    return status_success;
+}
+
+enum qconv_status qconv_slice_uint16_2D_array(const size_t outer_size_width,
+                                              const size_t outer_size_height,
+                                              const size_t inner_size_width,
+                                              const size_t inner_size_height,
+                                              const size_t starting_row_index,
+                                              const size_t starting_column_index,
+                                              const qconv_uint16_mod input[static const outer_size_width * outer_size_height],
+                                              qconv_uint16_mod output[static inner_size_width * inner_size_height]) {
+    for (size_t row = 0; row < inner_size_height; row++) {
+        if (inner_size_width + starting_column_index > outer_size_width
+                || inner_size_height + starting_row_index > outer_size_height) {
+            return status_invalid_slicing_size;
+        }
+        for (size_t column = 0; column < inner_size_width; column++) {
+            output[row * inner_size_width + column] = input[(row + starting_row_index) * outer_size_width + (starting_column_index + column)];
+        }
+    }
+    return status_success;
+}
+
+enum qconv_status qconv_uint16_direct_2D_linear_convolution (const size_t input_size_width,
+                                                             const size_t input_size_height,
+                                                             const size_t kernel_size_width,
+                                                             const size_t kernel_size_height,
+                                                             const qconv_uint16_mod input[static const input_size_width * input_size_height],
+                                                             const qconv_uint16_mod kernel[static const kernel_size_width * kernel_size_height],
+                                                             qconv_uint16_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]) {
 
     size_t output_size_width = input_size_width + kernel_size_width - 1;
     size_t output_size_height = input_size_height + kernel_size_height - 1;
@@ -126,13 +164,11 @@ enum qconv_status qconv_uint16_direct_2D_linear_convolution (
     return status_success;
 }
 
-enum qconv_status qconv_uint16_direct_2D_circular_convolution (
-        size_t size_width,
-        size_t size_height,
-        const qconv_uint16_mod input[static const size_width * size_height],
-        const qconv_uint16_mod kernel[static const size_width * size_height],
-        qconv_uint16_mod output[static size_width * size_height]) {
-
+enum qconv_status qconv_uint16_direct_2D_circular_convolution (const size_t size_width,
+                                                               const size_t size_height,
+                                                               const qconv_uint16_mod input[static const size_width * size_height],
+                                                               const qconv_uint16_mod kernel[static const size_width * size_height],
+                                                               qconv_uint16_mod output[static size_width * size_height]) {
     for (size_t o_row = 0; o_row < size_height; o_row++) {
         for (size_t o_column = 0; o_column < size_width; o_column++) {
             output[o_row * size_width + o_column].uint16.value = 0;

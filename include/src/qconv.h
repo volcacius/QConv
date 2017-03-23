@@ -7,8 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <assert.h>
 
-#define TEST_ITERATIONS 100000
+#define TEST_ITERATIONS 1000
 
 #define QCONV_LEN_8 8
 #define QCONV_LEN_16 16
@@ -23,6 +24,8 @@
 #define QCONV_CONV_SIZES 9
 
 #define CHECK_STATUS(status)({if (status != status_success) {return status;}})
+#define CHECK_TEST_STATUS(status)(assert(!status))
+
 
 /*
  * @brief Status code for QConv function calls.
