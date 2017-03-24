@@ -136,6 +136,18 @@ enum qconv_status qconv_slice_uint16_2D_array(const size_t outer_size_width,
     return status_success;
 }
 
+enum qconv_status qconv_transpose_uint16_2D(size_t size_width,
+                                            size_t size_height,
+                                            qconv_uint16_mod input[static size_width * size_height],
+                                            qconv_uint16_mod output[static size_height * size_width]) {
+    for (size_t a_transpose_row = 0; a_transpose_row < size_width; a_transpose_row++) {
+        for (size_t a_transpose_column = 0; a_transpose_column < size_height; a_transpose_column++) {
+            output[a_transpose_row * size_height + a_transpose_column].uint16.value = input[a_transpose_column * size_width + a_transpose_row].uint16.value;
+        }
+    }
+    return status_success;
+}
+
 enum qconv_status qconv_uint16_direct_2D_linear_convolution (const size_t input_size_width,
                                                              const size_t input_size_height,
                                                              const size_t kernel_size_width,

@@ -99,6 +99,11 @@ enum qconv_status qconv_slice_uint16_2D_array(const size_t outer_size_width,
                                               const qconv_uint16_mod input[static const outer_size_width * outer_size_height],
                                               qconv_uint16_mod output[static inner_size_width * inner_size_height]);
 
+enum qconv_status qconv_transpose_uint16_2D(size_t size_width,
+                                            size_t size_height,
+                                            qconv_uint16_mod input[static size_width * size_height],
+                                            qconv_uint16_mod output[static size_height * size_width]);
+
 enum qconv_status qconv_uint16_direct_2D_circular_convolution (const size_t size_width,
                                                                const size_t size_height,
                                                                const qconv_uint16_mod input[static const size_width * size_height],

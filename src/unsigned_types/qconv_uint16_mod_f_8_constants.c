@@ -17,5 +17,17 @@ const qconv_uint16_mod qconv_const_f_8 = {.mod_f_8.value = QCONV_F_8};
 const qconv_uint16_mod qconv_const_p_root_f_8_len_up_to_16 = {.mod_f_8.value = QCONV_P_ROOT_F_8_LEN_UP_TO_16};
 const qconv_uint16_mod qconv_const_p_root_f_8_len_up_to_256 = {.mod_f_8.value = QCONV_P_ROOT_F_8_LEN_UP_TO_256};
 
+const qconv_uint16_mod qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward[] = {{.mod_f_8.value = 241},
+                                                                                 {.mod_f_8.value = 241},
+                                                                                 {.mod_f_8.value = 64},
+                                                                                 {.mod_f_8.value = 241},
+                                                                                 {.mod_f_8.value = 4}};
+
+const qconv_uint16_mod qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse[] = {{.mod_f_8.value = 16},
+                                                                                 {.mod_f_8.value = 16},
+                                                                                 {.mod_f_8.value = 253},
+                                                                                 {.mod_f_8.value = 16},
+                                                                                 {.mod_f_8.value = 193}};
+
 
 

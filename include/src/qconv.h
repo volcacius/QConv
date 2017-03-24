@@ -36,3 +36,12 @@ enum qconv_status {
     status_invalid_padding_size,
     status_invalid_slicing_size
 };
+
+/*
+ * @brief Optimization level for transformation.
+ */
+enum qconv_optimize_transform {
+    optimize_null,
+    optimize_precomp,
+    optimize_precomp_order
+};
