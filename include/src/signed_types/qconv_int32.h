@@ -6,8 +6,15 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "qconv.h"
+
+/*
+ * Source: https://gustedt.wordpress.com/2010/06/02/right-shift-on-signed-types-is-not-well-defined/
+ */
+#define HIGHONES(c) ((signed)(~(unsigned)0 << (sizeof(signed)*CHAR_BIT - (c))))
+#define HIGHZEROS(c) (~HIGHONES(c))
 
 //Typedef a 32bit signed data type to a project wide inner 32bit representation
 typedef int32_t qconv_inner_int32;
@@ -30,6 +37,19 @@ union qconv_int32_mod {
     qconv_int32_mod_12289 mod_12289;
     qconv_int32 int32;
 };
+
+/*
+ * Source: https://gustedt.wordpress.com/2010/06/02/right-shift-on-signed-types-is-not-well-defined/
+ */
+inline int qconv_logshiftr(int x, unsigned c) {
+    return (x >> c) & HIGHZEROS(c);
+}
+/*
+ * Source: https://gustedt.wordpress.com/2010/06/02/right-shift-on-signed-types-is-not-well-defined/
+ */
+inline int qconv_arishiftr(int x, unsigned c) {
+    return qconv_logshiftr(x, c) ^ (x < 0 ? HIGHONES(c) : 0);
+}
 
 enum qconv_status qconv_int32_direct_1D_linear_convolution (
         const size_t input_size,

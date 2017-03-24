@@ -3,8 +3,6 @@
 //
 #include "qconv_uint16_mod_f_8.h"
 
-extern inline qconv_uint16_mod_f_8 qconv_reduce_uint32_mod_f_8(qconv_uint32 x);
-
 extern inline qconv_uint16_mod_f_8 qconv_mul_uint16_mod_f_8(const qconv_uint16_mod_f_8 x, const qconv_uint16_mod_f_8 y);
 
 extern inline qconv_uint16_mod_f_8 qconv_add_uint16_mod_f_8(qconv_uint16_mod_f_8 x, qconv_uint16_mod_f_8 y);
@@ -14,6 +12,8 @@ extern inline qconv_uint16_mod_f_8 qconv_subtract_uint16_mod_f_8(qconv_uint16_mo
 extern inline qconv_uint16_mod_f_8 qconv_subtract_uint16_mod_f_8(qconv_uint16_mod_f_8 f_8, qconv_uint16_mod_f_8 f8);
 
 extern inline qconv_uint16_mod_f_8 qconv_add_uint16_mod_f_8(qconv_uint16_mod_f_8 f_8, qconv_uint16_mod_f_8 f8);
+
+extern inline qconv_uint16_mod_f_8 qconv_reduce_int_mod_f_8(int x);
 
 extern inline void qconv_pmul_mod_f_8(const size_t size,
                                       const qconv_uint16_mod a[static const size],

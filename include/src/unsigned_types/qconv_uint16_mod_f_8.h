@@ -12,6 +12,7 @@
 #include "qconv.h"
 #include "qconv_uint16.h"
 #include "qconv_uint32.h"
+#include "qconv_int32.h"
 #include "qconv_uint16_mod_f_8_constants.h"
 
 inline qconv_uint16_mod_f_8 qconv_reduce_uint32_mod_f_8(qconv_uint32 x) {
@@ -19,12 +20,23 @@ inline qconv_uint16_mod_f_8 qconv_reduce_uint32_mod_f_8(qconv_uint32 x) {
     return y;
 }
 
+inline qconv_uint16_mod_f_8 qconv_reduce_int_mod_f_8(int x) {
+    int r = x & 0xff;
+    int q = qconv_arishiftr(x, 8);
+    int y = r - q;
+    if (y < 0) {
+        y += 257;
+    }
+    qconv_uint16_mod_f_8 z = {.value = (qconv_inner_uint16) y};
+    return z;
+}
+
 /*
  * @brief Fast multiplication modulo F_8 = 2^8 + 1
  */
 inline qconv_uint16_mod_f_8 qconv_mul_uint16_mod_f_8(const qconv_uint16_mod_f_8 x, const qconv_uint16_mod_f_8 y) {
-    qconv_uint32 z  = {.value = (qconv_inner_uint32) x.value * y.value};
-    qconv_uint16_mod_f_8 reduced = qconv_reduce_uint32_mod_f_8(z);
+    int z  = x.value * y.value;
+    qconv_uint16_mod_f_8 reduced = qconv_reduce_int_mod_f_8(z);
     return reduced;
 }
 

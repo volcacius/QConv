@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define TEST_ITERATIONS 1000
+#define TEST_ITERATIONS 10000
 
 #define QCONV_LEN_8 8
 #define QCONV_LEN_16 16

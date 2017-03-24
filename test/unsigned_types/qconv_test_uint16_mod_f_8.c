@@ -16,6 +16,18 @@ enum qconv_status qconv_test_mul_mod_f_8() {
     return status_success;
 }
 
+enum qconv_status qconv_test_fast_reduction_mod_f_8() {
+    printf("Test multiplication mod F_8\n");
+    for (int i = 0; i < TEST_ITERATIONS; i++) {
+        qconv_uint16_mod_f_8 a = {.value =  (qconv_inner_uint16) rand()};
+        qconv_uint16_mod_f_8 correct = {.value = (qconv_inner_uint16) (a.value % qconv_const_f_8.mod_f_8.value)};
+        int z = (int) a.value;
+        qconv_uint16_mod_f_8 test = qconv_reduce_int_mod_f_8(z);
+        assert(test.value == correct.value);
+    }
+    return status_success;
+}
+
 enum qconv_status qconv_test_mul_mod_f_8_union() {
     printf("Test multiplication mod F_8 with unions\n");
     for (int i = 0; i < TEST_ITERATIONS; i++) {
@@ -495,6 +507,7 @@ void qconv_test_uint16_mod_f_8_runall() {
     enum qconv_status status;
     status = qconv_test_mul_mod_f_8();
     CHECK_TEST_STATUS(status);
+    qconv_test_fast_reduction_mod_f_8();
     status = qconv_test_mul_mod_f_8_union();
     CHECK_TEST_STATUS(status);
     status = qconv_test_power_mod_f_8();
