@@ -35,5 +35,3 @@ void qconv_test_util_random_int32_2D_array(const size_t size_x,
                                            qconv_int32_mod a[static size_x][size_y],
                                            const size_t bit_size);
 
-int qconv_test_util_reduce(int a, const int p);
-
