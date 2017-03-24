@@ -81,7 +81,7 @@ void qconv_CT_1D_uint16_mod_f_8(size_t size, qconv_uint16_mod *a, qconv_uint16_m
 /*
  * @brief CT butterfly with input scrambling and precomputed root powers
  */
-void qconv_CT_1D_precomp_uint16_mod_f_8(size_t size, qconv_uint16_mod *a, const qconv_uint16_mod *powers);
+void qconv_CT_1D_precomp_uint16_mod_f_8(size_t size, qconv_uint16_mod *a, const qconv_uint8 *powers);
 
 /*
  * @brief NTT of length up to 256 mod F_8
@@ -138,7 +138,8 @@ void qconv_CT_2D_uint16_mod_f_8(size_t size_width,
 void qconv_CT_2D_precomp_uint16_mod_f_8(size_t size_width,
                                         size_t size_height,
                                         qconv_uint16_mod a[size_width * size_height],
-                                        const qconv_uint16_mod *powers);
+                                        const qconv_uint8 *row_powers,
+                                        const qconv_uint8 *column_powers);
 
 enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
                                               const size_t size_height,

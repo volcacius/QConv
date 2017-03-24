@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "qconv.h"
+#include "qconv_uint8.h"
 #include "qconv_uint16.h"
 #include "qconv_uint32.h"
 
@@ -31,5 +32,15 @@ extern const qconv_uint16_mod qconv_const_f_8;
 extern const qconv_uint16_mod qconv_const_p_root_f_8_len_up_to_16;
 extern const qconv_uint16_mod qconv_const_p_root_f_8_len_up_to_256;
 
-extern const qconv_uint16_mod qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward[];
-extern const qconv_uint16_mod qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_32_forward[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_32_inverse[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_64_forward[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_64_inverse[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_128_forward[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_128_inverse[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_256_forward[];
+extern const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_256_inverse[];
