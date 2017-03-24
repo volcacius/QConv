@@ -23,7 +23,7 @@
 
 #define QCONV_CONV_SIZES 9
 
-#define CHECK_STATUS(status)({if (status != status_success) {return status;}})
+#define CHECK_STATUS(status)({if (status) {return status;}})
 #define CHECK_TEST_STATUS(status)(assert(!status))
 
 
