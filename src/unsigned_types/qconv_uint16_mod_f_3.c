@@ -1,96 +1,96 @@
 //
 // Created by alessandro on 3/3/17.
 //
-#include "qconv_uint16_mod_f_8.h"
+#include "qconv_uint16_mod_f_3.h"
 
-extern inline qconv_uint16_mod_f_8 qconv_mul_uint16_mod_f_8(const qconv_uint16_mod_f_8 x, const qconv_uint16_mod_f_8 y);
+extern inline qconv_uint16_mod_f_3 qconv_mul_uint16_mod_f_3(const qconv_uint16_mod_f_3 x, const qconv_uint16_mod_f_3 y);
 
-extern inline qconv_uint16_mod_f_8 qconv_add_uint16_mod_f_8(qconv_uint16_mod_f_8 x, qconv_uint16_mod_f_8 y);
+extern inline qconv_uint16_mod_f_3 qconv_add_uint16_mod_f_3(qconv_uint16_mod_f_3 x, qconv_uint16_mod_f_3 y);
 
-extern inline qconv_uint16_mod_f_8 qconv_subtract_uint16_mod_f_8(qconv_uint16_mod_f_8 x, qconv_uint16_mod_f_8 y);
+extern inline qconv_uint16_mod_f_3 qconv_subtract_uint16_mod_f_3(qconv_uint16_mod_f_3 x, qconv_uint16_mod_f_3 y);
 
-extern inline qconv_uint16_mod_f_8 qconv_subtract_uint16_mod_f_8(qconv_uint16_mod_f_8 f_8, qconv_uint16_mod_f_8 f8);
+extern inline qconv_uint16_mod_f_3 qconv_subtract_uint16_mod_f_3(qconv_uint16_mod_f_3 f_3, qconv_uint16_mod_f_3 f8);
 
-extern inline qconv_uint16_mod_f_8 qconv_add_uint16_mod_f_8(qconv_uint16_mod_f_8 f_8, qconv_uint16_mod_f_8 f8);
+extern inline qconv_uint16_mod_f_3 qconv_add_uint16_mod_f_3(qconv_uint16_mod_f_3 f_3, qconv_uint16_mod_f_3 f8);
 
-extern inline qconv_uint16_mod_f_8 qconv_reduce_int_mod_f_8(int x);
+extern inline qconv_uint16_mod_f_3 qconv_reduce_int_mod_f_3(int x);
 
-extern inline void qconv_pmul_mod_f_8(const size_t size,
+extern inline void qconv_pmul_mod_f_3(const size_t size,
                                       const qconv_uint16_mod a[static const size],
                                       const qconv_uint16_mod b[static const size],
                                       qconv_uint16_mod c[static size]);
 
-qconv_uint16_mod_f_8 qconv_power_uint16_mod_f_8(qconv_uint16_mod_f_8 base, unsigned int exp) {
-    qconv_uint16_mod_f_8 res = {.value = (qconv_inner_uint16) 1};
+qconv_uint16_mod_f_3 qconv_power_uint16_mod_f_3(qconv_uint16_mod_f_3 base, unsigned int exp) {
+    qconv_uint16_mod_f_3 res = {.value = (qconv_inner_uint16) 1};
     while(exp > 0) {
         if (exp % 2 == 1) {
-            res = qconv_mul_uint16_mod_f_8(res, base);
+            res = qconv_mul_uint16_mod_f_3(res, base);
         }
-        base = qconv_mul_uint16_mod_f_8(base, base);
+        base = qconv_mul_uint16_mod_f_3(base, base);
         exp /= 2;
     }
     return res;
 }
 
-void qconv_INTT_1D_size_norm_uint16_mod_f_8(const size_t size, qconv_uint16_mod a[static size]) {
+void qconv_INTT_1D_size_norm_uint16_mod_f_3(const size_t size, qconv_uint16_mod a[static size]) {
     qconv_uint16_mod to_invert = {.uint16.value = size};
-    qconv_uint16_mod_f_8 inv = qconv_inverse_uint16_mod_f_8(to_invert);
+    qconv_uint16_mod_f_3 inv = qconv_inverse_uint16_mod_f_3(to_invert);
     for (size_t j = 0; j < size; j++) {
-        a[j].mod_f_8 = qconv_mul_uint16_mod_f_8(a[j].mod_f_8, inv);
+        a[j].mod_f_3 = qconv_mul_uint16_mod_f_3(a[j].mod_f_3, inv);
     }
 }
 
-void qconv_INTT_2D_size_norm_uint16_mod_f_8(const size_t size_width,
+void qconv_INTT_2D_size_norm_uint16_mod_f_3(const size_t size_width,
                                             const size_t size_height,
                                             qconv_uint16_mod a[static size_width * size_height]) {
-    qconv_INTT_1D_size_norm_uint16_mod_f_8(size_width * size_height, a);
+    qconv_INTT_1D_size_norm_uint16_mod_f_3(size_width * size_height, a);
 }
 
-qconv_uint16_mod_f_8 qconv_inverse_uint16_mod_f_8(qconv_uint16_mod a) {
+qconv_uint16_mod_f_3 qconv_inverse_uint16_mod_f_3(qconv_uint16_mod a) {
     // If a and module are relatively prime, then modulo inverse is a^(m-2) mode m
-    return qconv_power_uint16_mod_f_8(a.mod_f_8, (unsigned int) (qconv_const_f_8.mod_f_8.value - 2));
+    return qconv_power_uint16_mod_f_3(a.mod_f_3, (unsigned int) (qconv_const_f_3.mod_f_3.value - 2));
 }
 
-void qconv_CT_1D_uint16_mod_f_8(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse) {
+void qconv_CT_1D_uint16_mod_f_3(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse) {
     size_t m, i, j, istep, mmax;
     qconv_uint16_mod w, wt, wr, wtemp;
     qconv_bit_reverse_uint16_array_order(size, a);
     if (inverse) {
-        w.mod_f_8 = qconv_power_uint16_mod_f_8(p_root.mod_f_8,
-                                              qconv_const_f_8.mod_f_8.value - 1 - ((qconv_const_f_8.mod_f_8.value - 1) / size));
+        w.mod_f_3 = qconv_power_uint16_mod_f_3(p_root.mod_f_3,
+                                              qconv_const_f_3.mod_f_3.value - 1 - ((qconv_const_f_3.mod_f_3.value - 1) / size));
     } else {
-        w.mod_f_8 = qconv_power_uint16_mod_f_8(p_root.mod_f_8,
-                                              ((qconv_const_f_8.mod_f_8.value - 1) / size));
+        w.mod_f_3 = qconv_power_uint16_mod_f_3(p_root.mod_f_3,
+                                              ((qconv_const_f_3.mod_f_3.value - 1) / size));
     }
     mmax = 1;
     size_t powers_index = 0;
     //printf("Size %d\n", size);
     while (size > mmax) {
         istep = mmax << 1;
-        wt.mod_f_8 = qconv_power_uint16_mod_f_8(w.mod_f_8, (size / istep));
-        wr.mod_f_8 = wt.mod_f_8;
+        wt.mod_f_3 = qconv_power_uint16_mod_f_3(w.mod_f_3, (size / istep));
+        wr.mod_f_3 = wt.mod_f_3;
         for (i = 0; i < size; i += istep) {
             j = i + mmax;
             wtemp = a[j];
-            a[j].mod_f_8 = qconv_subtract_uint16_mod_f_8(a[i].mod_f_8, a[j].mod_f_8);
-            a[i].mod_f_8 = qconv_add_uint16_mod_f_8(a[i].mod_f_8, wtemp.mod_f_8);
+            a[j].mod_f_3 = qconv_subtract_uint16_mod_f_3(a[i].mod_f_3, a[j].mod_f_3);
+            a[i].mod_f_3 = qconv_add_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
         }
         for (m = 1; m < mmax; m++) {
             for (i = m; i < size; i += istep) {
                 j = i + mmax;
-                //printf("[%d].value = %d,\n", powers_index, wr.mod_f_8.value);
-                wtemp.mod_f_8 = qconv_mul_uint16_mod_f_8(wr.mod_f_8, a[j].mod_f_8);
-                a[j].mod_f_8 = qconv_subtract_uint16_mod_f_8(a[i].mod_f_8, wtemp.mod_f_8);
-                a[i].mod_f_8= qconv_add_uint16_mod_f_8(a[i].mod_f_8, wtemp.mod_f_8);
+                //printf("[%d].value = %d,\n", powers_index, wr.mod_f_3.value);
+                wtemp.mod_f_3 = qconv_mul_uint16_mod_f_3(wr.mod_f_3, a[j].mod_f_3);
+                a[j].mod_f_3 = qconv_subtract_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
+                a[i].mod_f_3= qconv_add_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
                 powers_index++;
             }
-            wr.mod_f_8 = qconv_mul_uint16_mod_f_8(wr.mod_f_8, wt.mod_f_8);
+            wr.mod_f_3 = qconv_mul_uint16_mod_f_3(wr.mod_f_3, wt.mod_f_3);
         }
         mmax = istep;
     }
 }
 
-void qconv_CT_1D_precomp_uint16_mod_f_8(size_t size, qconv_uint16_mod *a, const qconv_uint8 *powers) {
+void qconv_CT_1D_precomp_uint16_mod_f_3(size_t size, qconv_uint16_mod *a, const qconv_uint8 *powers) {
     size_t m, i, j, istep, mmax;
     qconv_uint16_mod wtemp;
     qconv_bit_reverse_uint16_array_order(size, a);
@@ -102,17 +102,17 @@ void qconv_CT_1D_precomp_uint16_mod_f_8(size_t size, qconv_uint16_mod *a, const 
         for (i = 0; i < size; i += istep) {
             j = i + mmax;
             wtemp = a[j];
-            a[j].mod_f_8 = qconv_subtract_uint16_mod_f_8(a[i].mod_f_8, a[j].mod_f_8);
-            a[i].mod_f_8 = qconv_add_uint16_mod_f_8(a[i].mod_f_8, wtemp.mod_f_8);
+            a[j].mod_f_3 = qconv_subtract_uint16_mod_f_3(a[i].mod_f_3, a[j].mod_f_3);
+            a[i].mod_f_3 = qconv_add_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
         }
 
         for (m = 1; m < mmax; m++) {
             for (i = m; i < size; i += istep) {
                 j = i + mmax;
-                qconv_uint16_mod power = {.mod_f_8.value = (qconv_inner_uint16) powers[powers_index].value};
-                wtemp.mod_f_8 = qconv_mul_uint16_mod_f_8(power.mod_f_8, a[j].mod_f_8);
-                a[j].mod_f_8 = qconv_subtract_uint16_mod_f_8(a[i].mod_f_8, wtemp.mod_f_8);
-                a[i].mod_f_8= qconv_add_uint16_mod_f_8(a[i].mod_f_8, wtemp.mod_f_8);
+                qconv_uint16_mod power = {.mod_f_3.value = (qconv_inner_uint16) powers[powers_index].value};
+                wtemp.mod_f_3 = qconv_mul_uint16_mod_f_3(power.mod_f_3, a[j].mod_f_3);
+                a[j].mod_f_3 = qconv_subtract_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
+                a[i].mod_f_3= qconv_add_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
                 powers_index++;
             }
         }
@@ -120,7 +120,7 @@ void qconv_CT_1D_precomp_uint16_mod_f_8(size_t size, qconv_uint16_mod *a, const 
     }
 }
 
-enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mod a[static size], enum qconv_optimize_transform optimize_level) {
+enum qconv_status qconv_NTT_1D_uint16_mod_f_3(const size_t size, qconv_uint16_mod a[static size], enum qconv_optimize_transform optimize_level) {
     switch(size) {
         case QCONV_LEN_8:
             switch (optimize_level) {
@@ -128,11 +128,11 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mo
                 case optimize_precomp_fuse:    
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_8, a, qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_8, a, qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_8, a, qconv_const_p_root_f_8_len_up_to_16, false);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_8, a, qconv_const_p_root_f_3_len_up_to_16, false);
                     break;
             }
             return status_success;
@@ -142,11 +142,11 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mo
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_16, a, qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_16, a, qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_16, a, qconv_const_p_root_f_8_len_up_to_16, false);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_16, a, qconv_const_p_root_f_3_len_up_to_16, false);
                     break;
             }
             return status_success;
@@ -156,11 +156,11 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mo
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_32, a, qconv_const_uint16_mod_f_8_CT_precomp_size_32_forward);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_32, a, qconv_const_uint16_mod_f_3_CT_precomp_size_32_forward);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_32, a, qconv_const_p_root_f_8_len_up_to_256, false);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_32, a, qconv_const_p_root_f_3_len_up_to_256, false);
                     break;
             }
             return status_success;
@@ -170,11 +170,11 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mo
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_64, a, qconv_const_uint16_mod_f_8_CT_precomp_size_64_forward);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_64, a, qconv_const_uint16_mod_f_3_CT_precomp_size_64_forward);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_64, a, qconv_const_p_root_f_8_len_up_to_256, false);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_64, a, qconv_const_p_root_f_3_len_up_to_256, false);
                     break;
             }
             return status_success;
@@ -184,11 +184,11 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mo
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_128, a, qconv_const_uint16_mod_f_8_CT_precomp_size_128_forward);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_128, a, qconv_const_uint16_mod_f_3_CT_precomp_size_128_forward);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_128, a, qconv_const_p_root_f_8_len_up_to_256, false);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_128, a, qconv_const_p_root_f_3_len_up_to_256, false);
                     break;
             }
             return status_success;
@@ -198,11 +198,11 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mo
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_256, a, qconv_const_uint16_mod_f_8_CT_precomp_size_256_forward);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_256, a, qconv_const_uint16_mod_f_3_CT_precomp_size_256_forward);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_256, a, qconv_const_p_root_f_8_len_up_to_256, false);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_256, a, qconv_const_p_root_f_3_len_up_to_256, false);
                     break;
             }
             return status_success;
@@ -211,7 +211,7 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mo
     }
 }
 
-enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_mod a[static size], enum qconv_optimize_transform optimize_level) {
+enum qconv_status qconv_INTT_1D_uint16_mod_f_3(const size_t size, qconv_uint16_mod a[static size], enum qconv_optimize_transform optimize_level) {
     switch(size) {
         case QCONV_LEN_8:
             switch (optimize_level) {
@@ -219,13 +219,13 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_m
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_8, a, qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_8, a);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_8, a, qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_8, a);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_8, a, qconv_const_p_root_f_8_len_up_to_16, true);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_8, a);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_8, a, qconv_const_p_root_f_3_len_up_to_16, true);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_8, a);
                     break;
             }
             return status_success;
@@ -235,13 +235,13 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_m
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_16, a, qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_16, a);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_16, a, qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_16, a);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_16, a, qconv_const_p_root_f_8_len_up_to_16, true);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_16, a);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_16, a, qconv_const_p_root_f_3_len_up_to_16, true);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_16, a);
                     break;
             }
             return status_success;
@@ -251,13 +251,13 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_m
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_32, a, qconv_const_uint16_mod_f_8_CT_precomp_size_32_inverse);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_32, a);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_32, a, qconv_const_uint16_mod_f_3_CT_precomp_size_32_inverse);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_32, a);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_32, a, qconv_const_p_root_f_8_len_up_to_256, true);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_32, a);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_32, a, qconv_const_p_root_f_3_len_up_to_256, true);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_32, a);
                     break;
             }
             return status_success;
@@ -267,13 +267,13 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_m
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_64, a, qconv_const_uint16_mod_f_8_CT_precomp_size_64_inverse);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_64, a);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_64, a, qconv_const_uint16_mod_f_3_CT_precomp_size_64_inverse);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_64, a);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_64, a, qconv_const_p_root_f_8_len_up_to_256, true);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_64, a);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_64, a, qconv_const_p_root_f_3_len_up_to_256, true);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_64, a);
                     break;
             }
             return status_success;
@@ -283,13 +283,13 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_m
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_128, a, qconv_const_uint16_mod_f_8_CT_precomp_size_128_inverse);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_128, a);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_128, a, qconv_const_uint16_mod_f_3_CT_precomp_size_128_inverse);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_128, a);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_128, a, qconv_const_p_root_f_8_len_up_to_256, true);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_128, a);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_128, a, qconv_const_p_root_f_3_len_up_to_256, true);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_128, a);
                     break;
             }
             return status_success;
@@ -299,13 +299,13 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_m
                 case optimize_precomp_fuse:
                 case optimize_precomp_order:
                 case optimize_precomp:
-                    qconv_CT_1D_precomp_uint16_mod_f_8(QCONV_LEN_256, a, qconv_const_uint16_mod_f_8_CT_precomp_size_256_inverse);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_256, a);
+                    qconv_CT_1D_precomp_uint16_mod_f_3(QCONV_LEN_256, a, qconv_const_uint16_mod_f_3_CT_precomp_size_256_inverse);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_256, a);
                     break;
                 case optimize_null:
                 default:
-                    qconv_CT_1D_uint16_mod_f_8(QCONV_LEN_256, a, qconv_const_p_root_f_8_len_up_to_256, true);
-                    qconv_INTT_1D_size_norm_uint16_mod_f_8(QCONV_LEN_256, a);
+                    qconv_CT_1D_uint16_mod_f_3(QCONV_LEN_256, a, qconv_const_p_root_f_3_len_up_to_256, true);
+                    qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_LEN_256, a);
                     break;
             }
             return status_success;
@@ -314,22 +314,22 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_8(const size_t size, qconv_uint16_m
     }
 }
 
-enum qconv_status qconv_NTT_1D_circular_convolution_uint16_mod_f_8(size_t size,
+enum qconv_status qconv_NTT_1D_circular_convolution_uint16_mod_f_3(size_t size,
                                                                    qconv_uint16_mod a[static size],
                                                                    qconv_uint16_mod b[static size],
                                                                    qconv_uint16_mod ntt[size],
                                                                    enum qconv_optimize_transform optimize_level) {
     enum qconv_status status;
-    status = qconv_NTT_1D_uint16_mod_f_8(size, a, optimize_level);
+    status = qconv_NTT_1D_uint16_mod_f_3(size, a, optimize_level);
     CHECK_STATUS(status);
-    status = qconv_NTT_1D_uint16_mod_f_8(size, b, optimize_level);
+    status = qconv_NTT_1D_uint16_mod_f_3(size, b, optimize_level);
     CHECK_STATUS(status);
-    qconv_pmul_mod_f_8(size, a, b, ntt);
-    status = qconv_INTT_1D_uint16_mod_f_8(size, ntt, optimize_level);
+    qconv_pmul_mod_f_3(size, a, b, ntt);
+    status = qconv_INTT_1D_uint16_mod_f_3(size, ntt, optimize_level);
     return status;
 }
 
-enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_8(size_t input_size,
+enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_3(size_t input_size,
                                                                  size_t kernel_size,
                                                                  qconv_uint16_mod input[static input_size],
                                                                  qconv_uint16_mod kernel[static kernel_size],
@@ -349,18 +349,18 @@ enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_8(size_t input_si
     CHECK_STATUS(status);
     status = qconv_zero_pad_uint16_1D_array(size, kernel_size, kernel, kernel_padded);
     CHECK_STATUS(status);
-    status = qconv_NTT_1D_uint16_mod_f_8(size, input_padded, optimize_level);
+    status = qconv_NTT_1D_uint16_mod_f_3(size, input_padded, optimize_level);
     CHECK_STATUS(status);
-    status = qconv_NTT_1D_uint16_mod_f_8(size, kernel_padded, optimize_level);
+    status = qconv_NTT_1D_uint16_mod_f_3(size, kernel_padded, optimize_level);
     CHECK_STATUS(status);
-    qconv_pmul_mod_f_8(size, input_padded, kernel_padded, ntt_padded);
-    status = qconv_INTT_1D_uint16_mod_f_8(size, ntt_padded, optimize_level);
+    qconv_pmul_mod_f_3(size, input_padded, kernel_padded, ntt_padded);
+    status = qconv_INTT_1D_uint16_mod_f_3(size, ntt_padded, optimize_level);
     CHECK_STATUS(status);
     status = qconv_slice_uint16_1D_array(size, input_size + kernel_size - 1, 0, ntt_padded, ntt);
     return status;
 }
 
-void qconv_CT_2D_uint16_mod_f_8(size_t size_width,
+void qconv_CT_2D_uint16_mod_f_3(size_t size_width,
                                              size_t size_height,
                                              qconv_uint16_mod a[size_width * size_height],
                                              qconv_uint16_mod p_root,
@@ -368,21 +368,21 @@ void qconv_CT_2D_uint16_mod_f_8(size_t size_width,
     enum qconv_status status;
     //row transform
     for (size_t a_row = 0; a_row < size_height; a_row++) {
-        qconv_CT_1D_uint16_mod_f_8(size_width, &a[a_row * size_width], p_root, inverse);
+        qconv_CT_1D_uint16_mod_f_3(size_width, &a[a_row * size_width], p_root, inverse);
     }
     //transpose
     qconv_uint16_mod a_transpose[size_height * size_width];
     qconv_transpose_uint16_2D(size_width, size_height, a, a_transpose);
     //column transform
     for (size_t a_transpose_column = 0; a_transpose_column < size_width; a_transpose_column++) {
-        qconv_CT_1D_uint16_mod_f_8(size_height, &a_transpose[a_transpose_column * size_height], p_root,
+        qconv_CT_1D_uint16_mod_f_3(size_height, &a_transpose[a_transpose_column * size_height], p_root,
                                             inverse);
     }
     //transpose back
     qconv_transpose_uint16_2D(size_height, size_width, a_transpose, a);
 }
 
-void qconv_CT_2D_precomp_uint16_mod_f_8(size_t size_width,
+void qconv_CT_2D_precomp_uint16_mod_f_3(size_t size_width,
                                         size_t size_height,
                                         qconv_uint16_mod a[size_width * size_height],
                                         const qconv_uint8 *row_powers,
@@ -390,20 +390,20 @@ void qconv_CT_2D_precomp_uint16_mod_f_8(size_t size_width,
     enum qconv_status status;
     //row transform
     for (size_t a_row = 0; a_row < size_height; a_row++) {
-        qconv_CT_1D_precomp_uint16_mod_f_8(size_width, &a[a_row * size_width], row_powers);
+        qconv_CT_1D_precomp_uint16_mod_f_3(size_width, &a[a_row * size_width], row_powers);
     }
     //transpose
     qconv_uint16_mod a_transpose[size_height * size_width];
     qconv_transpose_uint16_2D(size_width, size_height, a, a_transpose);
     //column transform
     for (size_t a_transpose_column = 0; a_transpose_column < size_width; a_transpose_column++) {
-        qconv_CT_1D_precomp_uint16_mod_f_8(size_height, &a_transpose[a_transpose_column * size_height], column_powers);
+        qconv_CT_1D_precomp_uint16_mod_f_3(size_height, &a_transpose[a_transpose_column * size_height], column_powers);
     }
     //transpose back
     qconv_transpose_uint16_2D(size_height, size_width, a_transpose, a);
 }
 
-enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
+enum qconv_status qconv_NTT_2D_uint16_mod_f_3(const size_t size_width,
                                               const size_t size_height,
                                               qconv_uint16_mod a[static size_width * size_height],
                                               enum qconv_optimize_transform optimize_level) {
@@ -416,18 +416,18 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_8,
                                                                QCONV_LEN_8,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_8,
                                                        QCONV_LEN_8,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        false);
                             break;
                     }
@@ -438,18 +438,18 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_8,
                                                                QCONV_LEN_16,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_8,
                                                        QCONV_LEN_16,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        false);
                             break;
                     }
@@ -466,18 +466,18 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_16,
                                                                QCONV_LEN_8,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_16,
                                                        QCONV_LEN_8,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        false);
                             break;
                     }
@@ -488,18 +488,18 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_16,
                                                                QCONV_LEN_16,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_16,
                                                        QCONV_LEN_16,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        false);
                             break;
                     }
@@ -513,7 +513,7 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_8(const size_t size_width,
     }
 }
 
-enum qconv_status qconv_INTT_2D_uint16_mod_f_8(const size_t size_width,
+enum qconv_status qconv_INTT_2D_uint16_mod_f_3(const size_t size_width,
                                                const size_t size_height,
                                                qconv_uint16_mod a[static size_width * size_height],
                                                enum qconv_optimize_transform optimize_level) {
@@ -526,21 +526,21 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_8,
                                                                QCONV_LEN_8,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_8, QCONV_LEN_8, a);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_8, QCONV_LEN_8, a);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_8,
                                                        QCONV_LEN_8,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        true);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_8, QCONV_LEN_8, a);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_8, QCONV_LEN_8, a);
                             break;
                     }
                     return status_success;
@@ -550,21 +550,21 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_8,
                                                                QCONV_LEN_16,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_8, QCONV_LEN_16, a);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_8, QCONV_LEN_16, a);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_8,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_8,
                                                        QCONV_LEN_16,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        true);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_8, QCONV_LEN_16, a);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_8, QCONV_LEN_16, a);
                             break;
                     }
                     return status_success;
@@ -580,21 +580,21 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_16,
                                                                QCONV_LEN_8,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_16, QCONV_LEN_8, a);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_16, QCONV_LEN_8, a);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_16,
                                                        QCONV_LEN_8,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        true);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_16, QCONV_LEN_8, a);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_16, QCONV_LEN_8, a);
                             break;
                     }
                     return status_success;
@@ -604,21 +604,21 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_8(const size_t size_width,
                         case optimize_precomp_fuse:
                         case optimize_precomp_order:
                         case optimize_precomp:
-                            qconv_CT_2D_precomp_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_LEN_16,
                                                                QCONV_LEN_16,
                                                                a,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse,
-                                                               qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_16, QCONV_LEN_16, a);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_16, QCONV_LEN_16, a);
                             break;
                         case optimize_null:
                         default:
-                            qconv_CT_2D_uint16_mod_f_8(QCONV_LEN_16,
+                            qconv_CT_2D_uint16_mod_f_3(QCONV_LEN_16,
                                                        QCONV_LEN_16,
                                                        a,
-                                                       qconv_const_p_root_f_8_len_up_to_16,
+                                                       qconv_const_p_root_f_3_len_up_to_16,
                                                        true);
-                            qconv_INTT_2D_size_norm_uint16_mod_f_8(QCONV_LEN_16, QCONV_LEN_16, a);
+                            qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_LEN_16, QCONV_LEN_16, a);
                             break;
                     }
                     return status_success;
@@ -631,23 +631,23 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_8(const size_t size_width,
     }
 }
 
-enum qconv_status qconv_NTT_2D_circular_convolution_uint16_mod_f_8(size_t size_width,
+enum qconv_status qconv_NTT_2D_circular_convolution_uint16_mod_f_3(size_t size_width,
                                                                    size_t size_height,
                                                                    qconv_uint16_mod a[static size_width * size_height],
                                                                    qconv_uint16_mod b[static size_width * size_height],
                                                                    qconv_uint16_mod ntt[size_width * size_height],
                                                                    enum qconv_optimize_transform optimize_level) {
     enum qconv_status status;
-    status = qconv_NTT_2D_uint16_mod_f_8(size_width, size_height, a, optimize_level);
+    status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, a, optimize_level);
     CHECK_STATUS(status);
-    status = qconv_NTT_2D_uint16_mod_f_8(size_width, size_height, b, optimize_level);
+    status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, b, optimize_level);
     CHECK_STATUS(status);
-    qconv_pmul_mod_f_8(size_width * size_height, a, b, ntt);
-    status = qconv_INTT_2D_uint16_mod_f_8(size_width, size_height, ntt, optimize_level);
+    qconv_pmul_mod_f_3(size_width * size_height, a, b, ntt);
+    status = qconv_INTT_2D_uint16_mod_f_3(size_width, size_height, ntt, optimize_level);
     return status;
 }
 
-enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_8(size_t input_size_width,
+enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_3(size_t input_size_width,
                                                                  size_t input_size_height,
                                                                  size_t kernel_size_width,
                                                                  size_t kernel_size_height,
@@ -674,12 +674,12 @@ enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_8(size_t input_si
     CHECK_STATUS(status);
     status = qconv_zero_pad_uint16_2D_array(size_width, size_height, kernel_size_width, kernel_size_height, kernel, kernel_padded);
     CHECK_STATUS(status);
-    status = qconv_NTT_2D_uint16_mod_f_8(size_width, size_height, input_padded, optimize_level);
+    status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, input_padded, optimize_level);
     CHECK_STATUS(status);
-    status = qconv_NTT_2D_uint16_mod_f_8(size_width, size_height, kernel_padded, optimize_level);
+    status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, kernel_padded, optimize_level);
     CHECK_STATUS(status);
-    qconv_pmul_mod_f_8(size_width * size_height, input_padded, kernel_padded, ntt_padded);
-    status = qconv_INTT_2D_uint16_mod_f_8(size_width, size_height, ntt_padded, optimize_level);
+    qconv_pmul_mod_f_3(size_width * size_height, input_padded, kernel_padded, ntt_padded);
+    status = qconv_INTT_2D_uint16_mod_f_3(size_width, size_height, ntt_padded, optimize_level);
     CHECK_STATUS(status);
     status = qconv_slice_uint16_2D_array(size_width,
                                          size_height,

@@ -6,7 +6,7 @@ set(QCONV_TEST_SRC ${QCONV_TEST_SRC} signed_types/qconv_test_int32.c)
 set(QCONV_TEST_SRC ${QCONV_TEST_SRC} unsigned_types/qconv_test_uint16.c)
 set(QCONV_TEST_SRC ${QCONV_TEST_SRC} unsigned_types/qconv_test_utils_uint16.c)
 set(QCONV_TEST_SRC ${QCONV_TEST_SRC} unsigned_types/qconv_test_uint16_mod_m_13.c)
-set(QCONV_TEST_SRC ${QCONV_TEST_SRC} unsigned_types/qconv_test_uint16_mod_f_8.c)
+set(QCONV_TEST_SRC ${QCONV_TEST_SRC} unsigned_types/qconv_test_uint16_mod_f_3.c)
 set(QCONV_TEST_SRC ${QCONV_TEST_SRC} gnmnt.c)
 
 #Define output executable

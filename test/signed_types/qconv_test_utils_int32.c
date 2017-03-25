@@ -69,3 +69,11 @@ bool qconv_test_util_compare_1D(const size_t size,
     }
     return true;
 }
+
+int qconv_test_util_reduce(int a, int p) {
+    a %= p;
+    if (a < 0) {
+        a += p;
+    }
+    return a;
+}

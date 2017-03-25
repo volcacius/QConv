@@ -1,9 +1,9 @@
 //
 // Created by alessandro on 3/3/17.
 //
-#include "qconv_uint16_mod_f_8_constants.h"
+#include "qconv_uint16_mod_f_3_constants.h"
 
-const size_t qconv_test_NTT_circular_convolution_uint16_mod_f_8_sizes[] = {
+const size_t qconv_test_NTT_circular_convolution_uint16_mod_f_3_sizes[] = {
         QCONV_LEN_8,
         QCONV_LEN_16,
         QCONV_LEN_32,
@@ -13,23 +13,23 @@ const size_t qconv_test_NTT_circular_convolution_uint16_mod_f_8_sizes[] = {
 };
 
 //Declare the useful constants as const structs as well
-const qconv_uint16_mod qconv_const_f_8 = {.mod_f_8.value = QCONV_F_8};
-const qconv_uint16_mod qconv_const_p_root_f_8_len_up_to_16 = {.mod_f_8.value = QCONV_P_ROOT_F_8_LEN_UP_TO_16};
-const qconv_uint16_mod qconv_const_p_root_f_8_len_up_to_256 = {.mod_f_8.value = QCONV_P_ROOT_F_8_LEN_UP_TO_256};
+const qconv_uint16_mod qconv_const_f_3 = {.mod_f_3.value = QCONV_F_8};
+const qconv_uint16_mod qconv_const_p_root_f_3_len_up_to_16 = {.mod_f_3.value = QCONV_P_ROOT_F_8_LEN_UP_TO_16};
+const qconv_uint16_mod qconv_const_p_root_f_3_len_up_to_256 = {.mod_f_3.value = QCONV_P_ROOT_F_8_LEN_UP_TO_256};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_8_forward[5] = {[0].value = 241,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward[5] = {[0].value = 241,
                                                                                  [1].value = 241,
                                                                                  [2].value = 64,
                                                                                  [3].value = 241,
                                                                                  [4].value = 4};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_8_inverse[5] = {[0].value = 16,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse[5] = {[0].value = 16,
                                                                                  [1].value = 16,
                                                                                  [2].value = 253,
                                                                                  [3].value = 16,
                                                                                  [4].value = 193};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward[17] = {[0].value = 241,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward[17] = {[0].value = 241,
                                                                                   [1].value = 241,
                                                                                   [2].value = 241,
                                                                                   [3].value = 241,
@@ -47,7 +47,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_16_forward[17] = {[
                                                                                   [15].value = 4,
                                                                                   [16].value = 225};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse[17] = {[0].value = 16,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse[17] = {[0].value = 16,
                                                                                   [1].value = 16,
                                                                                   [2].value = 16,
                                                                                   [3].value = 16,
@@ -65,7 +65,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_16_inverse[17] = {[
                                                                                   [15].value = 193,
                                                                                   [16].value = 8};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_32_forward[49] = {[0].value = 241,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_32_forward[49] = {[0].value = 241,
         [1].value = 241,
         [2].value = 241,
         [3].value = 241,
@@ -115,7 +115,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_32_forward[49] = {[
         [47].value = 225,
         [48].value = 17};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_32_inverse[49] = {[0].value = 16,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_32_inverse[49] = {[0].value = 16,
         [1].value = 16,
         [2].value = 16,
         [3].value = 16,
@@ -165,7 +165,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_32_inverse[49] = {[
         [47].value = 8,
         [48].value = 121};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_64_forward[129] = {[0].value = 241,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_64_forward[129] = {[0].value = 241,
         [1].value = 241,
         [2].value = 241,
         [3].value = 241,
@@ -295,7 +295,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_64_forward[129] = {
         [127].value = 17,
         [128].value = 92};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_64_inverse[129] = {[0].value = 16,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_64_inverse[129] = {[0].value = 16,
         [1].value = 16,
         [2].value = 16,
         [3].value = 16,
@@ -425,7 +425,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_64_inverse[129] = {
         [127].value = 121,
         [128].value = 176};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_128_forward[321] = {[0].value = 241,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_128_forward[321] = {[0].value = 241,
         [1].value = 241,
         [2].value = 241,
         [3].value = 241,
@@ -747,7 +747,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_128_forward[321] = 
         [319].value = 92,
         [320].value = 57};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_128_inverse[321] = {[0].value = 16,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_128_inverse[321] = {[0].value = 16,
         [1].value = 16,
         [2].value = 16,
         [3].value = 16,
@@ -1069,7 +1069,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_128_inverse[321] = 
         [319].value = 176,
         [320].value = 248};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_256_forward[769] = {[0].value = 241,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_256_forward[769] = {[0].value = 241,
         [1].value = 241,
         [2].value = 241,
         [3].value = 241,
@@ -1839,7 +1839,7 @@ const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_256_forward[769] = 
         [767].value = 57,
         [768].value = 171};
 
-const qconv_uint8 qconv_const_uint16_mod_f_8_CT_precomp_size_256_inverse[769] = {[0].value = 16,
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_256_inverse[769] = {[0].value = 16,
         [1].value = 16,
         [2].value = 16,
         [3].value = 16,

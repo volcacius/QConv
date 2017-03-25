@@ -21,8 +21,8 @@ struct qconv_uint16 {
 };
 
 //Define all the uint16 structs in the same header to avoid circular dependencies
-typedef struct qconv_uint16_mod_f_8 qconv_uint16_mod_f_8;
-struct qconv_uint16_mod_f_8 {
+typedef struct qconv_uint16_mod_f_3 qconv_uint16_mod_f_3;
+struct qconv_uint16_mod_f_3 {
     qconv_inner_uint16 value;
 };
 
@@ -34,7 +34,7 @@ struct qconv_uint16_mod_m_13 {
 //Overlay the various unsigned 16bit struct representation since they share the same inner unsigned 16bit representation
 typedef union qconv_uint16_mod qconv_uint16_mod;
 union qconv_uint16_mod {
-    qconv_uint16_mod_f_8 mod_f_8;
+    qconv_uint16_mod_f_3 mod_f_3;
     qconv_uint16_mod_m_13 mod_m_13;
     qconv_uint16 uint16;
 };

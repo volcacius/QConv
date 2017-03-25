@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 #include "qconv_uint16.h"
-#include "qconv_uint16_mod_f_8.h"
+#include "qconv_uint16_mod_f_3.h"
 #include "qconv_uint16_mod_m_13.h"
 #include "qconv_test_utils_uint16.h"
 

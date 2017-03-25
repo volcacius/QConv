@@ -2,8 +2,8 @@
 set(QCONV_LIB_SRC unsigned_types/qconv_uint16.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint8.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint8_mod_m_8.c)
-set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_f_8.c)
-set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_f_8_constants.c)
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_f_3.c)
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_f_3_constants.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_m_13.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint32.c)
 
