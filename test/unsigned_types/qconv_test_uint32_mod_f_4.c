@@ -66,13 +66,13 @@ enum qconv_status qconv_test_NTT_1D_max_identity_mod_f_4(size_t size, size_t bit
     qconv_test_util_max_uint32_1D_array(size, max, bit_size);
     qconv_test_util_clone_uint32_1D_array(size, max, max_precomp);
     qconv_test_util_clone_uint32_1D_array(size, max, original);
-    status = qconv_NTT_1D_uint32_mod_f_4(size, max, optimize_null);
+    status = qconv_NTT_1D_uint32_mod_f_4(size, max, optimize_precomp);
     CHECK_TEST_STATUS(status);
-    status = qconv_INTT_1D_uint32_mod_f_4(size, max, optimize_null);
+    status = qconv_INTT_1D_uint32_mod_f_4(size, max, optimize_precomp);
     CHECK_TEST_STATUS(status);
-    status = qconv_NTT_1D_uint32_mod_f_4(size, max_precomp, optimize_null);
+    status = qconv_NTT_1D_uint32_mod_f_4(size, max_precomp, optimize_precomp);
     CHECK_TEST_STATUS(status);
-    status = qconv_INTT_1D_uint32_mod_f_4(size, max_precomp, optimize_null);
+    status = qconv_INTT_1D_uint32_mod_f_4(size, max_precomp, optimize_precomp);
     CHECK_TEST_STATUS(status);
     assert(qconv_test_util_compare_uint32_1D_array(size, max, original));
     assert(qconv_test_util_compare_uint32_1D_array(size, max_precomp, original));
@@ -89,13 +89,13 @@ enum qconv_status qconv_test_NTT_2D_max_identity_mod_f_4(size_t size_width,
     qconv_test_util_max_uint32_2D_array(size_width, size_height, max, bit_size);
     qconv_test_util_clone_uint32_2D_array(size_width, size_height, max, max_precomp);
     qconv_test_util_clone_uint32_2D_array(size_width, size_height, max, original);
-    status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, max, optimize_null);
+    status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, max, optimize_precomp);
     CHECK_TEST_STATUS(status);
-    status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, max, optimize_null);
+    status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, max, optimize_precomp);
     CHECK_TEST_STATUS(status);
-    status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, max_precomp, optimize_null);
+    status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, max_precomp, optimize_precomp);
     CHECK_TEST_STATUS(status);
-    status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, max_precomp, optimize_null);
+    status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, max_precomp, optimize_precomp);
     CHECK_TEST_STATUS(status);
     assert(qconv_test_util_compare_uint32_2D_array(size_width, size_height, max, original));
     assert(qconv_test_util_compare_uint32_2D_array(size_width, size_height, max_precomp, original));
@@ -110,9 +110,9 @@ enum qconv_status qconv_test_NTT_1D_random_identity_mod_f_4(size_t size, size_t 
         qconv_uint32_mod a[size], original[size];
         qconv_test_util_random_uint32_1D_array(size, a, bit_size);
         qconv_test_util_clone_uint32_1D_array(size, a, original);
-        status = qconv_NTT_1D_uint32_mod_f_4(size, a, optimize_null);
+        status = qconv_NTT_1D_uint32_mod_f_4(size, a, optimize_precomp);
         CHECK_TEST_STATUS(status);
-        status = qconv_INTT_1D_uint32_mod_f_4(size, a, optimize_null);
+        status = qconv_INTT_1D_uint32_mod_f_4(size, a, optimize_precomp);
         CHECK_TEST_STATUS(status);
         assert(qconv_test_util_compare_uint32_1D_array(size, a, original));
     }
@@ -129,9 +129,9 @@ enum qconv_status qconv_test_NTT_2D_random_identity_mod_f_4(size_t size_width,
         qconv_uint32_mod random[size_width * size_height], original[size_width * size_height];
         qconv_test_util_random_uint32_2D_array(size_width, size_height, random, bit_size);
         qconv_test_util_clone_uint32_2D_array(size_width, size_height, random, original);
-        status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, random, optimize_null);
+        status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, random, optimize_precomp);
         CHECK_TEST_STATUS(status);
-        status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, random, optimize_null);
+        status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, random, optimize_precomp);
         CHECK_TEST_STATUS(status);
         assert(qconv_test_util_compare_uint32_2D_array(size_width, size_height, random, original));
     }
@@ -150,7 +150,7 @@ enum qconv_status qconv_test_NTT_1D_max_circular_convolution_mod_f_4(size_t size
     status = qconv_uint32_direct_1D_circular_convolution(size, input, kernel, conv);
     CHECK_TEST_STATUS(status);
     //NTT linear convolution
-    status = qconv_NTT_1D_circular_convolution_uint32_mod_f_4(size, input, kernel, ntt, optimize_null);
+    status = qconv_NTT_1D_circular_convolution_uint32_mod_f_4(size, input, kernel, ntt, optimize_precomp);
     CHECK_TEST_STATUS(status);
     assert(qconv_test_util_compare_uint32_1D_array(size, ntt, conv));
     return status_success;
@@ -199,7 +199,7 @@ enum qconv_status qconv_test_NTT_1D_random_circular_convolution_mod_f_4(size_t s
         CHECK_TEST_STATUS(status);
         //NTT circuar convolution
         double ntt_start_time = (double) clock() / CLOCKS_PER_SEC;
-        status = qconv_NTT_1D_circular_convolution_uint32_mod_f_4(size, a, b, ntt, optimize_null);
+        status = qconv_NTT_1D_circular_convolution_uint32_mod_f_4(size, a, b, ntt, optimize_precomp);
         double ntt_end_time = (double) clock() / CLOCKS_PER_SEC;
         ntt_tot_time += ntt_end_time - ntt_start_time;
         CHECK_TEST_STATUS(status);
@@ -262,7 +262,7 @@ enum qconv_status qconv_test_NTT_1D_max_linear_convolution_mod_f_4(size_t input_
     status = qconv_uint32_direct_1D_linear_convolution(input_size, kernel_size, input, kernel, conv);
     CHECK_TEST_STATUS(status);
     //NTT linear convolution
-    status = qconv_NTT_1D_linear_convolution_uint32_mod_f_4(input_size, kernel_size, input, kernel, ntt, optimize_null);
+    status = qconv_NTT_1D_linear_convolution_uint32_mod_f_4(input_size, kernel_size, input, kernel, ntt, optimize_precomp);
     CHECK_TEST_STATUS(status);
     assert(qconv_test_util_compare_uint32_1D_array(output_size, ntt, conv));
     return status_success;
@@ -291,7 +291,7 @@ enum qconv_status qconv_test_NTT_2D_max_linear_convolution_mod_f_4(size_t input_
     status = qconv_uint32_direct_2D_linear_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
     CHECK_TEST_STATUS(status);
     //NTT linear convolution
-    status = qconv_NTT_2D_linear_convolution_uint32_mod_f_4(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, ntt, optimize_null);
+    status = qconv_NTT_2D_linear_convolution_uint32_mod_f_4(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, ntt, optimize_precomp);
     CHECK_TEST_STATUS(status);
     assert(qconv_test_util_compare_uint32_2D_array(output_size_width, output_size_height, ntt, conv));
     return status_success;
@@ -323,7 +323,7 @@ enum qconv_status qconv_test_NTT_1D_random_linear_convolution_mod_f_4(size_t inp
         CHECK_TEST_STATUS(status);
         //NTT linear convolution
         double ntt_start_time = (double) clock() / CLOCKS_PER_SEC;
-        status = qconv_NTT_1D_linear_convolution_uint32_mod_f_4(input_size, kernel_size, input, kernel, ntt, optimize_null);
+        status = qconv_NTT_1D_linear_convolution_uint32_mod_f_4(input_size, kernel_size, input, kernel, ntt, optimize_precomp);
         double ntt_end_time = (double) clock() / CLOCKS_PER_SEC;
         ntt_tot_time += ntt_end_time - ntt_start_time;
         CHECK_TEST_STATUS(status);
@@ -367,7 +367,7 @@ enum qconv_status qconv_test_NTT_2D_random_linear_convolution_mod_f_4(size_t inp
         CHECK_TEST_STATUS(status);
         //NTT linear convolution
         double ntt_start_time = (double) clock() / CLOCKS_PER_SEC;
-        status = qconv_NTT_2D_linear_convolution_uint32_mod_f_4(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, ntt, optimize_null);
+        status = qconv_NTT_2D_linear_convolution_uint32_mod_f_4(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, ntt, optimize_precomp);
         double ntt_end_time = (double) clock() / CLOCKS_PER_SEC;
         ntt_tot_time += ntt_end_time - ntt_start_time;
         CHECK_TEST_STATUS(status);

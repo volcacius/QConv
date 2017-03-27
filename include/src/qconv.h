@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define TEST_ITERATIONS 10000
-
 #define QCONV_SIZE_8 8
 #define QCONV_SIZE_16 16
 #define QCONV_SIZE_32 32

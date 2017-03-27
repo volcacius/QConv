@@ -553,8 +553,8 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_3(const size_t size_width,
                             qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_SIZE_8,
                                                                QCONV_SIZE_16,
                                                                a,
-                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward,
-                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward);
                             break;
                         case optimize_null:
                         default:
@@ -584,8 +584,8 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_3(const size_t size_width,
                             qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_SIZE_16,
                                                                QCONV_SIZE_8,
                                                                a,
-                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward,
-                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward);
                             break;
                         case optimize_null:
                         default:
@@ -677,8 +677,8 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_3(const size_t size_width,
                             qconv_CT_2D_precomp_uint16_mod_f_3(QCONV_SIZE_8,
                                                                QCONV_SIZE_16,
                                                                a,
-                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse,
-                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse);
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse,
+                                                               qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse);
                             qconv_INTT_2D_size_norm_uint16_mod_f_3(QCONV_SIZE_8, QCONV_SIZE_16, a);
                             break;
                         case optimize_null:

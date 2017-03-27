@@ -14,6 +14,7 @@
 #include "qconv_int32_mod_12289_constants.h"
 #include "qconv.h"
 #include "time.h"
+#include "qconv_test_constants.h"
 
 void qconv_test_ntt_identity_12289();
 

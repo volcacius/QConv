@@ -6,6 +6,8 @@
 
 #include "qconv.h"
 
+#define TEST_ITERATIONS 1
+
 extern const size_t qconv_test_sizes[];
 
 //Constants for identities, i.e. INTT(NTT(x)) = x
