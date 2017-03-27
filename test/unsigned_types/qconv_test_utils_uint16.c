@@ -7,7 +7,9 @@
 qconv_uint16_mod qconv_test_util_naive_power_uint16_mod(qconv_uint16_mod base, const unsigned int exp, qconv_uint16_mod module) {
     qconv_uint16_mod result = {.uint16.value = 1};
     for (int i = 0; i < exp; i++) {
-        result.uint16.value = (result.uint16.value * base.uint16.value) % module.uint16.value;
+        qconv_inner_int32 temp = (qconv_inner_int32) result.uint16.value * (qconv_inner_int32) base.uint16.value;
+        temp %= module.uint16.value;
+        result.uint16.value = (qconv_inner_uint16) temp;
     }
     return result;
 }

@@ -1,15 +1,20 @@
 #Define src files
-set(QCONV_LIB_SRC unsigned_types/qconv_uint16.c)
-set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint8.c)
+set(QCONV_LIB_SRC unsigned_types/qconv_uint8.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint8_mod_m_8.c)
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_f_3.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_f_3_constants.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint16_mod_m_13.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint32.c)
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint32_mod_f_4.c)
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} unsigned_types/qconv_uint32_mod_f_4_constants.c)
 
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} signed_types/qconv_int32.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} signed_types/qconv_int32_mod_12289.c)
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} signed_types/qconv_int32_mod_12289_constants.c)
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} signed_types/qconv_int64.c)
+
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} qconv_crt.c)
 
 #Define output static library
 add_library(qconv_lib STATIC ${QCONV_LIB_SRC})

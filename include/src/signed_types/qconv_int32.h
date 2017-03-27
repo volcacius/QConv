@@ -9,12 +9,13 @@
 #include <limits.h>
 
 #include "qconv.h"
+#include "qconv_uint32.h"
 
 /*
  * Source: https://gustedt.wordpress.com/2010/06/02/right-shift-on-signed-types-is-not-well-defined/
  */
-#define HIGHONES(c) ((signed)(~(unsigned)0 << (sizeof(signed)*CHAR_BIT - (c))))
-#define HIGHZEROS(c) (~HIGHONES(c))
+#define QCONV_INT32_HIGHONES(c) ((qconv_inner_int32)(~(qconv_inner_uint32)0 << (sizeof(qconv_inner_int32)*CHAR_BIT - (c))))
+#define QCONV_INT32_HIGHZEROS(c) (~QCONV_INT32_HIGHONES(c))
 
 //Typedef a 32bit signed data type to a project wide inner 32bit representation
 typedef int32_t qconv_inner_int32;
@@ -41,14 +42,14 @@ union qconv_int32_mod {
 /*
  * Source: https://gustedt.wordpress.com/2010/06/02/right-shift-on-signed-types-is-not-well-defined/
  */
-inline int qconv_logshiftr(int x, unsigned c) {
-    return (x >> c) & HIGHZEROS(c);
+inline int qconv_int32_logshiftr(qconv_inner_int32 x, qconv_inner_uint32 c) {
+    return (x >> c) & QCONV_INT32_HIGHZEROS(c);
 }
 /*
  * Source: https://gustedt.wordpress.com/2010/06/02/right-shift-on-signed-types-is-not-well-defined/
  */
-inline int qconv_arishiftr(int x, unsigned c) {
-    return qconv_logshiftr(x, c) ^ (x < 0 ? HIGHONES(c) : 0);
+inline int qconv_int32_arishiftr(qconv_inner_int32 x, qconv_inner_uint32 c) {
+    return qconv_int32_logshiftr(x, c) ^ (x < 0 ? QCONV_INT32_HIGHONES(c) : 0);
 }
 
 enum qconv_status qconv_int32_direct_1D_linear_convolution (

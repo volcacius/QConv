@@ -12,6 +12,7 @@
 #include "qconv_uint16_mod_f_3.h"
 #include "qconv_uint16_mod_m_13.h"
 #include "qconv_test_utils_uint16.h"
+#include "qconv_test_constants.h"
 
 enum qconv_status qconv_test_mul_mod_f_3();
 
@@ -19,20 +20,9 @@ enum qconv_status qconv_test_power_mod_f_3();
 
 enum qconv_status qconv_test_mul_mod_f_3_union();
 
-enum qconv_status qconv_test_NTT_1D_identity_mod_f_3(size_t size, size_t bit_size);
-
 enum qconv_status qconv_test_NTT_1D_identity_mod_f_3_runall();
 
-enum qconv_status qconv_test_NTT_1D_circular_convolution_mod_f_3(size_t size,
-                                                    size_t input_bit_size,
-                                                    size_t kernel_bit_size);
-
 enum qconv_status qconv_test_NTT_1D_circular_convolution_mod_f_3_runall();
-
-enum qconv_status qconv_test_NTT_1D_linear_convolution_mod_f_3(size_t input_size,
-                                                  size_t kernel_size,
-                                                  size_t input_bit_size,
-                                                  size_t kernel_bit_size);
 
 enum qconv_status qconv_test_NTT_1D_linear_convolution_mod_f_3_runall();
 

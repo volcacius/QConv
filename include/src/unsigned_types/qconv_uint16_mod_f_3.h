@@ -20,28 +20,29 @@ inline qconv_uint16_mod_f_3 qconv_reduce_uint32_mod_f_3(qconv_uint32 x) {
     return y;
 }
 
-inline qconv_uint16_mod_f_3 qconv_reduce_int_mod_f_3(int x) {
-    int r = x & 0xff;
-    int q = qconv_arishiftr(x, 8);
-    int y = r - q;
+inline qconv_uint16_mod_f_3 qconv_reduce_int_mod_f_3(qconv_inner_int32 x) {
+    qconv_inner_int32 r = x & 0xff;
+    qconv_inner_int32 q = qconv_int32_arishiftr(x, QCONV_EXP_F_3);
+    qconv_inner_int32 y = r - q;
     if (y < 0) {
-        y += 257;
+        y += QCONV_F_3;
     }
     qconv_uint16_mod_f_3 z = {.value = (qconv_inner_uint16) y};
     return z;
 }
 
 /*
- * @brief Fast multiplication modulo F_8 = 2^8 + 1
+ * @brief Fast multiplication modulo F_3 = 2^8 + 1
  */
-inline qconv_uint16_mod_f_3 qconv_mul_uint16_mod_f_3(const qconv_uint16_mod_f_3 x, const qconv_uint16_mod_f_3 y) {
-    int z  = x.value * y.value;
+inline qconv_uint16_mod_f_3 qconv_mul_uint16_mod_f_3(qconv_uint16_mod_f_3 x, qconv_uint16_mod_f_3 y) {
+    //The cast after the = is not optional!
+    qconv_inner_int32 z  = (qconv_inner_int32) x.value * (qconv_inner_int32) y.value;
     qconv_uint16_mod_f_3 reduced = qconv_reduce_int_mod_f_3(z);
     return reduced;
 }
 
 /*
- * @brief Addition modulo F_8 = 2^ + 1
+ * @brief Addition modulo F_3 = 2^ + 1
  */
 inline qconv_uint16_mod_f_3 qconv_add_uint16_mod_f_3(qconv_uint16_mod_f_3 x, qconv_uint16_mod_f_3 y) {
     qconv_uint16_mod_f_3 result = {.value = x.value + y.value};
@@ -54,7 +55,7 @@ inline qconv_uint16_mod_f_3 qconv_add_uint16_mod_f_3(qconv_uint16_mod_f_3 x, qco
 }
 
 /*
- * @brief Subtraction modulo F_8 = 2^ + 1
+ * @brief Subtraction modulo F_3 = 2^ + 1
  */
 inline qconv_uint16_mod_f_3 qconv_subtract_uint16_mod_f_3(qconv_uint16_mod_f_3 x, qconv_uint16_mod_f_3 y) {
     qconv_uint16_mod_f_3 result;
@@ -68,45 +69,58 @@ inline qconv_uint16_mod_f_3 qconv_subtract_uint16_mod_f_3(qconv_uint16_mod_f_3 x
 }
 
 /*
- * @brief Fast exponentiation modulo F_8 = 2^8 + 1
+ * @brief Fast exponentiation modulo F_3 = 2^8 + 1
  * Credits: https://discuss.codechef.com/questions/20451/a-tutorial-on-fast-modulo-multiplication-exponential-squaring
  */
-qconv_uint16_mod_f_3 qconv_power_uint16_mod_f_3(const qconv_uint16_mod_f_3 base, unsigned int exp);
+qconv_uint16_mod_f_3 qconv_power_uint16_mod_f_3(qconv_uint16_mod_f_3 base, unsigned int exp);
 
 /*
- * @brief Point to point product modulo F_8 of two array
+ * @brief Point to point product modulo F_3 of two array
  */
 inline void qconv_pmul_mod_f_3(const size_t size,
                                const qconv_uint16_mod a[static const size],
                                const qconv_uint16_mod b[static const size],
                                qconv_uint16_mod c[static size]) {
+    #pragma omp parallel for
     for (size_t i = 0; i < size; i++) {
         c[i].mod_f_3 = qconv_mul_uint16_mod_f_3(a[i].mod_f_3, b[i].mod_f_3);
     }
 }
 
 /*
- * @brief CT butterfly with input scrambling
+ * @brief CT transform with input scrambling
  */
-void qconv_CT_1D_uint16_mod_f_3(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse);
+void qconv_CT_1D_uint16_mod_f_3(const size_t size,
+                                qconv_uint16_mod *a,
+                                const qconv_uint16_mod p_root,
+                                const size_t p_root_size,
+                                const bool inverse);
 
 /*
- * @brief CT butterfly with input scrambling and precomputed root powers
+ * @brief CT transform with input scrambling and precomputed root powers
  */
-void qconv_CT_1D_precomp_uint16_mod_f_3(size_t size, qconv_uint16_mod *a, const qconv_uint8 *powers);
+void qconv_CT_1D_precomp_uint16_mod_f_3(const size_t size,
+                                        qconv_uint16_mod *a,
+                                        const qconv_uint8 *powers);
+
+void qconv_CT_1D_uint16_mod_f_3_rewrite(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse);
 
 /*
- * @brief NTT of length up to 256 mod F_8
+ * @brief NTT of length up to 256 mod F_3
  */
-enum qconv_status qconv_NTT_1D_uint16_mod_f_3(const size_t size, qconv_uint16_mod a[static size], enum qconv_optimize_transform optimize_level);
+enum qconv_status qconv_NTT_1D_uint16_mod_f_3(const size_t size,
+                                              qconv_uint16_mod a[static size],
+                                              const enum qconv_optimize_transform optimize_level);
 
 /*
- * @brief INTT of length up to 256 mod F_8, including normalization at the end so that a = INTT(NTT(a))
+ * @brief INTT of length up to 256 mod F_3, including normalization at the end so that a = INTT(NTT(a))
  */
-enum qconv_status qconv_INTT_1D_uint16_mod_f_3(const size_t size, qconv_uint16_mod a[static size], enum qconv_optimize_transform optimize_level);
+enum qconv_status qconv_INTT_1D_uint16_mod_f_3(const size_t size,
+                                               qconv_uint16_mod a[static size],
+                                               const enum qconv_optimize_transform optimize_level);
 
 /*
- * @brief a^-1 mod CONV_F_8
+ * @brief a^-1 mod CONV_F_3
  */
 qconv_uint16_mod_f_3 qconv_inverse_uint16_mod_f_3(qconv_uint16_mod a);
 
@@ -123,32 +137,35 @@ void qconv_INTT_2D_size_norm_uint16_mod_f_3(const size_t size_width,
                                             qconv_uint16_mod a[static size_width * size_height]);
 
 /*
- * @brief NTT 1D circular convolution of length up to 256, mod F_8
+ * @brief NTT 1D circular convolution of length up to 256, mod F_3
  */
-enum qconv_status qconv_NTT_1D_circular_convolution_uint16_mod_f_3(size_t size,
+enum qconv_status qconv_NTT_1D_circular_convolution_uint16_mod_f_3(const size_t size,
                                                                    qconv_uint16_mod a[static size],
                                                                    qconv_uint16_mod b[static size],
                                                                    qconv_uint16_mod ntt[size],
-                                                                   enum qconv_optimize_transform optimize_level);
+                                                                   const enum qconv_optimize_transform optimize_level);
 
 /*
- * @brief NTT 1D linear convolution of output length up to 256, mod F_8
+ * @brief NTT 1D linear convolution of output length up to 256, mod F_3
  */
-enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_3(size_t input_size,
-                                                                 size_t kernel_size,
+enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_3(const size_t input_size,
+                                                                 const size_t kernel_size,
                                                                  qconv_uint16_mod input[static input_size],
                                                                  qconv_uint16_mod kernel[static kernel_size],
                                                                  qconv_uint16_mod ntt[input_size + kernel_size - 1],
-                                                                 enum qconv_optimize_transform optimize_level);
+                                                                 const enum qconv_optimize_transform optimize_level);
 
-void qconv_CT_2D_uint16_mod_f_3(size_t size_width,
-                                size_t size_height,
+void qconv_CT_2D_uint16_mod_f_3(const size_t size_width,
+                                const size_t size_height,
                                 qconv_uint16_mod a[size_width * size_height],
-                                qconv_uint16_mod p_root,
-                                bool inverse);
+                                qconv_uint16_mod row_p_root,
+                                qconv_uint16_mod column_p_root,
+                                const size_t row_p_root_size,
+                                const size_t column_p_root_size,
+                                const bool inverse);
 
-void qconv_CT_2D_precomp_uint16_mod_f_3(size_t size_width,
-                                        size_t size_height,
+void qconv_CT_2D_precomp_uint16_mod_f_3(const size_t size_width,
+                                        const size_t size_height,
                                         qconv_uint16_mod a[size_width * size_height],
                                         const qconv_uint8 *row_powers,
                                         const qconv_uint8 *column_powers);
@@ -156,27 +173,27 @@ void qconv_CT_2D_precomp_uint16_mod_f_3(size_t size_width,
 enum qconv_status qconv_NTT_2D_uint16_mod_f_3(const size_t size_width,
                                               const size_t size_height,
                                               qconv_uint16_mod a[static size_width * size_height],
-                                              enum qconv_optimize_transform optimize_level);
+                                              const enum qconv_optimize_transform optimize_level);
 
 enum qconv_status qconv_INTT_2D_uint16_mod_f_3(const size_t size_width,
                                                const size_t size_height,
                                                qconv_uint16_mod a[static size_width * size_height],
-                                               enum qconv_optimize_transform optimize_level);
+                                               const enum qconv_optimize_transform optimize_level);
 
-enum qconv_status qconv_NTT_2D_circular_convolution_uint16_mod_f_3(size_t size_width,
-                                                                   size_t size_height,
+enum qconv_status qconv_NTT_2D_circular_convolution_uint16_mod_f_3(const size_t size_width,
+                                                                   const size_t size_height,
                                                                    qconv_uint16_mod a[static size_width * size_height],
                                                                    qconv_uint16_mod b[static size_width * size_height],
                                                                    qconv_uint16_mod ntt[size_width * size_height],
-                                                                   enum qconv_optimize_transform optimize_level);
+                                                                   const enum qconv_optimize_transform optimize_level);
 
-enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_3(size_t input_size_width,
-                                                                 size_t input_size_height,
-                                                                 size_t kernel_size_width,
-                                                                 size_t kernel_size_height,
+enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_3(const size_t input_size_width,
+                                                                 const size_t input_size_height,
+                                                                 const size_t kernel_size_width,
+                                                                 const size_t kernel_size_height,
                                                                  qconv_uint16_mod input[static input_size_width * input_size_height],
                                                                  qconv_uint16_mod kernel[static kernel_size_width * kernel_size_height],
                                                                  qconv_uint16_mod ntt[(input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)],
-                                                                 enum qconv_optimize_transform optimize_level);
+                                                                 const enum qconv_optimize_transform optimize_level);
 
 

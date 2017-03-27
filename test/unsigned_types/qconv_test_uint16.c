@@ -6,18 +6,6 @@
 
 #include "qconv_test_uint16.h"
 
-const size_t qconv_test_convolution_uint16_sizes[QCONV_CONV_SIZES] = {
-        QCONV_LEN_8,
-        QCONV_LEN_16,
-        QCONV_LEN_32,
-        QCONV_LEN_64,
-        QCONV_LEN_128,
-        QCONV_LEN_256,
-        QCONV_LEN_512,
-        QCONV_LEN_1024,
-        QCONV_LEN_2048
-};
-
 void qconv_test_lin_circ_convolution_uint16(size_t input_bit_size,
                                             size_t kernel_bit_size,
                                             size_t input_size,
@@ -57,8 +45,8 @@ void qconv_test_convolution_uint16_runall() {
                     for (size_t kernel_bit_size = 2; kernel_bit_size < QCONV_MAX_UINT16_BITSIZE; kernel_bit_size++) {
                         qconv_test_lin_circ_convolution_uint16(input_bit_size,
                                                                kernel_bit_size,
-                                                               qconv_test_convolution_uint16_sizes[i],
-                                                               qconv_test_convolution_uint16_sizes[k]);
+                                                               qconv_test_sizes[i],
+                                                               qconv_test_sizes[k]);
                     }
                 }
             }
