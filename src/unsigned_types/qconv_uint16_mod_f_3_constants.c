@@ -3,67 +3,58 @@
 //
 #include "qconv_uint16_mod_f_3_constants.h"
 
-const size_t qconv_test_NTT_circular_convolution_uint16_mod_f_3_sizes[] = {
-        QCONV_LEN_8,
-        QCONV_LEN_16,
-        QCONV_LEN_32,
-        QCONV_LEN_64,
-        QCONV_LEN_128,
-        QCONV_LEN_256
-};
-
 //Declare the useful constants as const structs as well
-const qconv_uint16_mod qconv_const_f_3 = {.mod_f_3.value = QCONV_F_8};
-const qconv_uint16_mod qconv_const_p_root_f_3_len_up_to_16 = {.mod_f_3.value = QCONV_P_ROOT_F_8_LEN_UP_TO_16};
-const qconv_uint16_mod qconv_const_p_root_f_3_len_up_to_256 = {.mod_f_3.value = QCONV_P_ROOT_F_8_LEN_UP_TO_256};
+const qconv_uint16_mod qconv_const_f_3 = {.mod_f_3.value = QCONV_F_3};
+const qconv_uint16_mod qconv_const_p_root_f_3_size_16 = {.mod_f_3.value = QCONV_P_ROOT_F_3_SIZE_16};
+const qconv_uint16_mod qconv_const_p_root_f_3_size_256 = {.mod_f_3.value = QCONV_P_ROOT_F_3_SIZE_256};
 
-const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward[5] = {[0].value = 241,
-                                                                                 [1].value = 241,
-                                                                                 [2].value = 64,
-                                                                                 [3].value = 241,
-                                                                                 [4].value = 4};
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_8_forward[5] = {[0].value = 16,
+        [1].value = 16,
+        [2].value = 4,
+        [3].value = 16,
+        [4].value = 64};
 
-const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse[5] = {[0].value = 16,
-                                                                                 [1].value = 16,
-                                                                                 [2].value = 253,
-                                                                                 [3].value = 16,
-                                                                                 [4].value = 193};
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_8_inverse[5] = {[0].value = 241,
+        [1].value = 241,
+        [2].value = 193,
+        [3].value = 241,
+        [4].value = 253};
 
-const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward[17] = {[0].value = 241,
-                                                                                  [1].value = 241,
-                                                                                  [2].value = 241,
-                                                                                  [3].value = 241,
-                                                                                  [4].value = 64,
-                                                                                  [5].value = 64,
-                                                                                  [6].value = 241,
-                                                                                  [7].value = 241,
-                                                                                  [8].value = 4,
-                                                                                  [9].value = 4,
-                                                                                  [10].value = 249,
-                                                                                  [11].value = 64,
-                                                                                  [12].value = 2,
-                                                                                  [13].value = 241,
-                                                                                  [14].value = 128,
-                                                                                  [15].value = 4,
-                                                                                  [16].value = 225};
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_16_forward[17] = {[0].value = 16,
+        [1].value = 16,
+        [2].value = 16,
+        [3].value = 16,
+        [4].value = 4,
+        [5].value = 4,
+        [6].value = 16,
+        [7].value = 16,
+        [8].value = 64,
+        [9].value = 64,
+        [10].value = 2,
+        [11].value = 4,
+        [12].value = 8,
+        [13].value = 16,
+        [14].value = 32,
+        [15].value = 64,
+        [16].value = 128};
 
-const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse[17] = {[0].value = 16,
-                                                                                  [1].value = 16,
-                                                                                  [2].value = 16,
-                                                                                  [3].value = 16,
-                                                                                  [4].value = 253,
-                                                                                  [5].value = 253,
-                                                                                  [6].value = 16,
-                                                                                  [7].value = 16,
-                                                                                  [8].value = 193,
-                                                                                  [9].value = 193,
-                                                                                  [10].value = 32,
-                                                                                  [11].value = 253,
-                                                                                  [12].value = 129,
-                                                                                  [13].value = 16,
-                                                                                  [14].value = 255,
-                                                                                  [15].value = 193,
-                                                                                  [16].value = 8};
+const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_16_inverse[17] = {[0].value = 241,
+        [1].value = 241,
+        [2].value = 241,
+        [3].value = 241,
+        [4].value = 193,
+        [5].value = 193,
+        [6].value = 241,
+        [7].value = 241,
+        [8].value = 253,
+        [9].value = 253,
+        [10].value = 129,
+        [11].value = 193,
+        [12].value = 225,
+        [13].value = 241,
+        [14].value = 249,
+        [15].value = 253,
+        [16].value = 255};
 
 const qconv_uint8 qconv_const_uint16_mod_f_3_CT_precomp_size_32_forward[49] = {[0].value = 241,
         [1].value = 241,

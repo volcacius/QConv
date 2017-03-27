@@ -3,9 +3,9 @@
 //
 #include "qconv_int32.h"
 
-extern int qconv_logshiftr(int x, unsigned c);
+extern int qconv_int32_logshiftr(qconv_inner_int32 x, qconv_inner_uint32 c);
 
-extern int qconv_arishiftr(int x, unsigned c);
+extern int qconv_int32_arishiftr(qconv_inner_int32 x, qconv_inner_uint32 c);
 
 enum qconv_status qconv_int32_direct_1D_linear_convolution (const size_t input_size,
                                                             const size_t kernel_size,
