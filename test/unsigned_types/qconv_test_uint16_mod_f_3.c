@@ -128,9 +128,9 @@ enum qconv_status qconv_test_NTT_2D_random_identity_mod_f_3(size_t size_width,
         CHECK_TEST_STATUS(status);
         status = qconv_INTT_2D_uint16_mod_f_3(size_width, size_height, random, optimize_null);
         CHECK_TEST_STATUS(status);
-        status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, random, optimize_precomp);
+        status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, random_precomp, optimize_precomp);
         CHECK_TEST_STATUS(status);
-        status = qconv_INTT_2D_uint16_mod_f_3(size_width, size_height, random, optimize_precomp);
+        status = qconv_INTT_2D_uint16_mod_f_3(size_width, size_height, random_precomp, optimize_precomp);
         CHECK_TEST_STATUS(status);
         assert(qconv_test_util_compare_uint16_2D_array(size_width, size_height, random, original));
         assert(qconv_test_util_compare_uint16_2D_array(size_width, size_height, random_precomp, original));

@@ -6,7 +6,7 @@
 
 #include "qconv.h"
 
-#define TEST_ITERATIONS 1
+#define TEST_ITERATIONS 10000
 
 extern const size_t qconv_test_sizes[];
 
