@@ -13,10 +13,10 @@
 
 int main() {
     srand(time(NULL));
-    //qconv_test_uint16_runall();
-    //qconv_test_int32_mod_runall();
+    qconv_test_uint16_runall();
     qconv_test_uint16_mod_f_3_runall();
-    //qconv_test_uint32_runall();
+    qconv_test_int32_mod_runall();
+    qconv_test_uint32_runall();
     qconv_test_uint32_mod_f_4_runall();
-    //qconv_test_NTT_1D_convolution_mod_crt_f_3_f_4(QCONV_SIZE_256, 8, optimize_precomp);
+    qconv_test_mod_crt_f_3_f_4_run_all();
 }

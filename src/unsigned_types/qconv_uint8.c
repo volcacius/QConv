@@ -31,7 +31,7 @@ enum qconv_status qconv_uint8_direct_1D_circular_convolution (
         output[o].uint8.value = 0;
         for (int i = 0; i < size; i++) {
             int k = o - i;
-            while (k < 0 || k >= size) {
+            while (k < 0) {
                 k += size;
             }
             output[o].uint8.value += input[i].uint8.value * kernel[k].uint8.value;

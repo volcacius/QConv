@@ -29,7 +29,7 @@ enum qconv_status qconv_uint32_direct_1D_circular_convolution (const size_t size
         output[o].uint32.value = 0;
         for (size_t i = 0; i < size; i++) {
             int k = (int) (o - i);
-            while (k < 0 || k >= size) {
+            while (k < 0) {
                 k += size;
             }
             output[o].uint32.value += input[i].uint32.value * kernel[k].uint32.value;
