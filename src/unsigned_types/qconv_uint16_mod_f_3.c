@@ -54,52 +54,11 @@ qconv_uint16_mod_f_3 qconv_inverse_uint16_mod_f_3(qconv_uint16_mod a) {
 }
 
 void qconv_CT_1D_uint16_mod_f_3(const size_t size,
+                                //const size_t log2_size,
                                 qconv_uint16_mod a[static size],
                                 qconv_uint16_mod p_root,
                                 const size_t p_root_size,
                                 const bool inverse) {
-    size_t m, i, j, istep, mmax;
-    qconv_uint16_mod w, wt, wr, wtemp;
-    qconv_bit_reverse_uint16_array_order(size, a);
-    if (inverse) {
-        w.mod_f_3 = qconv_power_uint16_mod_f_3(p_root.mod_f_3,
-                                              p_root_size - (p_root_size / size));
-    } else {
-        w.mod_f_3 = qconv_power_uint16_mod_f_3(p_root.mod_f_3,
-                                              (p_root_size / size));
-    }
-    mmax = 1;
-    size_t powers_index = 0;
-    //printf("Size %d\n", size);
-    while (size > mmax) {
-        istep = mmax << 1;
-        wt.mod_f_3 = qconv_power_uint16_mod_f_3(w.mod_f_3, (size / istep));
-        wr.mod_f_3 = wt.mod_f_3;
-        for (i = 0; i < size; i += istep) {
-            j = i + mmax;
-            wtemp = a[j];
-            a[j].mod_f_3 = qconv_subtract_uint16_mod_f_3(a[i].mod_f_3, a[j].mod_f_3);
-            a[i].mod_f_3 = qconv_add_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
-        }
-        for (m = 1; m < mmax; m++) {
-            for (i = m; i < size; i += istep) {
-                j = i + mmax;
-                //printf("[%d].value = %d,\n", powers_index, wr.mod_f_3.value);
-                wtemp.mod_f_3 = qconv_mul_uint16_mod_f_3(wr.mod_f_3, a[j].mod_f_3);
-                a[j].mod_f_3 = qconv_subtract_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
-                a[i].mod_f_3= qconv_add_uint16_mod_f_3(a[i].mod_f_3, wtemp.mod_f_3);
-                powers_index++;
-            }
-            wr.mod_f_3 = qconv_mul_uint16_mod_f_3(wr.mod_f_3, wt.mod_f_3);
-        }
-        mmax = istep;
-    }
-}
-
-void qconv_CT_1D_uint16_mod_f_3_rewrite(const size_t size,
-                                        qconv_uint16_mod *a,
-                                        qconv_uint16_mod p_root,
-                                        const bool inverse) {
     //get log2 of size
     size_t temp_size = size;
     size_t log2_size = 0;
@@ -112,8 +71,13 @@ void qconv_CT_1D_uint16_mod_f_3_rewrite(const size_t size,
 
     //get N root of unity
     if (inverse) {
-        p_root.mod_f_3 = qconv_inverse_uint16_mod_f_3(p_root);
+        p_root.mod_f_3 = qconv_power_uint16_mod_f_3(p_root.mod_f_3,
+                                               p_root_size - (p_root_size / size));
+    } else {
+        p_root.mod_f_3 = qconv_power_uint16_mod_f_3(p_root.mod_f_3,
+                                               (p_root_size / size));
     }
+    printf("size %d\n", size);
 
     //optimize first iteration of outermost loop
     for (size_t first_iter = 0; first_iter < size; first_iter+= 2) {
@@ -122,12 +86,13 @@ void qconv_CT_1D_uint16_mod_f_3_rewrite(const size_t size,
         a[first_iter].mod_f_3 = qconv_add_uint16_mod_f_3(a[first_iter].mod_f_3, temp.mod_f_3);
     }
 
-    for (size_t index = 2; index < log2_size; index++) {
-        const size_t m = (1U << index);
+    for (size_t log2_m = 2; log2_m <= log2_size; log2_m++) {
+        const size_t m = (1U << log2_m);
         const size_t mh = (m >> 1);
-        const qconv_uint16_mod_f_3 dw = qconv_power_uint16_mod_f_3(p_root.mod_f_3, (1 << (log2_size - index)));
+        const qconv_uint16_mod_f_3 dw = qconv_power_uint16_mod_f_3(p_root.mod_f_3, (1 << (log2_size - log2_m)));
         qconv_uint16_mod_f_3 w = {.value = 1};
         for (size_t j = 0; j < mh; j++) {
+            printf("%d\n", w.value);
             for (size_t r = 0; r < size; r += m) {
                 const size_t t1 = r + j;
                 const size_t t2 = t1 + mh;

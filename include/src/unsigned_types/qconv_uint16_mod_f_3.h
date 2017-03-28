@@ -103,7 +103,11 @@ void qconv_CT_1D_precomp_uint16_mod_f_3(const size_t size,
                                         qconv_uint16_mod *a,
                                         const qconv_uint8 *powers);
 
-void qconv_CT_1D_uint16_mod_f_3_rewrite(size_t size, qconv_uint16_mod *a, qconv_uint16_mod p_root, bool inverse);
+void qconv_CT_1D_uint16_mod_f_3_rewrite(size_t size,
+                                        qconv_uint16_mod *a,
+                                        qconv_uint16_mod p_root,
+                                        const size_t p_root_size,
+                                        bool inverse);
 
 /*
  * @brief NTT of length up to 256 mod F_3

@@ -253,8 +253,8 @@ enum qconv_status qconv_INTT_1D_uint32_mod_f_4(const size_t size, qconv_uint32_m
 }
 
 enum qconv_status qconv_NTT_1D_circular_convolution_uint32_mod_f_4(const size_t size,
-                                                                   qconv_uint32_mod a[static size],
-                                                                   qconv_uint32_mod b[static size],
+                                                                   qconv_uint32_mod input[static size],
+                                                                   qconv_uint32_mod kernel[static size],
                                                                    qconv_uint32_mod ntt[size],
                                                                    enum qconv_optimize_transform optimize_level) {
     enum qconv_status status, status_bis;
@@ -262,16 +262,16 @@ enum qconv_status qconv_NTT_1D_circular_convolution_uint32_mod_f_4(const size_t 
     {
         #pragma omp section
         {
-            status = qconv_NTT_1D_uint32_mod_f_4(size, a, optimize_level);
+            status = qconv_NTT_1D_uint32_mod_f_4(size, input, optimize_level);
         }
         #pragma omp section
         {
-            status_bis = qconv_NTT_1D_uint32_mod_f_4(size, b, optimize_level);
+            status_bis = qconv_NTT_1D_uint32_mod_f_4(size, kernel, optimize_level);
         }
     }
     CHECK_STATUS(status);
     CHECK_STATUS(status_bis);
-    qconv_pmul_mod_f_4(size, a, b, ntt);
+    qconv_pmul_mod_f_4(size, input, kernel, ntt);
     status = qconv_INTT_1D_uint32_mod_f_4(size, ntt, optimize_level);
     return status;
 }

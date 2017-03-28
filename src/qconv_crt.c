@@ -47,7 +47,7 @@ enum qconv_status qconv_NTT_1D_circular_convolution_mod_crt_f_3_f_4(size_t size,
         output[i].mod_f_4 = qconv_mul_uint32_mod_f_4(f_3_inverse_mod_f4, output[i].mod_f_4);
         output[i].uint32.value = QCONV_F_3 * output[i].uint32.value + output_bis[i].uint16.value;
     }
-
+    return status;
 }
 
 enum qconv_status qconv_NTT_2D_circular_convolution_mod_crt_f_3_f_4(size_t size_width,
@@ -95,6 +95,9 @@ enum qconv_status qconv_NTT_2D_circular_convolution_mod_crt_f_3_f_4(size_t size_
         output[i].mod_f_4 = qconv_mul_uint32_mod_f_4(f_3_inverse_mod_f4, output[i].mod_f_4);
         output[i].uint32.value = QCONV_F_3 * output[i].uint32.value + output_bis[i].uint16.value;
     }
-
+    return status;
 }
 
+enum qconv_status qconv_NTT_2D_overlap_and_add_linear_convolution() {
+
+}
