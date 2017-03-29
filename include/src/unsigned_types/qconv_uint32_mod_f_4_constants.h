@@ -31,9 +31,14 @@ extern const qconv_uint32_mod qconv_const_f_4;
 extern const qconv_uint32_mod qconv_const_p_root_f_4_size_32;
 extern const qconv_uint32_mod qconv_const_p_root_f_4_size_65536;
 
-extern const qconv_uint16 qconv_const_uint32_mod_f_4_CT_precomp_size_8_forward[];
-extern const qconv_uint16 qconv_const_uint32_mod_f_4_CT_precomp_size_8_inverse[];
-extern const qconv_uint16 qconv_const_uint32_mod_f_4_CT_precomp_size_16_forward[];
-extern const qconv_uint16 qconv_const_uint32_mod_f_4_CT_precomp_size_16_inverse[];
-extern const qconv_uint16 qconv_const_uint32_mod_f_4_CT_precomp_size_32_forward[];
-extern const qconv_uint16 qconv_const_uint32_mod_f_4_CT_precomp_size_32_inverse[];
+extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_8_forward[];
+extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_8_inverse[];
+
+extern const qconv_inner_uint16 qconv_const_f_4_DIF_r2_std2rev_size_8_forward[];
+extern const qconv_inner_uint16 *qconv_const_f_4_DIT_r2_rev2std_size_8_inverse;
+
+extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_16_forward[];
+extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_16_inverse[];
+
+extern const qconv_inner_uint16 qconv_const_f_4_DIF_r2_std2rev_size_16_forward[];
+extern const const qconv_inner_uint16 *qconv_const_f_4_DIT_r2_rev2std_size_16_inverse;

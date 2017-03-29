@@ -15,6 +15,7 @@
 #include "qconv_int64.h"
 #include "qconv_uint64.h"
 #include "qconv_uint32_mod_f_4_constants.h"
+#include "qconv_utils.h"
 
 inline qconv_uint32_mod_f_4 qconv_reduce_int64_mod_f_4(qconv_inner_int64 x) {
     qconv_inner_int64 r = x & 0xffff;
@@ -85,20 +86,46 @@ inline void qconv_pmul_mod_f_4(const size_t size,
 }
 
 /*
- * @brief CT butterfly with input scrambling
+ * @brief CT transform with input scrambling
  */
-void qconv_CT_1D_uint32_mod_f_4(const size_t size,
-                                qconv_uint32_mod a[static size],
-                                const qconv_uint32_mod p_root,
-                                const size_t p_root_size,
-                                const bool inverse);
+void qconv_DIT_r2_std2std_1D_uint32_mod_f_4(const size_t size,
+                                            const size_t log2_size,
+                                            qconv_uint32_mod a[static size],
+                                            qconv_uint32_mod p_root,
+                                            const size_t p_root_size,
+                                            const bool inverse);
 
 /*
- * @brief CT butterfly with input scrambling and precomputed root powers
+ * @brief CT transform with input scrambling and precomputed root powers
  */
-void qconv_CT_1D_precomp_uint32_mod_f_4(const size_t size,
-                                        qconv_uint32_mod a[static size],
-                                        const qconv_uint16 *powers);
+void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4(const size_t size,
+                                                    const size_t log2_size,
+                                                    qconv_uint32_mod a[static size],
+                                                    const qconv_inner_uint16 *powers);
+
+void qconv_DIT_r2_rev2std_1D_uint32_mod_f_4(const size_t size,
+                                            const size_t log2_size,
+                                            qconv_uint32_mod a[static size],
+                                            qconv_uint32_mod p_root,
+                                            const size_t p_root_size,
+                                            bool inverse);
+
+void qconv_DIF_r2_std2rev_1D_uint32_mod_f_4(const size_t size,
+                                            const size_t log2_size,
+                                            qconv_uint32_mod a[static size],
+                                            qconv_uint32_mod p_root,
+                                            const size_t p_root_size);
+
+void qconv_DIF_r2_std2rev_precomp_1D_uint32_mod_f_4(const size_t size,
+                                                    const size_t log2_size,
+                                                    qconv_uint32_mod a[static size],
+                                                    const qconv_inner_uint16 *powers);
+
+void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4(const size_t size,
+                                                    const size_t log2_size,
+                                                    qconv_uint32_mod a[static size],
+                                                    const qconv_inner_uint16 *powers);
+
 
 /*
  * @brief NTT of length up to 32 mod F_4

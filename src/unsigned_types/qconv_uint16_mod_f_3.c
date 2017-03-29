@@ -36,7 +36,7 @@ void qconv_INTT_1D_size_norm_uint16_mod_f_3(const size_t size, qconv_uint16_mod 
     qconv_uint16_mod to_invert = {.uint16.value = size};
     qconv_uint16_mod_f_3 inv = qconv_inverse_uint16_mod_f_3(to_invert);
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t j = 0; j < size; j++) {
         a[j].mod_f_3 = qconv_mul_uint16_mod_f_3(a[j].mod_f_3, inv);
     }
@@ -329,13 +329,13 @@ enum qconv_status qconv_NTT_1D_circular_convolution_uint16_mod_f_3(const size_t 
                                                                    qconv_uint16_mod ntt[size],
                                                                    const enum qconv_optimize_transform optimize_level) {
     enum qconv_status status, status_bis;
-    #pragma omp parallel sections
+#pragma omp parallel sections
     {
-        #pragma omp section
+#pragma omp section
         {
             status = qconv_NTT_1D_uint16_mod_f_3(size, a, optimize_level);
         }
-        #pragma omp section
+#pragma omp section
         {
             status_bis = qconv_NTT_1D_uint16_mod_f_3(size, b, optimize_level);
         }
@@ -476,7 +476,7 @@ void qconv_DIT_rev2std_2D_precomp_uint16_mod_f_3(const size_t size_width,
                                                  const qconv_inner_uint8 *row_powers,
                                                  const qconv_inner_uint8 *column_powers) {
     //row transform
-#pragma omp parallel for
+    #pragma omp parallel for
     for (size_t a_row = 0; a_row < size_height; a_row++) {
         qconv_DIT_r2_rev2std_precomp_1D_uint16_mod_f_3(size_width, log2_size_width, &a[a_row * size_width], row_powers);
     }
@@ -504,7 +504,7 @@ void qconv_DIF_std2rev_2D_precomp_uint16_mod_f_3(const size_t size_width,
                                                  const qconv_inner_uint8 *row_powers,
                                                  const qconv_inner_uint8 *column_powers) {
     //row transform
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t a_row = 0; a_row < size_height; a_row++) {
         qconv_DIF_r2_std2rev_precomp_1D_uint16_mod_f_3(size_width, log2_size_width, &a[a_row * size_width], row_powers);
     }
@@ -514,7 +514,7 @@ void qconv_DIF_std2rev_2D_precomp_uint16_mod_f_3(const size_t size_width,
     qconv_transpose_uint16_2D(size_width, size_height, a, a_transpose);
 
     //column transform
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t a_transpose_column = 0; a_transpose_column < size_width; a_transpose_column++) {
         qconv_DIF_r2_std2rev_precomp_1D_uint16_mod_f_3(size_height, log2_size_height,
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
@@ -868,13 +868,13 @@ enum qconv_status qconv_NTT_2D_circular_convolution_uint16_mod_f_3(const size_t 
                                                                    const enum qconv_optimize_transform optimize_level) {
     enum qconv_status status, status_bis;
 
-    #pragma omp parallel sections
+#pragma omp parallel sections
     {
-        #pragma omp section
+#pragma omp section
         {
             status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, a, optimize_level);
         }
-        #pragma omp section
+#pragma omp section
         {
             status_bis = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, b, optimize_level);
         }
@@ -914,13 +914,13 @@ enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_3(const size_t in
     qconv_uint16_mod ntt_padded[size_width * size_height];
 
     //Pad the input and kernel
-    #pragma omp parallel sections
+#pragma omp parallel sections
     {
-        #pragma omp section
+#pragma omp section
         {
             status = qconv_zero_pad_uint16_2D_array(size_width, size_height, input_size_width, input_size_height, input, input_padded);
         }
-        #pragma omp section
+#pragma omp section
         {
             status_bis = qconv_zero_pad_uint16_2D_array(size_width, size_height, kernel_size_width, kernel_size_height, kernel, kernel_padded);
         }
@@ -929,13 +929,13 @@ enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_3(const size_t in
     CHECK_STATUS(status_bis);
 
     //Perform the transform
-    #pragma omp parallel sections
+#pragma omp parallel sections
     {
-    #pragma omp section
+#pragma omp section
         {
             status = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, input_padded, optimize_level);
         }
-    #pragma omp section
+#pragma omp section
         {
             status_bis = qconv_NTT_2D_uint16_mod_f_3(size_width, size_height, kernel_padded, optimize_level);
         }

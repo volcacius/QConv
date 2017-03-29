@@ -89,7 +89,8 @@ void qconv_test_NTT_2D_max_convolution_mod_crt_f_3_f_4(size_t size_width,
 }
 
 void qconv_test_NTT_1D_convolution_mod_crt_f_3_f_4_run_all() {
-    for (size_t optimize_level = optimize_null; optimize_level < optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
+        printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         for (size_t input_bit_size = 1; input_bit_size <= QCONV_MAX_BITSIZE; input_bit_size++) {
             for (size_t kernel_bit_size = 1; kernel_bit_size <= QCONV_MAX_BITSIZE; kernel_bit_size++) {
                 for (size_t size_index = 0; size_index < QCONV_CRT_F_3_F_4_1D_CONV_SIZES; size_index++) {
@@ -103,7 +104,8 @@ void qconv_test_NTT_1D_convolution_mod_crt_f_3_f_4_run_all() {
 }
 
 void qconv_test_NTT_2D_convolution_mod_crt_f_3_f_4_run_all() {
-    for (size_t optimize_level = optimize_null; optimize_level < optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
+        printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         for (size_t input_bit_size = 1; input_bit_size <= QCONV_MAX_BITSIZE; input_bit_size++) {
             for (size_t kernel_bit_size = 1; kernel_bit_size <= QCONV_MAX_BITSIZE; kernel_bit_size++) {
                 for (size_t size_width_index = 0; size_width_index < QCONV_CRT_F_3_F_4_2D_CONV_SIZES; size_width_index++) {

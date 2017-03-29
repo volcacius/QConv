@@ -127,7 +127,10 @@ enum qconv_status qconv_test_NTT_2D_random_identity_mod_f_3(size_t size_width,
     return status_success;
 }
 
-enum qconv_status qconv_test_NTT_1D_max_circular_convolution_mod_f_3(size_t size, size_t input_bit_size, size_t kernel_bit_size, enum qconv_optimize_transform optimize_level) {
+enum qconv_status qconv_test_NTT_1D_max_circular_convolution_mod_f_3(size_t size,
+                                                                     size_t input_bit_size,
+                                                                     size_t kernel_bit_size,
+                                                                     enum qconv_optimize_transform optimize_level) {
     enum qconv_status status;
     printf("Test 1D NTT mod F_3 max circular convolution\n size %d, input %dbit, kernel %dbit\n",
            size, input_bit_size, kernel_bit_size);
@@ -504,7 +507,7 @@ enum qconv_status qconv_test_NTT_1D_linear_convolution_mod_f_3_runall() {
         status = qconv_test_NTT_1D_linear_convolution_mod_f_3(QCONV_SIZE_128, QCONV_SIZE_32, 2, 1, optimize_level);
         CHECK_TEST_STATUS(status);
     }
-    return status;
+    return status_success;
 }
 
 enum qconv_status qconv_test_NTT_1D_circular_convolution_mod_f_3_runall() {
@@ -518,7 +521,7 @@ enum qconv_status qconv_test_NTT_1D_circular_convolution_mod_f_3_runall() {
         status = qconv_test_NTT_1D_circular_convolution_mod_f_3(QCONV_SIZE_64, 2, 1, optimize_level);
         CHECK_TEST_STATUS(status);
     }
-    return status;
+    return status_success;
 }
 
 enum qconv_status qconv_test_NTT_2D_circular_convolution_mod_f_3_runall() {
@@ -528,7 +531,7 @@ enum qconv_status qconv_test_NTT_2D_circular_convolution_mod_f_3_runall() {
         status = qconv_test_NTT_2D_circular_convolution_mod_f_3(QCONV_SIZE_8, QCONV_SIZE_8, 2, 1, optimize_level);
         CHECK_TEST_STATUS(status);
     }
-    return status;
+    return status_success;
 }
 
 enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_3_runall() {
@@ -539,46 +542,19 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_3_runall() {
                                                               optimize_level);
         CHECK_TEST_STATUS(status);
     }
-    return status;
+    return status_success;
 }
 
 void qconv_test_uint16_mod_f_3_runall() {
-    enum qconv_status status;
-    status = qconv_test_fast_reduction_mod_f_3();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_mul_mod_f_3();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_mul_mod_f_3_union();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_power_mod_f_3();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_NTT_1D_identity_mod_f_3_runall();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_NTT_1D_circular_convolution_mod_f_3_runall();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_NTT_1D_linear_convolution_mod_f_3_runall();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_NTT_2D_identity_mod_f_3_runall();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_NTT_2D_circular_convolution_mod_f_3_runall();
-    CHECK_TEST_STATUS(status);
-    status = qconv_test_NTT_2D_linear_convolution_mod_f_3_runall();
-    CHECK_TEST_STATUS(status);
-
-    /*size_t size = 16;
-    qconv_uint16_mod a[size], b[size], ntt[size], conv[size];
-
-    qconv_test_util_random_uint16_1D_array(size, a, 2);
-    qconv_test_util_random_uint16_1D_array(size, b, 1);
-    //Direct circular convolution
-    qconv_uint16_direct_1D_circular_convolution(size, a, b, conv);
-    //NTT circuar convolution
-    qconv_DIF_r2_std2rev_1D_uint16_mod_f_3(size, 4, a, qconv_const_p_root_f_3_size_16, 16);
-    qconv_DIF_r2_std2rev_1D_uint16_mod_f_3(size, 4, b, qconv_const_p_root_f_3_size_16, 16);
-    qconv_pmul_mod_f_3(size, a, b, ntt);
-    qconv_DIT_r2_rev2std_1D_uint16_mod_f_3(size, 4, ntt, qconv_const_p_root_f_3_size_16, 16);
-    qconv_INTT_1D_size_norm_uint16_mod_f_3(size, ntt);
-    assert(qconv_test_util_compare_uint16_1D_array(size, ntt, conv));*/
-
+    qconv_test_fast_reduction_mod_f_3();
+    qconv_test_mul_mod_f_3();
+    qconv_test_mul_mod_f_3_union();
+    qconv_test_power_mod_f_3();
+    qconv_test_NTT_1D_identity_mod_f_3_runall();
+    qconv_test_NTT_1D_circular_convolution_mod_f_3_runall();
+    qconv_test_NTT_1D_linear_convolution_mod_f_3_runall();
+    qconv_test_NTT_2D_identity_mod_f_3_runall();
+    qconv_test_NTT_2D_circular_convolution_mod_f_3_runall();
+    qconv_test_NTT_2D_linear_convolution_mod_f_3_runall();
 }
 
