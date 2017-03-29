@@ -13,12 +13,5 @@
 #include "qconv_test_utils_uint32.h"
 #include "qconv_test_constants.h"
 
-void qconv_test_lin_circ_convolution_uint32(size_t input_size,
-                                            size_t kernel_size,
-                                            size_t input_bit_size,
-                                            size_t kernel_bit_size);
-
-void qconv_test_convolution_uint32_runall();
-
 void qconv_test_uint32_runall();
 

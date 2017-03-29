@@ -20,6 +20,17 @@
 #define QCONV_SIZE_2048 2048
 #define QCONV_SIZE_65536 65536
 
+#define QCONV_LOG_SIZE_8 3
+#define QCONV_LOG_SIZE_16 4
+#define QCONV_LOG_SIZE_32 5
+#define QCONV_LOG_SIZE_64 6
+#define QCONV_LOG_SIZE_128 7
+#define QCONV_LOG_SIZE_256 8
+#define QCONV_LOG_SIZE_512 9
+#define QCONV_LOG_SIZE_1024 10
+#define QCONV_LOG_SIZE_2048 11
+#define QCONV_LOG_SIZE_65536 16
+
 //Consider only sizes up to 2048 in tests, bigger constants are used only as algorithm inner magic numbers
 #define QCONV_CONV_SIZES 9
 

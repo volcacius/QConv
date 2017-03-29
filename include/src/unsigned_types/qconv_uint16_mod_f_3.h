@@ -14,6 +14,7 @@
 #include "qconv_uint32.h"
 #include "qconv_int32.h"
 #include "qconv_uint16_mod_f_3_constants.h"
+#include "qconv_utils.h"
 
 inline qconv_uint16_mod_f_3 qconv_reduce_uint32_mod_f_3(qconv_uint32 x) {
     qconv_uint16_mod_f_3 y = {.value = x.value % qconv_const_f_3.mod_f_3.value};
@@ -90,24 +91,20 @@ inline void qconv_pmul_mod_f_3(const size_t size,
 /*
  * @brief CT transform with input scrambling
  */
-void qconv_CT_1D_uint16_mod_f_3(const size_t size,
-                                qconv_uint16_mod *a,
-                                const qconv_uint16_mod p_root,
-                                const size_t p_root_size,
-                                const bool inverse);
+void qconv_DIT_r2_std2std_1D_uint16_mod_f_3(const size_t size,
+                                            const size_t log2_size,
+                                            qconv_uint16_mod a[static size],
+                                            qconv_uint16_mod p_root,
+                                            const size_t p_root_size,
+                                            const bool inverse);
 
 /*
  * @brief CT transform with input scrambling and precomputed root powers
  */
-void qconv_CT_1D_precomp_uint16_mod_f_3(const size_t size,
-                                        qconv_uint16_mod *a,
-                                        const qconv_uint8 *powers);
-
-void qconv_CT_1D_uint16_mod_f_3_rewrite(size_t size,
-                                        qconv_uint16_mod *a,
-                                        qconv_uint16_mod p_root,
-                                        const size_t p_root_size,
-                                        bool inverse);
+void qconv_DIT_r2_std2std_precomp_1D_uint16_mod_f_3(const size_t size,
+                                                    const size_t log2_size,
+                                                    qconv_uint16_mod a[static size],
+                                                    const qconv_inner_uint8 *powers);
 
 /*
  * @brief NTT of length up to 256 mod F_3
@@ -161,6 +158,8 @@ enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_3(const size_t in
 
 void qconv_CT_2D_uint16_mod_f_3(const size_t size_width,
                                 const size_t size_height,
+                                const size_t log2_size_width,
+                                const size_t log2_size_height,
                                 qconv_uint16_mod a[size_width * size_height],
                                 qconv_uint16_mod row_p_root,
                                 qconv_uint16_mod column_p_root,
@@ -170,9 +169,11 @@ void qconv_CT_2D_uint16_mod_f_3(const size_t size_width,
 
 void qconv_CT_2D_precomp_uint16_mod_f_3(const size_t size_width,
                                         const size_t size_height,
+                                        const size_t log2_size_width,
+                                        const size_t log2_size_height,
                                         qconv_uint16_mod a[size_width * size_height],
-                                        const qconv_uint8 *row_powers,
-                                        const qconv_uint8 *column_powers);
+                                        const qconv_inner_uint8 *row_powers,
+                                        const qconv_inner_uint8 *column_powers);
 
 enum qconv_status qconv_NTT_2D_uint16_mod_f_3(const size_t size_width,
                                               const size_t size_height,
