@@ -106,6 +106,29 @@ void qconv_DIT_r2_std2std_precomp_1D_uint16_mod_f_3(const size_t size,
                                                     qconv_uint16_mod a[static size],
                                                     const qconv_inner_uint8 *powers);
 
+void qconv_DIT_r2_rev2std_1D_uint16_mod_f_3(const size_t size,
+                                            const size_t log2_size,
+                                            qconv_uint16_mod a[static size],
+                                            qconv_uint16_mod p_root,
+                                            const size_t p_root_size,
+                                            bool inverse);
+
+void qconv_DIF_r2_std2rev_1D_uint16_mod_f_3(const size_t size,
+                                            const size_t log2_size,
+                                            qconv_uint16_mod a[static size],
+                                            qconv_uint16_mod p_root,
+                                            const size_t p_root_size);
+
+void qconv_DIF_r2_std2rev_precomp_1D_uint16_mod_f_3(const size_t size,
+                                                    const size_t log2_size,
+                                                    qconv_uint16_mod a[static size],
+                                                    const qconv_inner_uint8 *powers);
+
+void qconv_DIT_r2_rev2std_precomp_1D_uint16_mod_f_3(const size_t size,
+                                                    const size_t log2_size,
+                                                    qconv_uint16_mod a[static size],
+                                                    const qconv_inner_uint8 *powers);
+
 /*
  * @brief NTT of length up to 256 mod F_3
  */
@@ -156,24 +179,24 @@ enum qconv_status qconv_NTT_1D_linear_convolution_uint16_mod_f_3(const size_t in
                                                                  qconv_uint16_mod ntt[input_size + kernel_size - 1],
                                                                  const enum qconv_optimize_transform optimize_level);
 
-void qconv_CT_2D_uint16_mod_f_3(const size_t size_width,
-                                const size_t size_height,
-                                const size_t log2_size_width,
-                                const size_t log2_size_height,
-                                qconv_uint16_mod a[size_width * size_height],
-                                qconv_uint16_mod row_p_root,
-                                qconv_uint16_mod column_p_root,
-                                const size_t row_p_root_size,
-                                const size_t column_p_root_size,
-                                const bool inverse);
+void qconv_DIT_std2std_2D_uint16_mod_f_3(const size_t size_width,
+                                         const size_t size_height,
+                                         const size_t log2_size_width,
+                                         const size_t log2_size_height,
+                                         qconv_uint16_mod a[static size_width * size_height],
+                                         qconv_uint16_mod row_p_root,
+                                         qconv_uint16_mod column_p_root,
+                                         const size_t row_p_root_size,
+                                         const size_t column_p_root_size,
+                                         const bool inverse);
 
-void qconv_CT_2D_precomp_uint16_mod_f_3(const size_t size_width,
-                                        const size_t size_height,
-                                        const size_t log2_size_width,
-                                        const size_t log2_size_height,
-                                        qconv_uint16_mod a[size_width * size_height],
-                                        const qconv_inner_uint8 *row_powers,
-                                        const qconv_inner_uint8 *column_powers);
+void qconv_DIT_std2std_2D_precomp_uint16_mod_f_3(const size_t size_width,
+                                                 const size_t size_height,
+                                                 const size_t log2_size_width,
+                                                 const size_t log2_size_height,
+                                                 qconv_uint16_mod a[static size_width * size_height],
+                                                 const qconv_inner_uint8 *row_powers,
+                                                 const qconv_inner_uint8 *column_powers);
 
 enum qconv_status qconv_NTT_2D_uint16_mod_f_3(const size_t size_width,
                                               const size_t size_height,

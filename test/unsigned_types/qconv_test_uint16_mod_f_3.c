@@ -460,7 +460,7 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_3(size_t input_size
 
 enum qconv_status qconv_test_NTT_1D_identity_mod_f_3_runall() {
     enum qconv_status status;
-    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         for (size_t bit_size = 1; bit_size <= QCONV_MAX_F_3_NTT_IDENTITY_BITSIZE; bit_size++) {
             for (size_t i = 0; i < QCONV_F_3_1D_IDENTITY_SIZES; i++) {
@@ -474,7 +474,7 @@ enum qconv_status qconv_test_NTT_1D_identity_mod_f_3_runall() {
 
 enum qconv_status qconv_test_NTT_2D_identity_mod_f_3_runall() {
     enum qconv_status status;
-    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         for (size_t bit_size = 1; bit_size <= QCONV_MAX_F_3_NTT_IDENTITY_BITSIZE; bit_size++) {
             for (size_t i = 0; i < QCONV_F_3_2D_IDENTITY_SIZES; i++) {
@@ -493,7 +493,7 @@ enum qconv_status qconv_test_NTT_2D_identity_mod_f_3_runall() {
 
 enum qconv_status qconv_test_NTT_1D_linear_convolution_mod_f_3_runall() {
     enum qconv_status status;
-    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         status = qconv_test_NTT_1D_linear_convolution_mod_f_3(QCONV_SIZE_16, QCONV_SIZE_16, 2, 2, optimize_level);
         CHECK_TEST_STATUS(status);
@@ -509,7 +509,7 @@ enum qconv_status qconv_test_NTT_1D_linear_convolution_mod_f_3_runall() {
 
 enum qconv_status qconv_test_NTT_1D_circular_convolution_mod_f_3_runall() {
     enum qconv_status status;
-    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         status = qconv_test_NTT_1D_circular_convolution_mod_f_3(QCONV_SIZE_16, 2, 2, optimize_level);
         CHECK_TEST_STATUS(status);
@@ -523,7 +523,7 @@ enum qconv_status qconv_test_NTT_1D_circular_convolution_mod_f_3_runall() {
 
 enum qconv_status qconv_test_NTT_2D_circular_convolution_mod_f_3_runall() {
     enum qconv_status status;
-    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         status = qconv_test_NTT_2D_circular_convolution_mod_f_3(QCONV_SIZE_8, QCONV_SIZE_8, 2, 1, optimize_level);
         CHECK_TEST_STATUS(status);
@@ -533,7 +533,7 @@ enum qconv_status qconv_test_NTT_2D_circular_convolution_mod_f_3_runall() {
 
 enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_3_runall() {
     enum qconv_status status;
-    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp; optimize_level++) {
+    for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
         status = qconv_test_NTT_2D_linear_convolution_mod_f_3(QCONV_SIZE_8, QCONV_SIZE_8, QCONV_SIZE_8, QCONV_SIZE_8, 2, 1,
                                                               optimize_level);
@@ -564,5 +564,21 @@ void qconv_test_uint16_mod_f_3_runall() {
     CHECK_TEST_STATUS(status);
     status = qconv_test_NTT_2D_linear_convolution_mod_f_3_runall();
     CHECK_TEST_STATUS(status);
+
+    /*size_t size = 16;
+    qconv_uint16_mod a[size], b[size], ntt[size], conv[size];
+
+    qconv_test_util_random_uint16_1D_array(size, a, 2);
+    qconv_test_util_random_uint16_1D_array(size, b, 1);
+    //Direct circular convolution
+    qconv_uint16_direct_1D_circular_convolution(size, a, b, conv);
+    //NTT circuar convolution
+    qconv_DIF_r2_std2rev_1D_uint16_mod_f_3(size, 4, a, qconv_const_p_root_f_3_size_16, 16);
+    qconv_DIF_r2_std2rev_1D_uint16_mod_f_3(size, 4, b, qconv_const_p_root_f_3_size_16, 16);
+    qconv_pmul_mod_f_3(size, a, b, ntt);
+    qconv_DIT_r2_rev2std_1D_uint16_mod_f_3(size, 4, ntt, qconv_const_p_root_f_3_size_16, 16);
+    qconv_INTT_1D_size_norm_uint16_mod_f_3(size, ntt);
+    assert(qconv_test_util_compare_uint16_1D_array(size, ntt, conv));*/
+
 }
 
