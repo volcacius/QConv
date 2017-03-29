@@ -17,10 +17,10 @@
 #include "qconv_uint32_mod_f_4_constants.h"
 #include "qconv_utils.h"
 
-inline qconv_uint32_mod_f_4 qconv_reduce_int64_mod_f_4(qconv_inner_int64 x) {
-    qconv_inner_int64 r = x & 0xffff;
-    qconv_inner_int64 q = qconv_int64_arishiftr(x, 16);
-    qconv_inner_int64 y = r - q;
+inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 x) {
+    qconv_inner_int32 r = x & 0xffff;
+    qconv_inner_int32 q = qconv_int64_arishiftr(x, 16);
+    qconv_inner_int32 y = r - q;
     if (y < 0) {
         y += QCONV_F_4;
     }
@@ -32,9 +32,16 @@ inline qconv_uint32_mod_f_4 qconv_reduce_int64_mod_f_4(qconv_inner_int64 x) {
  * @brief Fast multiplication modulo F_4 = 2^16 + 1
  */
 inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
-    //The cast after the = is not optional!
-    qconv_inner_uint64 z  = ((qconv_inner_uint64) x.value) * ((qconv_inner_uint64) y.value);
-    qconv_uint32_mod_f_4 reduced = qconv_reduce_int64_mod_f_4(z);
+    qconv_uint32_mod_f_4 reduced;
+    if (x.value == QCONV_F_4 - 1 && y.value == QCONV_F_4 - 1) {
+        reduced.value = 1;
+    } else {
+        qconv_inner_uint32 z = x.value *  y.value;
+        if (z > INT32_MAX) {
+            z -= QCONV_F_4 * QCONV_F_4_REDUCTION_FACTOR;
+        }
+        reduced = qconv_reduce_int32_mod_f_4((qconv_inner_int32) z);
+    }
     return reduced;
 }
 

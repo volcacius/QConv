@@ -1,5 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 .ipynb_checkpoints/
 cmake-build-debug/
-build
+build/
+.idea/
 

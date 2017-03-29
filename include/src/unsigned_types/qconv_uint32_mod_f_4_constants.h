@@ -20,8 +20,10 @@
 #define QCONV_MAX_F_4_NTT_2D_SIZE_16X16_INPUT_BITSIZE 4
 #define QCONV_MAX_F_4_NTT_2D_SIZE_16X16_KERNEL_BITSIZE 4
 
+//Multiplicative factor to keep the value of the result of a unsigned mult within a signed interval, to be able to apply a fast reduction
+#define QCONV_F_4_REDUCTION_FACTOR 32768U
 //Access the following values through the const variables so that their representation is consisted with the global inner one
-#define QCONV_F_4 65537
+#define QCONV_F_4 65537U
 #define QCONV_P_ROOT_F_4_SIZE_32 2
 #define QCONV_P_ROOT_F_4_SIZE_65536 3
 

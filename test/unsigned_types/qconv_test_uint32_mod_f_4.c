@@ -27,7 +27,7 @@ enum qconv_status qconv_test_fast_reduction_mod_f_4(bool big_int) {
         }
         qconv_uint32_mod_f_4 correct = {.value = (qconv_inner_uint32) (a.value % qconv_const_f_4.mod_f_4.value)};
         qconv_inner_int64 z = (qconv_inner_int64) a.value;
-        qconv_uint32_mod_f_4 test = qconv_reduce_int64_mod_f_4(z);
+        qconv_uint32_mod_f_4 test = qconv_reduce_int32_mod_f_4(z);
         assert(test.value == correct.value);
     }
     return status_success;
@@ -52,7 +52,6 @@ enum qconv_status qconv_test_power_mod_f_4() {
         unsigned int exp = rand() % qconv_const_f_4.mod_f_4.value;
         qconv_uint32_mod correct = qconv_test_util_naive_power_uint32_mod(base, exp, qconv_const_f_4);
         qconv_uint32_mod_f_4 test = qconv_power_uint32_mod_f_4(base.mod_f_4, exp);
-        //printf("Test power mod F_4 base %d exp %d, %d %d\n", base.mod_f_4.value, exp, correct.mod_f_4.value, test.value);
         assert(test.value == correct.mod_f_4.value);
     }
     return status_success;
@@ -552,8 +551,8 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_4_runall() {
 
 void qconv_test_uint32_mod_f_4_runall() {
     qconv_test_mul_mod_f_4();
-    qconv_test_fast_reduction_mod_f_4(false);
-    qconv_test_fast_reduction_mod_f_4(true);
+    //qconv_test_fast_reduction_mod_f_4(false);
+    //qconv_test_fast_reduction_mod_f_4(true);
     qconv_test_mul_mod_f_4_union();
     qconv_test_power_mod_f_4();
     qconv_test_NTT_1D_identity_mod_f_4_runall();
@@ -562,12 +561,5 @@ void qconv_test_uint32_mod_f_4_runall() {
     qconv_test_NTT_2D_identity_mod_f_4_runall();
     qconv_test_NTT_2D_circular_convolution_mod_f_4_runall();
     qconv_test_NTT_2D_linear_convolution_mod_f_4_runall();
-    /*size_t size = 16;
-    size_t logsize = 4;
-    size_t bit_size = 16;
-    qconv_uint32_mod max[size];
-    qconv_test_util_max_uint32_1D_array(size, max, bit_size);
-    qconv_DIF_r2_std2rev_1D_uint32_mod_f_4(size, logsize, max, qconv_const_p_root_f_4_size_32, 32);*/
-
 }
 
