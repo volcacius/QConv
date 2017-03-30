@@ -526,337 +526,230 @@ void qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(const size_t size_width,
     qconv_transpose_uint32_2D(size_height, size_width, a_transpose, a);
 }
 
+enum qconv_status qconv_NTT_2D_uint32_mod_f_4_inner2x(const size_t size_width,
+                                                      const size_t size_height,
+                                                      qconv_uint32_mod a[static size_width * size_height],
+                                                      enum qconv_optimize_transform optimize_level,
+                                                      qconv_uint32_mod row_p_root,
+                                                      qconv_uint32_mod column_p_root,
+                                                      const size_t row_p_root_size,
+                                                      const size_t column_p_root_size) {
+    switch(optimize_level) {
+        case optimize_precomp_fuse_order:
+        case optimize_precomp_order:
+            qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(size_width,
+                                                        size_height,
+                                                        qconv_get_log2_power_of_two(size_width),
+                                                        qconv_get_log2_power_of_two(size_height),
+                                                        a,
+                                                        qconv_get_const_f_4_DIF_std2rev_forward(size_width),
+                                                        qconv_get_const_f_4_DIF_std2rev_forward(size_height));
+            return status_success;
+        case optimize_precomp:
+            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(size_width,
+                                                        size_height,
+                                                        qconv_get_log2_power_of_two(size_width),
+                                                        qconv_get_log2_power_of_two(size_height),
+                                                        a,
+                                                        qconv_get_const_f_4_DIT_std2std_forward(size_width),
+                                                        qconv_get_const_f_4_DIT_std2std_forward(size_height));
+            return status_success;
+        case optimize_null:
+        default:
+            qconv_DIT_std2std_2D_uint32_mod_f_4(size_width,
+                                                size_height,
+                                                qconv_get_log2_power_of_two(size_width),
+                                                qconv_get_log2_power_of_two(size_height),
+                                                a,
+                                                row_p_root,
+                                                column_p_root,
+                                                row_p_root_size,
+                                                column_p_root_size,
+                                                false);
+            return status_success;
+    }
+
+}
+
+enum qconv_status qconv_NTT_2D_uint32_mod_f_4_inner(const size_t size_width,
+                                                    const size_t size_height,
+                                                    qconv_uint32_mod a[static size_width * size_height],
+                                                    enum qconv_optimize_transform optimize_level,
+                                                    qconv_uint32_mod row_p_root,
+                                                    const size_t row_p_root_size) {
+    switch (size_height) {
+        case QCONV_SIZE_8:
+        case QCONV_SIZE_16:
+            return qconv_NTT_2D_uint32_mod_f_4_inner2x(size_width,
+                                                       size_height,
+                                                       a,
+                                                       optimize_level,
+                                                       row_p_root,
+                                                       qconv_const_p_root_f_4_size_32,
+                                                       row_p_root_size,
+                                                       QCONV_SIZE_32);
+        case QCONV_SIZE_32:
+        case QCONV_SIZE_64:
+        case QCONV_SIZE_128:
+        case QCONV_SIZE_256:
+        case QCONV_SIZE_512:
+            qconv_DIT_std2std_2D_uint32_mod_f_4(size_width,
+                                                size_height,
+                                                qconv_get_log2_power_of_two(size_width),
+                                                qconv_get_log2_power_of_two(size_height),
+                                                a,
+                                                row_p_root,
+                                                qconv_const_p_root_f_4_size_65536,
+                                                row_p_root_size,
+                                                QCONV_SIZE_65536,
+                                                false);
+            return status_success;
+        default:
+            return status_invalid_input_size;
+    }
+}
+
 enum qconv_status qconv_NTT_2D_uint32_mod_f_4(const size_t size_width,
                                               const size_t size_height,
                                               qconv_uint32_mod a[static size_width * size_height],
                                               enum qconv_optimize_transform optimize_level) {
     switch(size_width) {
         case QCONV_SIZE_8:
-            switch(size_height) {
-                case QCONV_SIZE_8:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_8_forward,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_8_forward);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_forward,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_forward);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                QCONV_SIZE_8,
-                                                                QCONV_LOG_SIZE_8,
-                                                                QCONV_LOG_SIZE_8,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                false);
-                            return status_success;
-                    }
-                case QCONV_SIZE_16:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_8_forward,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_16_forward);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_forward,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_forward);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                QCONV_SIZE_16,
-                                                                QCONV_LOG_SIZE_8,
-                                                                QCONV_LOG_SIZE_16,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                false);
-                            return status_success;
-                    }
-                default:
-                    return status_invalid_input_size;
-
-            }
         case QCONV_SIZE_16:
-            switch(size_height) {
-                case QCONV_SIZE_8:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_16_forward,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_8_forward);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_forward,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_forward);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                QCONV_SIZE_8,
-                                                                QCONV_LOG_SIZE_16,
-                                                                QCONV_LOG_SIZE_8,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                false);
-                            return status_success;
-                    }
-                case QCONV_SIZE_16:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_16_forward,
-                                                                        qconv_const_f_4_DIF_r2_std2rev_size_16_forward);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_forward,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_forward);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                QCONV_SIZE_16,
-                                                                QCONV_LOG_SIZE_16,
-                                                                QCONV_LOG_SIZE_16,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                false);
-                            return status_success;
-                    }
-                default:
-                    return status_invalid_input_size;
-
-            }
+            return qconv_NTT_2D_uint32_mod_f_4_inner(size_width,
+                                                     size_height,
+                                                     a,
+                                                     optimize_level,
+                                                     qconv_const_p_root_f_4_size_32,
+                                                     QCONV_SIZE_32);
+        case QCONV_SIZE_32:
+        case QCONV_SIZE_64:
+        case QCONV_SIZE_128:
+        case QCONV_SIZE_256:
+        case QCONV_SIZE_512:
+            return qconv_NTT_2D_uint32_mod_f_4_inner(size_width,
+                                                     size_height,
+                                                     a,
+                                                     optimize_level,
+                                                     qconv_const_p_root_f_4_size_65536,
+                                                     QCONV_SIZE_65536);
         default:
             return status_invalid_input_size;
+    }
+}
+
+enum qconv_status qconv_INTT_2D_uint32_mod_f_4_inner2x(const size_t size_width,
+                                                       const size_t size_height,
+                                                       qconv_uint32_mod a[static size_width * size_height],
+                                                       enum qconv_optimize_transform optimize_level,
+                                                       qconv_uint32_mod row_p_root,
+                                                       qconv_uint32_mod column_p_root,
+                                                       const size_t row_p_root_size,
+                                                       const size_t column_p_root_size) {
+    switch(optimize_level) {
+        case optimize_precomp_fuse_order:
+        case optimize_precomp_order:
+            qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(size_width,
+                                                        size_height,
+                                                        qconv_get_log2_power_of_two(size_width),
+                                                        qconv_get_log2_power_of_two(size_height),
+                                                        a,
+                                                        qconv_get_const_f_4_DIT_rev2std_inverse(size_width),
+                                                        qconv_get_const_f_4_DIT_rev2std_inverse(size_height));
+            qconv_INTT_2D_size_norm_uint32_mod_f_4(size_width, size_height, a);
+            return status_success;
+        case optimize_precomp:
+            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(size_width,
+                                                        size_height,
+                                                        qconv_get_log2_power_of_two(size_width),
+                                                        qconv_get_log2_power_of_two(size_height),
+                                                        a,
+                                                        qconv_get_const_f_4_DIT_std2std_inverse(size_width),
+                                                        qconv_get_const_f_4_DIT_std2std_inverse(size_height));
+            qconv_INTT_2D_size_norm_uint32_mod_f_4(size_width, size_height, a);
+            return status_success;
+        case optimize_null:
+        default:
+            qconv_DIT_std2std_2D_uint32_mod_f_4(size_width,
+                                                size_height,
+                                                qconv_get_log2_power_of_two(size_width),
+                                                qconv_get_log2_power_of_two(size_height),
+                                                a,
+                                                row_p_root,
+                                                column_p_root,
+                                                row_p_root_size,
+                                                column_p_root_size,
+                                                true);
+            qconv_INTT_2D_size_norm_uint32_mod_f_4(size_width, size_height, a);
+            return status_success;
+    }
+
+}
+
+enum qconv_status qconv_INTT_2D_uint32_mod_f_4_inner(const size_t size_width,
+                                                     const size_t size_height,
+                                                     qconv_uint32_mod a[static size_width * size_height],
+                                                     enum qconv_optimize_transform optimize_level,
+                                                     qconv_uint32_mod row_p_root,
+                                                     const size_t row_p_root_size) {
+    switch (size_height) {
+        case QCONV_SIZE_8:
+        case QCONV_SIZE_16:
+            return qconv_INTT_2D_uint32_mod_f_4_inner2x(size_width,
+                                                        size_height,
+                                                        a,
+                                                        optimize_level,
+                                                        row_p_root,
+                                                        qconv_const_p_root_f_4_size_32,
+                                                        row_p_root_size,
+                                                        QCONV_SIZE_32);
+        case QCONV_SIZE_32:
+        case QCONV_SIZE_64:
+        case QCONV_SIZE_128:
+        case QCONV_SIZE_256:
+        case QCONV_SIZE_512:
+            qconv_DIT_std2std_2D_uint32_mod_f_4(size_width,
+                                                size_height,
+                                                qconv_get_log2_power_of_two(size_width),
+                                                qconv_get_log2_power_of_two(size_height),
+                                                a,
+                                                row_p_root,
+                                                qconv_const_p_root_f_4_size_65536,
+                                                row_p_root_size,
+                                                QCONV_SIZE_65536,
+                                                true);
+            qconv_INTT_2D_size_norm_uint32_mod_f_4(size_width, size_height, a);
+            return status_success;
+        default:
+            return status_invalid_input_size;
+
     }
 }
 
 enum qconv_status qconv_INTT_2D_uint32_mod_f_4(const size_t size_width,
                                                const size_t size_height,
                                                qconv_uint32_mod a[static size_width * size_height],
-                                               const enum qconv_optimize_transform optimize_level) {
+                                               enum qconv_optimize_transform optimize_level) {
     switch(size_width) {
         case QCONV_SIZE_8:
-            switch(size_height) {
-                case QCONV_SIZE_8:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_8_inverse,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_8_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_8, QCONV_SIZE_8, a);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_inverse,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_8, QCONV_SIZE_8, a);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                QCONV_SIZE_8,
-                                                                QCONV_LOG_SIZE_8,
-                                                                QCONV_LOG_SIZE_8,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                true);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_8, QCONV_SIZE_8, a);
-                            return status_success;
-                    }
-                case QCONV_SIZE_16:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_8_inverse,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_16_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_8, QCONV_SIZE_16, a);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_inverse,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_8, QCONV_SIZE_16, a);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_8,
-                                                                QCONV_SIZE_16,
-                                                                QCONV_LOG_SIZE_8,
-                                                                QCONV_LOG_SIZE_16,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                true);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_8, QCONV_SIZE_16, a);
-                            return status_success;
-                    }
-                default:
-                    return status_invalid_input_size;
-
-            }
         case QCONV_SIZE_16:
-            switch(size_height) {
-                case QCONV_SIZE_8:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_16_inverse,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_8_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_16, QCONV_SIZE_8, a);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_8,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_8,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_inverse,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_8_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_16, QCONV_SIZE_8, a);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                QCONV_SIZE_8,
-                                                                QCONV_LOG_SIZE_16,
-                                                                QCONV_LOG_SIZE_8,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                true);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_16, QCONV_SIZE_8, a);
-                            return status_success;
-                    }
-                case QCONV_SIZE_16:
-                    switch(optimize_level) {
-                        case optimize_precomp_fuse_order:
-                        case optimize_precomp_order:
-                            qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_16_inverse,
-                                                                        qconv_const_f_4_DIT_r2_rev2std_size_16_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_16, QCONV_SIZE_16, a);
-                            return status_success;
-                        case optimize_precomp:
-                            qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                        QCONV_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        QCONV_LOG_SIZE_16,
-                                                                        a,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_inverse,
-                                                                        qconv_const_f_4_DIT_r2_std2std_size_16_inverse);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_16, QCONV_SIZE_16, a);
-                            return status_success;
-                        case optimize_null:
-                        default:
-                            qconv_DIT_std2std_2D_uint32_mod_f_4(QCONV_SIZE_16,
-                                                                QCONV_SIZE_16,
-                                                                QCONV_LOG_SIZE_16,
-                                                                QCONV_LOG_SIZE_16,
-                                                                a,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                qconv_const_p_root_f_4_size_32,
-                                                                QCONV_SIZE_32,
-                                                                QCONV_SIZE_32,
-                                                                true);
-                            qconv_INTT_2D_size_norm_uint32_mod_f_4(QCONV_SIZE_16, QCONV_SIZE_16, a);
-                            return status_success;
-                    }
-                default:
-                    return status_invalid_input_size;
-
-            }
+            return qconv_INTT_2D_uint32_mod_f_4_inner(size_width,
+                                                      size_height,
+                                                      a,
+                                                      optimize_level,
+                                                      qconv_const_p_root_f_4_size_32,
+                                                      QCONV_SIZE_32);
+        case QCONV_SIZE_32:
+        case QCONV_SIZE_64:
+        case QCONV_SIZE_128:
+        case QCONV_SIZE_256:
+        case QCONV_SIZE_512:
+            return qconv_INTT_2D_uint32_mod_f_4_inner(size_width,
+                                                      size_height,
+                                                      a,
+                                                      optimize_level,
+                                                      qconv_const_p_root_f_4_size_65536,
+                                                      QCONV_SIZE_65536);
         default:
             return status_invalid_input_size;
     }

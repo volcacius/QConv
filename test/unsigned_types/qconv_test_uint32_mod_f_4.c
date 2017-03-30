@@ -536,6 +536,26 @@ enum qconv_status qconv_test_NTT_2D_circular_convolution_mod_f_4_runall() {
                 CHECK_TEST_STATUS(status);
             }
         }
+        for (size_t input_bit_size = 2; input_bit_size <= QCONV_MAX_F_4_NTT_2D_SIZE_32X32_INPUT_BITSIZE; input_bit_size++) {
+            for (size_t kernel_bit_size = 1; kernel_bit_size <= QCONV_MAX_F_4_NTT_2D_SIZE_32X32_KERNEL_BITSIZE; kernel_bit_size++) {
+                status = qconv_test_NTT_2D_circular_convolution_mod_f_4(QCONV_SIZE_32, QCONV_SIZE_32, input_bit_size, kernel_bit_size, optimize_level);
+                CHECK_TEST_STATUS(status);
+            }
+        }
+
+        for (size_t input_bit_size = 2; input_bit_size <= QCONV_MAX_F_4_NTT_2D_SIZE_64X64_INPUT_BITSIZE; input_bit_size++) {
+            for (size_t kernel_bit_size = 1; kernel_bit_size <= QCONV_MAX_F_4_NTT_2D_SIZE_64X64_KERNEL_BITSIZE; kernel_bit_size++) {
+                status = qconv_test_NTT_2D_circular_convolution_mod_f_4(QCONV_SIZE_64, QCONV_SIZE_64, input_bit_size, kernel_bit_size, optimize_level);
+                CHECK_TEST_STATUS(status);
+            }
+        }
+
+        for (size_t input_bit_size = 2; input_bit_size <= QCONV_MAX_F_4_NTT_2D_SIZE_128X128_INPUT_BITSIZE; input_bit_size++) {
+            for (size_t kernel_bit_size = 1; kernel_bit_size <= QCONV_MAX_F_4_NTT_2D_SIZE_128X128_KERNEL_BITSIZE; kernel_bit_size++) {
+                status = qconv_test_NTT_2D_circular_convolution_mod_f_4(QCONV_SIZE_128, QCONV_SIZE_128, input_bit_size, kernel_bit_size, optimize_level);
+                CHECK_TEST_STATUS(status);
+            }
+        }
     }
     return status_success;
 }

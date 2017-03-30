@@ -31,3 +31,39 @@ const qconv_inner_uint8 qconv_const_f_3_DIT_r2_std2std_size_16_inverse[] =
 
 const qconv_inner_uint8 *qconv_const_f_3_DIT_r2_rev2std_size_16_inverse =
         qconv_const_f_3_DIT_r2_std2std_size_16_inverse;
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIF_std2rev_forward(size_t size) {
+    switch(size) {
+        case QCONV_SIZE_8:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIF_r2_std2rev_size_8_forward;
+        case QCONV_SIZE_16:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIF_r2_std2rev_size_16_forward;
+    }
+}
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIT_std2std_forward(size_t size) {
+    switch(size) {
+        case QCONV_SIZE_8:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIT_r2_std2std_size_8_forward;
+        case QCONV_SIZE_16:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIT_r2_std2std_size_16_forward;
+    }
+}
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIT_std2std_inverse(size_t size) {
+    switch(size) {
+        case QCONV_SIZE_8:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIT_r2_std2std_size_8_inverse;
+        case QCONV_SIZE_16:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIT_r2_std2std_size_16_inverse;
+    }
+}
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIT_rev2std_inverse(size_t size) {
+    switch(size) {
+        case QCONV_SIZE_8:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIT_r2_rev2std_size_8_inverse;
+        case QCONV_SIZE_16:
+            return (qconv_inner_uint8 *) qconv_const_f_3_DIT_r2_rev2std_size_16_inverse;
+    }
+}

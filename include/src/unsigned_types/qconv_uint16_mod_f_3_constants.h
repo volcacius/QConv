@@ -37,4 +37,12 @@ extern const qconv_inner_uint8 qconv_const_f_3_DIT_r2_std2std_size_16_forward[];
 extern const qconv_inner_uint8 qconv_const_f_3_DIT_r2_std2std_size_16_inverse[];
 
 extern const qconv_inner_uint8 qconv_const_f_3_DIF_r2_std2rev_size_16_forward[];
-extern const const qconv_inner_uint8 *qconv_const_f_3_DIT_r2_rev2std_size_16_inverse;
+extern const qconv_inner_uint8 *qconv_const_f_3_DIT_r2_rev2std_size_16_inverse;
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIF_std2rev_forward(size_t size);
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIT_std2std_forward(size_t size);
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIT_std2std_inverse(size_t size);
+
+qconv_inner_uint8 *qconv_get_const_f_3_DIT_rev2std_inverse(size_t size);

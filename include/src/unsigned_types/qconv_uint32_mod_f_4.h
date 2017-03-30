@@ -184,21 +184,6 @@ enum qconv_status qconv_NTT_1D_linear_convolution_uint32_mod_f_4(const size_t in
                                                                  qconv_uint32_mod ntt[input_size + kernel_size - 1],
                                                                  const enum qconv_optimize_transform optimize_level);
 
-void qconv_CT_2D_uint32_mod_f_4(const size_t size_width,
-                                const size_t size_height,
-                                qconv_uint32_mod a[size_width * size_height],
-                                qconv_uint32_mod row_p_root,
-                                qconv_uint32_mod column_p_root,
-                                const size_t row_p_root_size,
-                                const size_t column_p_root_size,
-                                const bool inverse);
-
-void qconv_CT_2D_precomp_uint32_mod_f_4(const size_t size_width,
-                                        const size_t size_height,
-                                        qconv_uint32_mod a[size_width * size_height],
-                                        const qconv_uint16 *row_powers,
-                                        const qconv_uint16 *column_powers);
-
 enum qconv_status qconv_NTT_2D_uint32_mod_f_4(const size_t size_width,
                                               const size_t size_height,
                                               qconv_uint32_mod a[static size_width * size_height],

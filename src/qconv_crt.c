@@ -81,11 +81,39 @@ enum qconv_status qconv_NTT_2D_circular_convolution_mod_crt_f_3_f_4(size_t size_
     CHECK_STATUS(status);
     CHECK_STATUS(status_bis);
 
+    /*printf("F4 output:\n");
+    for (size_t i = 0; i < size_height; i++) {
+        for (size_t j = 0; j < size_width; j++) {
+            printf("%d ", output[i * size_width + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+
+    printf("F3 output:\n");
+    for (size_t i = 0; i < size_height; i++) {
+        for (size_t j = 0; j < size_width; j++) {
+            printf("%d ", output_bis[i * size_width + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");*/
+
+
     #pragma omp parallel for
     for (size_t i = 0; i < size; i++) {
         qconv_uint32_mod_f_4 temp = {.value = (qconv_inner_uint32) output_bis[i].mod_f_3.value};
         output[i].mod_f_4 = qconv_subtract_uint32_mod_f_4(output[i].mod_f_4, temp);
     }
+
+    /*printf("Sub:\n");
+    for (size_t i = 0; i < size_height; i++) {
+        for (size_t j = 0; j < size_width; j++) {
+            printf("%d ", output[i * size_width + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");*/
 
     qconv_uint32_mod f_3_mod_f4 = {.mod_f_4.value = QCONV_F_3};
     qconv_uint32_mod_f_4 f_3_inverse_mod_f4 = qconv_inverse_uint32_mod_f_4(f_3_mod_f4);
@@ -95,9 +123,16 @@ enum qconv_status qconv_NTT_2D_circular_convolution_mod_crt_f_3_f_4(size_t size_
         output[i].mod_f_4 = qconv_mul_uint32_mod_f_4(f_3_inverse_mod_f4, output[i].mod_f_4);
         output[i].uint32.value = QCONV_F_3 * output[i].uint32.value + output_bis[i].uint16.value;
     }
+
+    /*printf("Final output:\n");
+    for (size_t i = 0; i < size_height; i++) {
+        for (size_t j = 0; j < size_width; j++) {
+            printf("%d ", output[i * size_width + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");*/
+
     return status;
 }
 
-enum qconv_status qconv_NTT_2D_overlap_and_add_linear_convolution() {
-
-}

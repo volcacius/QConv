@@ -63,13 +63,15 @@ void qconv_test_NTT_1D_max_convolution_mod_crt_f_3_f_4(size_t size,
                                                        size_t input_bit_size,
                                                        size_t kernel_bit_size,
                                                        enum qconv_optimize_transform optimize_level) {
+    enum qconv_status status;
     printf("Test 1D NTT mod CRT F_3_F_4 max circular convolution\n size %d, input %dbit, kernel %dbit\n\n",
            size, input_bit_size, kernel_bit_size);
     qconv_uint32_mod input[size], kernel[size], conv[size], ntt[size];
     qconv_test_util_max_uint32_1D_array(size, input, input_bit_size);
     qconv_test_util_max_uint32_1D_array(size, kernel, kernel_bit_size);
     qconv_uint32_direct_1D_circular_convolution(size, input, kernel, conv);
-    qconv_NTT_1D_circular_convolution_mod_crt_f_3_f_4(size, input, kernel, ntt, optimize_level);
+    status = qconv_NTT_1D_circular_convolution_mod_crt_f_3_f_4(size, input, kernel, ntt, optimize_level);
+    CHECK_TEST_STATUS(status);
     assert(qconv_test_util_compare_uint32_1D_array(size, ntt, conv));
 }
 
@@ -78,20 +80,22 @@ void qconv_test_NTT_2D_max_convolution_mod_crt_f_3_f_4(size_t size_width,
                                                        size_t input_bit_size,
                                                        size_t kernel_bit_size,
                                                        enum qconv_optimize_transform optimize_level) {
+    enum qconv_status status;
     printf("Test 2D NTT mod CRT F_3_F_4 max circular convolution\n size %dx%d, input %dbit, kernel %dbit\n\n",
            size_width, size_height, input_bit_size, kernel_bit_size);
     qconv_uint32_mod input[size_width * size_height], kernel[size_width * size_height], conv[size_width * size_height], ntt[size_width * size_height];
     qconv_test_util_max_uint32_2D_array(size_width, size_height, input, input_bit_size);
     qconv_test_util_max_uint32_2D_array(size_width, size_height, kernel, kernel_bit_size);
     qconv_uint32_direct_2D_circular_convolution(size_width, size_height, input, kernel, conv);
-    qconv_NTT_2D_circular_convolution_mod_crt_f_3_f_4(size_width, size_height, input, kernel, ntt, optimize_level);
+    status = qconv_NTT_2D_circular_convolution_mod_crt_f_3_f_4(size_width, size_height, input, kernel, ntt, optimize_level);
+    CHECK_TEST_STATUS(status);
     assert(qconv_test_util_compare_uint32_2D_array(size_width, size_height, ntt, conv));
 }
 
 void qconv_test_NTT_1D_convolution_mod_crt_f_3_f_4_run_all() {
     for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
-        for (size_t input_bit_size = 1; input_bit_size <= QCONV_MAX_BITSIZE; input_bit_size++) {
+        for (size_t input_bit_size = 2; input_bit_size <= QCONV_MAX_BITSIZE; input_bit_size++) {
             for (size_t kernel_bit_size = 1; kernel_bit_size <= QCONV_MAX_BITSIZE; kernel_bit_size++) {
                 for (size_t size_index = 0; size_index < QCONV_CRT_F_3_F_4_1D_CONV_SIZES; size_index++) {
                     qconv_test_NTT_1D_max_convolution_mod_crt_f_3_f_4(qconv_test_sizes[size_index], input_bit_size, kernel_bit_size, optimize_level);
@@ -106,7 +110,7 @@ void qconv_test_NTT_1D_convolution_mod_crt_f_3_f_4_run_all() {
 void qconv_test_NTT_2D_convolution_mod_crt_f_3_f_4_run_all() {
     for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
         printf("%s:\n", qconv_get_optimize_level_string(optimize_level));
-        for (size_t input_bit_size = 1; input_bit_size <= QCONV_MAX_BITSIZE; input_bit_size++) {
+        for (size_t input_bit_size = 2; input_bit_size <= QCONV_MAX_BITSIZE; input_bit_size++) {
             for (size_t kernel_bit_size = 1; kernel_bit_size <= QCONV_MAX_BITSIZE; kernel_bit_size++) {
                 for (size_t size_width_index = 0; size_width_index < QCONV_CRT_F_3_F_4_2D_CONV_SIZES; size_width_index++) {
                     for (size_t size_height_index = 0; size_height_index < QCONV_CRT_F_3_F_4_2D_CONV_SIZES; size_height_index++) {
