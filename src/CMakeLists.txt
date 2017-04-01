@@ -18,6 +18,8 @@ set(QCONV_LIB_SRC ${QCONV_LIB_SRC} qconv_crt.c)
 
 set(QCONV_LIB_SRC ${QCONV_LIB_SRC} qconv_utils.c)
 
+set(QCONV_LIB_SRC ${QCONV_LIB_SRC} qconv_block.c)
+
 #Define output static library
 add_library(qconv_lib STATIC ${QCONV_LIB_SRC})
 

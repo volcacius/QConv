@@ -218,7 +218,6 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_3(const size_t size,
     switch(size) {
         case QCONV_SIZE_8:
             switch (optimize_level) {
-                case optimize_precomp_fuse_order:
                 case optimize_precomp_order:
                     qconv_DIF_r2_std2rev_precomp_1D_uint16_mod_f_3(QCONV_SIZE_8, QCONV_LOG_SIZE_8, a,
                                                                    qconv_const_f_3_DIF_r2_std2rev_size_8_forward);
@@ -235,7 +234,6 @@ enum qconv_status qconv_NTT_1D_uint16_mod_f_3(const size_t size,
             }
         case QCONV_SIZE_16:
             switch (optimize_level) {
-                case optimize_precomp_fuse_order:
                 case optimize_precomp_order:
                     qconv_DIF_r2_std2rev_precomp_1D_uint16_mod_f_3(QCONV_SIZE_16, QCONV_LOG_SIZE_16, a,
                                                                    qconv_const_f_3_DIF_r2_std2rev_size_16_forward);
@@ -267,7 +265,6 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_3(const size_t size, qconv_uint16_m
     switch(size) {
         case QCONV_SIZE_8:
             switch (optimize_level) {
-                case optimize_precomp_fuse_order:
                 case optimize_precomp_order:
                     qconv_DIT_r2_rev2std_precomp_1D_uint16_mod_f_3(QCONV_SIZE_8, QCONV_LOG_SIZE_8, a,
                                                                    qconv_const_f_3_DIT_r2_rev2std_size_8_inverse);
@@ -285,10 +282,8 @@ enum qconv_status qconv_INTT_1D_uint16_mod_f_3(const size_t size, qconv_uint16_m
                     qconv_INTT_1D_size_norm_uint16_mod_f_3(QCONV_SIZE_8, a);
                     return status_success;
             }
-            return status_success;
         case QCONV_SIZE_16:
             switch (optimize_level) {
-                case optimize_precomp_fuse_order:
                 case optimize_precomp_order:
                     qconv_DIT_r2_rev2std_precomp_1D_uint16_mod_f_3(QCONV_SIZE_16, QCONV_LOG_SIZE_16, a,
                                                                    qconv_const_f_3_DIT_r2_rev2std_size_16_inverse);
@@ -529,7 +524,6 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_3_inner2x(const size_t size_width,
                                                       const size_t row_p_root_size,
                                                       const size_t column_p_root_size) {
     switch(optimize_level) {
-        case optimize_precomp_fuse_order:
         case optimize_precomp_order:
             qconv_DIF_std2rev_2D_precomp_uint16_mod_f_3(size_width,
                                                         size_height,
@@ -639,7 +633,6 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_3_inner2x(const size_t size_width,
                                                        const size_t row_p_root_size,
                                                        const size_t column_p_root_size) {
     switch(optimize_level) {
-        case optimize_precomp_fuse_order:
         case optimize_precomp_order:
             qconv_DIT_rev2std_2D_precomp_uint16_mod_f_3(size_width,
                                                         size_height,

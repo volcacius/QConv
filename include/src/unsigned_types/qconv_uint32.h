@@ -57,22 +57,54 @@ void qconv_bit_reverse_uint32_array_order(const size_t size, qconv_uint32_mod a[
 qconv_uint32 qconv_uint32_gcd(qconv_uint32 a, qconv_uint32 b);
 
 /*
- * @brief Zero pad input array of size inner_size to output array of size outer_size
+ * @brief Right zero input array of size inner_size to output array of size outer_size
  */
-enum qconv_status qconv_zero_pad_uint32_1D_array(const size_t outer_size,
-                                                 const size_t inner_size,
-                                                 const qconv_uint32_mod input[static const inner_size],
-                                                 qconv_uint32_mod output[static outer_size]);
+enum qconv_status qconv_right_zero_pad_uint32_1D_array(const size_t outer_size,
+                                                       const size_t inner_size,
+                                                       const qconv_uint32_mod input[inner_size],
+                                                       qconv_uint32_mod output[outer_size]);
+
+/*
+ * @brief Left zero input array of size inner_size to output array of size outer_size
+ */
+enum qconv_status qconv_left_zero_pad_uint32_1D_array(const size_t outer_size,
+                                                      const size_t inner_size,
+                                                      const qconv_uint32_mod input[inner_size],
+                                                      qconv_uint32_mod output[outer_size]);
 
 /*
  * @brief Zero pad input array of size inner_size_width * inner_size_height to output array of size outer_size_width * outer_size_height
  */
-enum qconv_status qconv_zero_pad_uint32_2D_array(const size_t outer_size_width,
-                                                 const size_t outer_size_height,
-                                                 const size_t inner_size_width,
-                                                 const size_t inner_size_height,
-                                                 const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
-                                                 qconv_uint32_mod output[static outer_size_width * outer_size_height]);
+enum qconv_status qconv_bottom_left_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                             const size_t outer_size_height,
+                                                             const size_t inner_size_width,
+                                                             const size_t inner_size_height,
+                                                             const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
+                                                             qconv_uint32_mod output[static outer_size_width * outer_size_height]);
+
+enum qconv_status qconv_bottom_right_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                              const size_t outer_size_height,
+                                                              const size_t inner_size_width,
+                                                              const size_t inner_size_height,
+                                                              const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
+                                                              qconv_uint32_mod output[static outer_size_width * outer_size_height]);
+
+enum qconv_status qconv_top_left_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                          const size_t outer_size_height,
+                                                          const size_t inner_size_width,
+                                                          const size_t inner_size_height,
+                                                          const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
+                                                          qconv_uint32_mod output[static outer_size_width * outer_size_height]);
+
+enum qconv_status qconv_top_right_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                           const size_t outer_size_height,
+                                                           const size_t inner_size_width,
+                                                           const size_t inner_size_height,
+                                                           const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
+                                                           qconv_uint32_mod output[static outer_size_width * outer_size_height]);
+
+enum qconv_status qconv_reverse_uint32_array(const size_t size,
+                                             qconv_uint32_mod a[static size]);
 
 /*
  * @brief Slice input array of size outer_size to output_array of size inner_size,
