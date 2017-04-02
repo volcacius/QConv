@@ -64,23 +64,6 @@ qconv_uint32 qconv_uint32_gcd(qconv_uint32 a, qconv_uint32 b) {
     return qconv_uint32_gcd(c, a);
 }
 
-enum qconv_status qconv_zero_pad_uint32_1D_array(const size_t outer_size,
-                                                 const size_t inner_size,
-                                                 const size_t left_offset,
-                                                 const qconv_uint32_mod input[static inner_size],
-                                                 qconv_uint32_mod output[static outer_size]) {
-    for (size_t i = 0; i <left_offset; i++) {
-        output[i].uint32.value = 0;
-    }
-    for (size_t i = left_offset; i < left_offset + inner_size; i++) {
-        output[i].uint32.value = input[i - left_offset].uint32.value;
-    }
-    for (size_t i = left_offset + inner_size; i <outer_size; i++) {
-        output[i].uint32.value = 0;
-    }
-    return status_success;
-}
-
 enum qconv_status qconv_right_zero_pad_uint32_1D_array(const size_t outer_size,
                                                        const size_t inner_size,
                                                        const qconv_uint32_mod input[static inner_size],
@@ -98,11 +81,19 @@ enum qconv_status qconv_left_zero_pad_uint32_1D_array(const size_t outer_size,
                                                       const size_t inner_size,
                                                       const qconv_uint32_mod input[inner_size],
                                                       qconv_uint32_mod output[outer_size]) {
-    for (size_t i = 0; i < inner_size; i++) {
+    size_t pad_size = outer_size - inner_size;
+
+    /*printf("1D to left pad:\n");
+    for (size_t i = 0; i <inner_size; i++) {
+        printf("%d ", input[i].uint32.value);
+    }
+    printf("\n");*/
+
+    for (size_t i = 0; i < pad_size; i++) {
         output[i].uint32.value = 0;
     }
-    for (size_t i = inner_size; i <outer_size; i++) {
-        output[i].uint32.value = input[i].uint32.value;
+    for (size_t i = pad_size; i <outer_size; i++) {
+        output[i].uint32.value = input[i - pad_size].uint32.value;
     }
     return status_success;
 }
@@ -149,16 +140,63 @@ enum qconv_status qconv_top_left_zero_pad_uint32_2D_array(const size_t outer_siz
                                                           const size_t inner_size_height,
                                                           const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
                                                           qconv_uint32_mod output[static outer_size_width * outer_size_height]) {
+    size_t pad_size = outer_size_width * (outer_size_height - inner_size_height);
     //Zero the top rows
-    for (size_t i = 0; i < outer_size_width * (outer_size_height - inner_size_height); i++) {
+    for (size_t i = 0; i < pad_size; i++) {
         output[i].uint32.value = 0;
     }
-    //Pad all the inner rows
-    for (size_t row = inner_size_height; row < outer_size_height; row++) {
+    // Pad all the inner rows
+    for (size_t row = 0; row < inner_size_height; row++) {
         qconv_left_zero_pad_uint32_1D_array(outer_size_width, inner_size_width, &input[row * inner_size_width],
-                                            &output[row * outer_size_width]);
+                                             &output[pad_size + row * outer_size_width]);
     }
     return status_success;
+}
+
+enum qconv_status qconv_top_zero_pad_uint32_2D_array(const size_t size_width,
+                                                     const size_t outer_size_height,
+                                                     const size_t inner_size_height,
+                                                     const qconv_uint32_mod input[static const size_width * inner_size_height],
+                                                     qconv_uint32_mod output[static size_width * outer_size_height]) {
+    size_t pad_size = size_width * (outer_size_height - inner_size_height);
+    for (size_t i = 0; i < pad_size; i++) {
+        output[i].uint32.value = 0;
+    }
+    qconv_clone_uint32_array(size_width * inner_size_height, input, &output[pad_size]);
+}
+
+enum qconv_status qconv_bottom_zero_pad_uint32_2D_array(const size_t size_width,
+                                                        const size_t outer_size_height,
+                                                        const size_t inner_size_height,
+                                                        const qconv_uint32_mod input[static const size_width * inner_size_height],
+                                                        qconv_uint32_mod output[static size_width * outer_size_height]) {
+    size_t input_size = size_width * inner_size_height;
+    qconv_clone_uint32_array(input_size, input, output);
+    for (size_t i = input_size; i < size_width * outer_size_height; i++) {
+        output[i].uint32.value = 0;
+    }
+}
+
+enum qconv_status qconv_left_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                      const size_t size_height,
+                                                      const size_t inner_size_width,
+                                                      const qconv_uint32_mod input[static const inner_size_width * size_height],
+                                                      qconv_uint32_mod output[static inner_size_width * size_height]) {
+    for (size_t row = 0; row < size_height; row++) {
+        qconv_left_zero_pad_uint32_1D_array(outer_size_width, inner_size_width, &input[row * inner_size_width],
+                                             &output[row * outer_size_width]);
+    }
+}
+
+enum qconv_status qconv_right_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                       const size_t size_height,
+                                                       const size_t inner_size_width,
+                                                       const qconv_uint32_mod input[static const inner_size_width * size_height],
+                                                       qconv_uint32_mod output[static inner_size_width * size_height]) {
+    for (size_t row = 0; row < size_height; row++) {
+        qconv_right_zero_pad_uint32_1D_array(outer_size_width, inner_size_width, &input[row * inner_size_width],
+                                            &output[row * outer_size_width]);
+    }
 }
 
 enum qconv_status qconv_top_right_zero_pad_uint32_2D_array(const size_t outer_size_width,
@@ -167,41 +205,18 @@ enum qconv_status qconv_top_right_zero_pad_uint32_2D_array(const size_t outer_si
                                                            const size_t inner_size_height,
                                                            const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
                                                            qconv_uint32_mod output[static outer_size_width * outer_size_height]) {
+    size_t pad_size = outer_size_width * (outer_size_height - inner_size_height);
     //Zero the top rows
-    for (size_t i = 0; i < outer_size_width * (outer_size_height - inner_size_height); i++) {
+    for (size_t i = 0; i < pad_size; i++) {
         output[i].uint32.value = 0;
     }
     // Pad all the inner rows
     for (size_t row = 0; row < inner_size_height; row++) {
         qconv_right_zero_pad_uint32_1D_array(outer_size_width, inner_size_width, &input[row * inner_size_width],
-                                             &output[row * outer_size_width]);
+                                             &output[pad_size + row * outer_size_width]);
     }
     return status_success;
 }
-
-/*enum qconv_status qconv_pad_uint32_2D_array(const size_t outer_size_width,
-                                            const size_t outer_size_height,
-                                            const size_t top_left_width_offset,
-                                            const size_t top_left_height_offset,
-                                            const size_t inner_size_width,
-                                            const size_t inner_size_height,
-                                            const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
-                                            qconv_uint32_mod output[static outer_size_width * outer_size_height]) {
-    //Zero the top rows
-    for (size_t i = 0; i < outer_size_width * inner_size_height; i++) {
-        output[i].uint32.value = 0;
-    }
-    // Pad all the inner rows
-    for (size_t row = 0; row < inner_size_height; row++) {
-        qconv_right_zero_pad_uint32_1D_array(outer_size_width, inner_size_width, &input[row * inner_size_width],
-                                             &output[row * outer_size_width]);
-    }
-    //Zero the bottom rows
-    for (size_t i = outer_size_width * inner_size_height; i < outer_size_width * outer_size_height; i++) {
-        output[i].uint32.value = 0;
-    }
-    return status_success;
-}*/
 
 enum qconv_status qconv_reverse_uint32_array(const size_t size,
                                              qconv_uint32_mod a[static size]) {
@@ -235,17 +250,35 @@ enum qconv_status qconv_slice_uint32_2D_array(const size_t outer_size_width,
                                               const size_t outer_size_height,
                                               const size_t inner_size_width,
                                               const size_t inner_size_height,
-                                              const size_t starting_row_index,
-                                              const size_t starting_column_index,
+                                              const size_t top_left_width_offset,
+                                              const size_t top_left_height_offset,
                                               const qconv_uint32_mod input[static const outer_size_width * outer_size_height],
                                               qconv_uint32_mod output[static inner_size_width * inner_size_height]) {
+    if (inner_size_width + top_left_width_offset > outer_size_width
+        || inner_size_height + top_left_height_offset > outer_size_height) {
+        return status_invalid_slicing_size;
+    }
     for (size_t row = 0; row < inner_size_height; row++) {
-        if (inner_size_width + starting_column_index > outer_size_width
-            || inner_size_height + starting_row_index > outer_size_height) {
-            return status_invalid_slicing_size;
-        }
         for (size_t column = 0; column < inner_size_width; column++) {
-            output[row * inner_size_width + column] = input[(row + starting_row_index) * outer_size_width + (starting_column_index + column)];
+            output[row * inner_size_width + column].uint32.value =
+                    input[(row + top_left_height_offset) * outer_size_width + (top_left_width_offset + column)].uint32.value;
+        }
+    }
+    return status_success;
+}
+
+enum qconv_status qconv_insert_uint32_2D_array(const size_t outer_size_width,
+                                               const size_t outer_size_height,
+                                               const size_t inner_size_width,
+                                               const size_t inner_size_height,
+                                               const size_t top_left_width_offset,
+                                               const size_t top_left_height_offset,
+                                               const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
+                                               qconv_uint32_mod output[static outer_size_width * outer_size_height]) {
+    for (size_t row = 0; row < inner_size_height; row++) {
+        for (size_t column = 0; column < inner_size_width; column++) {
+            output[(row + top_left_height_offset) * outer_size_width + (top_left_width_offset + column)] =
+                    input[row * inner_size_width +  + column];
         }
     }
     return status_success;
@@ -263,13 +296,13 @@ enum qconv_status qconv_transpose_uint32_2D(size_t size_width,
     return status_success;
 }
 
-enum qconv_status qconv_uint32_direct_2D_linear_convolution (const size_t input_size_width,
-                                                             const size_t input_size_height,
-                                                             const size_t kernel_size_width,
-                                                             const size_t kernel_size_height,
-                                                             const qconv_uint32_mod input[static const input_size_width * input_size_height],
-                                                             const qconv_uint32_mod kernel[static const kernel_size_width * kernel_size_height],
-                                                             qconv_uint32_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]) {
+enum qconv_status qconv_uint32_direct_2D_linear_convolution(const size_t input_size_width,
+                                                            const size_t input_size_height,
+                                                            const size_t kernel_size_width,
+                                                            const size_t kernel_size_height,
+                                                            const qconv_uint32_mod input[static const input_size_width * input_size_height],
+                                                            const qconv_uint32_mod kernel[static const kernel_size_width * kernel_size_height],
+                                                            qconv_uint32_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]) {
 
     size_t output_size_width = input_size_width + kernel_size_width - 1;
     size_t output_size_height = input_size_height + kernel_size_height - 1;
@@ -291,11 +324,11 @@ enum qconv_status qconv_uint32_direct_2D_linear_convolution (const size_t input_
     return status_success;
 }
 
-enum qconv_status qconv_uint32_direct_2D_circular_convolution (const size_t size_width,
-                                                               const size_t size_height,
-                                                               const qconv_uint32_mod input[static const size_width * size_height],
-                                                               const qconv_uint32_mod kernel[static const size_width * size_height],
-                                                               qconv_uint32_mod output[static size_width * size_height]) {
+enum qconv_status qconv_uint32_direct_2D_circular_convolution(const size_t size_width,
+                                                              const size_t size_height,
+                                                              const qconv_uint32_mod input[static const size_width * size_height],
+                                                              const qconv_uint32_mod kernel[static const size_width * size_height],
+                                                              qconv_uint32_mod output[static size_width * size_height]) {
     for (size_t o_row = 0; o_row < size_height; o_row++) {
         for (size_t o_column = 0; o_column < size_width; o_column++) {
             output[o_row * size_width + o_column].uint32.value = 0;
@@ -315,4 +348,37 @@ enum qconv_status qconv_uint32_direct_2D_circular_convolution (const size_t size
         }
     }
     return status_success;
+}
+
+enum qconv_status qconv_uint32_direct_1D_cnn_convolution(size_t input_size,
+                                                         size_t kernel_size,
+                                                         size_t stride,
+                                                         qconv_uint32_mod input[input_size],
+                                                         qconv_uint32_mod kernel[kernel_size],
+                                                         qconv_uint32_mod output[input_size - kernel_size + 1],
+                                                         enum qconv_optimize_transform optimize_level) {
+    size_t output_size = input_size - kernel_size + 1;
+    size_t offset = 0;
+    for (size_t i = 0; i < output_size; i++) {
+        output[i].uint32.value = 0;
+        for (size_t k = 0; k < kernel_size; k++) {
+            output[i].uint32.value = kernel[k].uint32.value * input[offset + k].uint32.value;
+        }
+        offset += stride;
+    }
+}
+
+void qconv_clone_uint32_2D_array(const size_t size_width,
+                                 const size_t size_height,
+                                 const qconv_uint32_mod source[static size_width * size_height],
+                                 qconv_uint32_mod destination[static size_width * size_height]) {
+    qconv_clone_uint32_array(size_width * size_height, source, destination);
+}
+
+void qconv_clone_uint32_array(size_t size,
+                              const qconv_uint32_mod source[static size],
+                              qconv_uint32_mod destination[static size]) {
+    for (size_t k = 0; k < size; k++) {
+        destination[k].uint32.value = source[k].uint32.value;
+    }
 }

@@ -14,17 +14,16 @@ int main() {
     //qconv_test_uint16_runall();
     //qconv_test_uint16_mod_f_3_runall();
     //qconv_test_uint32_runall();
-    //qconv_test_uint32_mod_f_4_runall();
+    qconv_test_uint32_mod_f_4_runall();
     //qconv_test_mod_crt_f_3_f_4_run_all();
     qconv_test_zero_pad_uint32_2D_array();
     const size_t input_size = 512;
     const size_t kernel_size = 11;
-    const size_t block_size = QCONV_SIZE_16;
     qconv_uint32_mod input[input_size];
     qconv_uint32_mod kernel[kernel_size];
     qconv_uint32_mod output[input_size + kernel_size - 1];
     qconv_uint32_mod direct[input_size + kernel_size - 1];
-
+/*
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
     for (int i = 0; i < 1; i++) {
@@ -37,8 +36,7 @@ int main() {
         direct_tot_time += (direct_end_time - direct_start_time);
 
         double ntt_start_time = (double) clock() / CLOCKS_PER_SEC;
-        qconv_NTT_1D_block_cnn_convolution_uint32_mod_f_4(input_size, kernel_size, block_size, input, kernel, output,
-                                                          optimize_precomp_order);
+        qconv_NTT_1D_block_linear_convolution_uint32_mod_f_4(input_size, kernel_size, input, kernel, output, optimize_precomp_order);
         double ntt_end_time = (double) clock() / CLOCKS_PER_SEC;
         ntt_tot_time += ntt_end_time - ntt_start_time;
         assert(qconv_test_util_compare_uint32_1D_array(input_size + kernel_size - 1, output, direct));
@@ -56,7 +54,7 @@ int main() {
     printf("\n");
 
     printf("Direct: %fs, NTT %fs, Speed ratio over direct: %f\n\n",
-           direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);
+           direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);*/
 }
 
 

@@ -38,16 +38,14 @@ void qconv_test_lin_circ_convolution_uint32(size_t input_bit_size,
 }
 
 void qconv_test_convolution_uint32_runall() {
-    for (size_t iter = 0; iter < TEST_ITERATIONS; iter++) {
-        for (size_t i = 0; i < QCONV_CONV_SIZES; i++) {
-            for (size_t k = 0; k < QCONV_CONV_SIZES; k++) {
-                for (size_t input_bit_size = 2; input_bit_size < QCONV_MAX_UINT32_CONV_BITSIZE; input_bit_size++) {
-                    for (size_t kernel_bit_size = 2; kernel_bit_size < QCONV_MAX_UINT32_CONV_BITSIZE; kernel_bit_size++) {
-                        qconv_test_lin_circ_convolution_uint32(input_bit_size,
-                                                               kernel_bit_size,
-                                                               qconv_test_sizes[i],
-                                                               qconv_test_sizes[k]);
-                    }
+    for (size_t i = 0; i < QCONV_CONV_SIZES; i++) {
+        for (size_t k = 0; k < QCONV_CONV_SIZES; k++) {
+            for (size_t input_bit_size = 2; input_bit_size < QCONV_MAX_UINT32_CONV_BITSIZE; input_bit_size++) {
+                for (size_t kernel_bit_size = 2; kernel_bit_size < QCONV_MAX_UINT32_CONV_BITSIZE; kernel_bit_size++) {
+                    qconv_test_lin_circ_convolution_uint32(input_bit_size,
+                                                           kernel_bit_size,
+                                                           qconv_test_sizes[i],
+                                                           qconv_test_sizes[k]);
                 }
             }
         }

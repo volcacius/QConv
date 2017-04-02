@@ -103,6 +103,30 @@ enum qconv_status qconv_top_right_zero_pad_uint32_2D_array(const size_t outer_si
                                                            const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
                                                            qconv_uint32_mod output[static outer_size_width * outer_size_height]);
 
+enum qconv_status qconv_top_zero_pad_uint32_2D_array(const size_t size_width,
+                                                     const size_t outer_size_height,
+                                                     const size_t inner_size_height,
+                                                     const qconv_uint32_mod input[static const size_width * inner_size_height],
+                                                     qconv_uint32_mod output[static size_width * outer_size_height]);
+
+enum qconv_status qconv_bottom_zero_pad_uint32_2D_array(const size_t size_width,
+                                                        const size_t outer_size_height,
+                                                        const size_t inner_size_height,
+                                                        const qconv_uint32_mod input[static const size_width * inner_size_height],
+                                                        qconv_uint32_mod output[static size_width * outer_size_height]);
+
+enum qconv_status qconv_left_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                      const size_t size_height,
+                                                      const size_t inner_size_width,
+                                                      const qconv_uint32_mod input[static const inner_size_width * size_height],
+                                                      qconv_uint32_mod output[static inner_size_width * size_height]);
+
+enum qconv_status qconv_right_zero_pad_uint32_2D_array(const size_t outer_size_width,
+                                                       const size_t size_height,
+                                                       const size_t inner_size_width,
+                                                       const qconv_uint32_mod input[static const inner_size_width * size_height],
+                                                       qconv_uint32_mod output[static inner_size_width * size_height]);
+
 enum qconv_status qconv_reverse_uint32_array(const size_t size,
                                              qconv_uint32_mod a[static size]);
 
@@ -125,6 +149,15 @@ enum qconv_status qconv_slice_uint32_2D_array(const size_t outer_size_width,
                                               const qconv_uint32_mod input[static const outer_size_width * outer_size_height],
                                               qconv_uint32_mod output[static inner_size_width * inner_size_height]);
 
+enum qconv_status qconv_insert_uint32_2D_array(const size_t outer_size_width,
+                                               const size_t outer_size_height,
+                                               const size_t inner_size_width,
+                                               const size_t inner_size_height,
+                                               const size_t top_left_width_offset,
+                                               const size_t top_left_height_offset,
+                                               const qconv_uint32_mod input[static const inner_size_width * inner_size_height],
+                                               qconv_uint32_mod output[static outer_size_width * outer_size_height]);
+
 enum qconv_status qconv_transpose_uint32_2D(size_t size_width,
                                             size_t size_height,
                                             qconv_uint32_mod input[static size_width * size_height],
@@ -143,3 +176,20 @@ enum qconv_status qconv_uint32_direct_2D_linear_convolution (const size_t input_
                                                              const qconv_uint32_mod input[static const input_size_width * input_size_height],
                                                              const qconv_uint32_mod kernel[static const kernel_size_width * kernel_size_height],
                                                              qconv_uint32_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]);
+
+enum qconv_status qconv_uint32_direct_1D_cnn_convolution(size_t input_size,
+                                                         size_t kernel_size,
+                                                         size_t stride,
+                                                         qconv_uint32_mod input[input_size],
+                                                         qconv_uint32_mod kernel[kernel_size],
+                                                         qconv_uint32_mod output[input_size + kernel_size - 1],
+                                                         enum qconv_optimize_transform optimize_level);
+
+void qconv_clone_uint32_2D_array(const size_t size_width,
+                                 const size_t size_height,
+                                 const qconv_uint32_mod source[static const size_width * size_height],
+                                 qconv_uint32_mod destination[static size_width * size_height]);
+
+void qconv_clone_uint32_array(const size_t size,
+                              const qconv_uint32_mod source[static const size],
+                              qconv_uint32_mod destination[static size]);

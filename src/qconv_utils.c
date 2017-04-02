@@ -13,6 +13,21 @@ size_t qconv_get_log2_power_of_two(size_t power_of_two) {
     return log2;
 }
 
+enum qconv_status get_block_size(size_t  kernel_size, size_t *block_size) {
+    if (kernel_size <= QCONV_SIZE_8/2 + 1) {
+        *block_size = QCONV_SIZE_8;
+        return status_success;
+    } else if (kernel_size <= QCONV_SIZE_16/2 + 1) {
+        *block_size = QCONV_SIZE_16;
+        return status_success;
+    } else if (kernel_size <= QCONV_SIZE_32/2 + 1) {
+        *block_size = QCONV_SIZE_32;
+        return status_success;
+    } else {
+        return status_invalid_kernel_size;
+    }
+}
+
 char* qconv_get_optimize_level_string(enum qconv_optimize_transform optimize_level) {
     switch(optimize_level) {
         case optimize_null:

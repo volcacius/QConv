@@ -67,14 +67,6 @@ void qconv_test_util_max_uint32_1D_array(const size_t size,
     }
 }
 
-void qconv_test_util_clone_uint32_1D_array(size_t size,
-                                           qconv_uint32_mod source[static size],
-                                           qconv_uint32_mod destination[static size]) {
-    for (size_t k = 0; k < size; k++) {
-        destination[k].uint32.value = source[k].uint32.value;
-    }
-}
-
 void qconv_test_util_random_uint32_2D_array(const size_t size_x,
                                             const size_t size_y,
                                             qconv_uint32_mod a[size_x * size_y],
@@ -94,7 +86,7 @@ bool qconv_test_util_compare_uint32_1D_array(const size_t size,
                                 const qconv_uint32_mod a[static const size],
                                 const qconv_uint32_mod b[static const size]) {
     for (size_t i = 0; i < size; i++) {
-        //printf("%d %d\n", a[i].uint32.value, b[i].uint32.value);
+        printf("%d %d\n", a[i].uint32.value, b[i].uint32.value);
         if (a[i].uint32.value != b[i].uint32.value) {
             printf("Error with %d %d\n", a[i].uint32.value, b[i].uint32.value);
             return false;
@@ -108,13 +100,6 @@ void qconv_test_util_max_uint32_2D_array(const size_t size_width,
                                          qconv_uint32_mod a[static size_width * size_height],
                                          const size_t bit_size) {
     qconv_test_util_max_uint32_1D_array(size_width * size_height, a, bit_size);
-}
-
-void qconv_test_util_clone_uint32_2D_array(size_t size_width,
-                                           size_t size_height,
-                                           qconv_uint32_mod source[static size_width * size_height],
-                                           qconv_uint32_mod destination[static size_width * size_height]) {
-    qconv_test_util_clone_uint32_1D_array(size_width * size_height, source, destination);
 }
 
 qconv_inner_uint32 qconv_test_util_reduce_inner_uint32(qconv_inner_uint32 a, qconv_inner_uint32 p) {

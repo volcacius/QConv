@@ -9,6 +9,7 @@
 #define TEST_ITERATIONS 10
 
 extern const size_t qconv_test_sizes[];
+extern const size_t qconv_kernel_test_sizes[];
 
 //As a design rule, we are interested only in input and kernels with 8 bits max
 #define QCONV_MAX_BITSIZE 8

@@ -15,3 +15,16 @@ const size_t qconv_test_sizes[] = {
         QCONV_SIZE_1024,
         QCONV_SIZE_2048
 };
+
+const size_t qconv_kernel_test_sizes[] = {
+        QCONV_KERNEL_SIZE_3,
+        QCONV_KERNEL_SIZE_4,
+        QCONV_KERNEL_SIZE_5,
+        QCONV_KERNEL_SIZE_7,
+        QCONV_KERNEL_SIZE_9,
+        QCONV_KERNEL_SIZE_11,
+        QCONV_KERNEL_SIZE_13,
+        QCONV_KERNEL_SIZE_15,
+        QCONV_KERNEL_SIZE_17
+};
+
