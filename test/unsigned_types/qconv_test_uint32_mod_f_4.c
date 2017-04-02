@@ -582,12 +582,12 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
 
-    size_t input_size_width = 64;
-    size_t input_size_height = 8;
-    size_t kernel_size_width = 5;
-    size_t kernel_size_height = 5;
-    size_t input_bit_size = 3;
-    size_t kernel_bit_size = 3;
+    size_t input_size_width = 32;
+    size_t input_size_height = 16;
+    size_t kernel_size_width = 3;
+    size_t kernel_size_height = 3;
+    size_t input_bit_size = 2;
+    size_t kernel_bit_size = 2;
     size_t block_size_width = 8;
     size_t block_size_height = 8;
     enum qconv_optimize_transform optimize_level = optimize_precomp_order;
@@ -638,9 +638,6 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     }
     printf(" Direct: %fs, NTT %fs, Speed ratio over direct: %f\n\n",
            direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);
-    return status_success;
-
-
     return status_success;
 }
 
@@ -716,8 +713,8 @@ void qconv_test_uint32_mod_f_4_runall() {
     qconv_test_NTT_1D_linear_convolution_mod_f_4_runall();
     qconv_test_NTT_2D_identity_mod_f_4_runall();
     qconv_test_NTT_2D_circular_convolution_mod_f_4_runall();
-    qconv_test_NTT_2D_linear_convolution_mod_f_4_runall();*/
-    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();
+    qconv_test_NTT_2D_linear_convolution_mod_f_4_runall();
+    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();*/
     qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
 }
 

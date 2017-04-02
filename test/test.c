@@ -16,6 +16,8 @@ int main() {
     //qconv_test_uint32_runall();
     qconv_test_uint32_mod_f_4_runall();
     //qconv_test_mod_crt_f_3_f_4_run_all();
+
+    /*
     qconv_test_zero_pad_uint32_2D_array();
     const size_t input_size = 512;
     const size_t kernel_size = 11;
@@ -23,7 +25,7 @@ int main() {
     qconv_uint32_mod kernel[kernel_size];
     qconv_uint32_mod output[input_size + kernel_size - 1];
     qconv_uint32_mod direct[input_size + kernel_size - 1];
-/*
+
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
     for (int i = 0; i < 1; i++) {
