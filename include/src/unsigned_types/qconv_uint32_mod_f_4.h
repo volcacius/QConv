@@ -17,9 +17,9 @@
 #include "qconv_uint32_mod_f_4_constants.h"
 #include "qconv_utils.h"
 
-inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 x) {
-    qconv_inner_int32 r = x & 0xffff;
-    qconv_inner_int32 q = qconv_int32_arishiftr(x, 16);
+inline qconv_uint32_mod_f_4 qconv_reduce_uint32_mod_f_4(qconv_inner_uint32 x) {
+    qconv_inner_uint32 r = x & 0xffff;
+    qconv_inner_uint32 q = x >> 16;
     qconv_inner_int32 y = r - q;
     if (y < 0) {
         y += QCONV_F_4;
@@ -37,10 +37,7 @@ inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 
         reduced.value = 1;
     } else {
         qconv_inner_uint32 z = x.value *  y.value;
-        if (z > INT32_MAX) {
-            z -= QCONV_F_4 * QCONV_F_4_REDUCTION_FACTOR;
-        }
-        reduced = qconv_reduce_int32_mod_f_4((qconv_inner_int32) z);
+        reduced = qconv_reduce_uint32_mod_f_4(z);
     }
     return reduced;
 }
