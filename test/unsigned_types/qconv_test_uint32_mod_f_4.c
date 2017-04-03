@@ -16,23 +16,6 @@ enum qconv_status qconv_test_mul_mod_f_4() {
     return status_success;
 }
 
-enum qconv_status qconv_test_fast_reduction_mod_f_4(bool big_int) {
-    printf("Test fast reduction mod F_4\n");
-    for (int i = 0; i < TEST_ITERATIONS; i++) {
-        qconv_uint32_mod_f_4 a;
-        if (big_int) {
-            a.value =  (qconv_inner_uint32) rand() * rand();
-        } else {
-            a.value =  (qconv_inner_uint32) rand();
-        }
-        qconv_uint32_mod_f_4 correct = {.value = (qconv_inner_uint32) (a.value % qconv_const_f_4.mod_f_4.value)};
-        qconv_inner_int64 z = (qconv_inner_int64) a.value;
-        qconv_uint32_mod_f_4 test = qconv_reduce_int32_mod_f_4(z);
-        assert(test.value == correct.value);
-    }
-    return status_success;
-}
-
 enum qconv_status qconv_test_mul_mod_f_4_union() {
     printf("Test multiplication mod F_4 with unions\n");
     for (int i = 0; i < TEST_ITERATIONS; i++) {
@@ -752,9 +735,7 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_4_runall() {
 }
 
 void qconv_test_uint32_mod_f_4_runall() {
-    /*qconv_test_mul_mod_f_4();
-    //qconv_test_fast_reduction_mod_f_4(false);
-    //qconv_test_fast_reduction_mod_f_4(true);
+    qconv_test_mul_mod_f_4();
     qconv_test_mul_mod_f_4_union();
     qconv_test_power_mod_f_4();
     qconv_test_NTT_1D_identity_mod_f_4_runall();
@@ -763,7 +744,7 @@ void qconv_test_uint32_mod_f_4_runall() {
     qconv_test_NTT_2D_identity_mod_f_4_runall();
     qconv_test_NTT_2D_circular_convolution_mod_f_4_runall();
     qconv_test_NTT_2D_linear_convolution_mod_f_4_runall();
-    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();*/
-    qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
+    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();
+    //qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
 }
 
