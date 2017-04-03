@@ -583,7 +583,7 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     double ntt_tot_time = 0;
 
     size_t input_size_width = 32;
-    size_t input_size_height = 16;
+    size_t input_size_height = 32;
     size_t kernel_size_width = 3;
     size_t kernel_size_height = 3;
     size_t input_bit_size = 2;

@@ -1422,16 +1422,19 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
         output_offset_width += valid_subblock_size_width;
     }
 
-    //Reset width offset and compute new height offsets
-    input_offset_width = 0;
-    input_offset_height += valid_subblock_size_height - discard_subblock_size_height;
-    output_offset_width = 0;
-    output_offset_height += valid_subblock_size_height;
+    //Compute new input height offset
+    input_offset_height = valid_subblock_size_height - discard_subblock_size_height;
 
     /*
      * STEP 2: INNER ROWS OF BLOCKS
      */
     for (input_offset_height; input_offset_height <= input_size_height - block_size_height; input_offset_height += valid_subblock_size_height) {
+
+        input_offset_width = 0;
+        output_offset_width = 0;
+        output_offset_height += valid_subblock_size_height;
+
+        printf("Left input Offset %d, %d\n\n", input_offset_width, input_offset_height);
 
         /*
          * STEP 2.1: LEFT BLOCK THAT REQUIRES LEFT PADDING
@@ -1528,7 +1531,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
         printf("\n");
 
         /*
-         * STEP 1.2: INNER ROW OF BLOCKS THAT DOESN'T REQUIRE PADDING
+         * STEP 2.2: INNER ROW OF BLOCKS THAT DOESN'T REQUIRE PADDING
          */
 
         input_offset_width = valid_subblock_size_width - discard_subblock_size_width;
@@ -1701,6 +1704,302 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
                                          output_offset_height,
                                          valid_output, output);
 
+            printf("Right Output:\n");
+            for (size_t i = 0; i < output_size_height; i++) {
+                for(size_t j = 0; j < output_size_width; j++) {
+                    printf("%d ", output[i * output_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            //Compute new output offset
+            output_offset_width += valid_subblock_size_width;
+        }
+    }
+/*
+
+    */
+/*
+     * STEP 3: BOTTOM ROWS OF BLOCKS
+     *//*
+
+    for (input_offset_height; input_offset_height <= input_size_height; input_offset_height += valid_subblock_size_height) {
+
+        */
+/*
+         * STEP 3.1: LEFT BLOCK THAT REQUIRES LEFT PADDING
+         *//*
+
+
+        //Extract valid input
+        qconv_uint32_mod left_input_valid_subblock[valid_subblock_size_width * block_size_height];
+        qconv_slice_uint32_2D_array(input_size_width,
+                                    input_size_height,
+                                    valid_subblock_size_width,
+                                    block_size_height,
+                                    input_offset_width,
+                                    input_offset_height,
+                                    input, left_input_valid_subblock);
+
+        //Print left input valid block
+        printf("Left input valid block:\n");
+        for (size_t i = 0; i < block_size_height; i++) {
+            for(size_t j = 0; j < valid_subblock_size_width; j++) {
+                printf("%d ", left_input_valid_subblock[i * valid_subblock_size_width + j]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        //Compute left block
+        qconv_uint32_mod left_block[block_size];
+        qconv_left_zero_pad_uint32_2D_array(block_size_width,
+                                            block_size_height,
+                                            valid_subblock_size_width,
+                                            left_input_valid_subblock,
+                                            left_block);
+
+        //Print left input left padded block
+        printf("Left input block:\n");
+        for (size_t i = 0; i < block_size_height; i++) {
+            for(size_t j = 0; j < block_size_width; j++) {
+                printf("%d ", left_block[i * block_size_width + j]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        qconv_NTT_2D_uint32_mod_f_4(block_size_width, block_size_height, left_block, optimize_level);
+        qconv_pmul_mod_f_4(block_size, left_block, kernel_block, left_block);
+        qconv_INTT_2D_uint32_mod_f_4(block_size_width, block_size_height, left_block, optimize_level);
+
+        //Print left input top left padded block
+        printf("Left output block:\n");
+        for (size_t i = 0; i < block_size_height; i++) {
+            for(size_t j = 0; j < block_size_width; j++) {
+                printf("%d ", left_block[i * block_size_width + j]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        //Slice block back into valid size
+        qconv_uint32_mod left_output_valid_subblock[valid_subblock_size_width * valid_subblock_size_height];
+        qconv_slice_uint32_2D_array(block_size_width,
+                                    block_size_height,
+                                    valid_subblock_size_width,
+                                    valid_subblock_size_width,
+                                    discard_subblock_size_width,
+                                    discard_subblock_size_height,
+                                    left_block, left_output_valid_subblock);
+
+        //Print left output valid block
+        printf("Left output valid block:\n");
+        for (size_t i = 0; i < valid_subblock_size_height; i++) {
+            for(size_t j = 0; j < valid_subblock_size_width; j++) {
+                printf("%d ", left_output_valid_subblock[i * valid_subblock_size_width + j]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        //Insert valid block into output
+        qconv_insert_uint32_2D_array(output_size_width,
+                                     output_size_height,
+                                     valid_subblock_size_width,
+                                     valid_subblock_size_height,
+                                     output_offset_width,
+                                     output_offset_height,
+                                     left_output_valid_subblock, output);
+
+        printf("Output:\n");
+        for (size_t i = 0; i < output_size_height; i++) {
+            for(size_t j = 0; j < output_size_width; j++) {
+                printf("%d ", output[i * output_size_width + j]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        */
+/*
+         * STEP 2.2: INNER ROW OF BLOCKS THAT DOESN'T REQUIRE PADDING
+         *//*
+
+
+        input_offset_width = valid_subblock_size_width - discard_subblock_size_width;
+        output_offset_width = valid_subblock_size_width;
+
+        for (input_offset_width; input_offset_width <= input_size_width - block_size_width; input_offset_width += valid_subblock_size_width) {
+            printf("Input Offset %d, %d\n\n", input_offset_width, input_offset_height);
+
+            //Extract input block
+            qconv_uint32_mod block[block_size];
+            qconv_slice_uint32_2D_array(input_size_width,
+                                        input_size_height,
+                                        block_size_width,
+                                        block_size_height,
+                                        input_offset_width,
+                                        input_offset_height,
+                                        input, block);
+
+
+            //Print input top padded block
+            printf("Input block:\n");
+            for (size_t i = 0; i < block_size_height; i++) {
+                for(size_t j = 0; j < block_size_width; j++) {
+                    printf("%d ", block[i * block_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            qconv_NTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+            qconv_pmul_mod_f_4(block_size, block, kernel_block, block);
+            qconv_INTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+
+            printf("Output block:\n");
+            for (size_t i = 0; i < block_size_height; i++) {
+                for(size_t j = 0; j < block_size_width; j++) {
+                    printf("%d ", block[i * block_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            //Slice output block back into valid size
+            qconv_uint32_mod valid_output_subblock[valid_subblock_size_width * valid_subblock_size_height];
+            qconv_slice_uint32_2D_array(block_size_width,
+                                        block_size_height,
+                                        valid_subblock_size_width,
+                                        valid_subblock_size_height,
+                                        discard_subblock_size_width,
+                                        discard_subblock_size_height,
+                                        block, valid_output_subblock);
+
+            printf("Output valid block:\n");
+            for (size_t i = 0; i < valid_subblock_size_height; i++) {
+                for(size_t j = 0; j < valid_subblock_size_width; j++) {
+                    printf("%d ", valid_output_subblock[i * valid_subblock_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            //Insert valid output block into output
+            qconv_insert_uint32_2D_array(output_size_width,
+                                         output_size_height,
+                                         valid_subblock_size_width,
+                                         valid_subblock_size_height,
+                                         output_offset_width,
+                                         output_offset_height,
+                                         valid_output_subblock, output);
+
+            printf("Output:\n");
+            for (size_t i = 0; i < output_size_height; i++) {
+                for(size_t j = 0; j < output_size_width; j++) {
+                    printf("%d ", output[i * output_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            //Compute new output offset
+            output_offset_width += valid_subblock_size_width;
+        }
+
+        */
+/*
+         * STEP 2.3: RIGHT BLOCKS THAT REQUIRE RIGHT PADDING
+         *//*
+
+
+        for (input_offset_width; input_offset_width < input_size_width; input_offset_width += valid_subblock_size_width) {
+
+            printf("Right Input Offset %d, %d\n\n", input_offset_width, input_offset_height);
+
+            size_t valid_input_subbblock_size_width = input_size_width - input_offset_width;
+
+            //Extract valid input
+            qconv_uint32_mod valid_input_subblock[valid_input_subbblock_size_width * block_size_height];
+            qconv_slice_uint32_2D_array(input_size_width,
+                                        input_size_height,
+                                        valid_input_subbblock_size_width,
+                                        block_size_height,
+                                        input_offset_width,
+                                        input_offset_height,
+                                        input, valid_input_subblock);
+
+            //Print first input valid block
+            printf("Right Input valid block:\n");
+            for (size_t i = 0; i < valid_subblock_size_height; i++) {
+                for(size_t j = 0; j < block_size_width; j++) {
+                    printf("%d ", valid_input_subblock[i * valid_input_subbblock_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            //Right zero pad extracted input
+            qconv_uint32_mod block[block_size];
+            qconv_right_zero_pad_uint32_2D_array(block_size_width,
+                                                 block_size_height,
+                                                 valid_input_subbblock_size_width,
+                                                 valid_input_subblock, block);
+
+            //Print input top padded block
+            printf("Right Input block:\n");
+            for (size_t i = 0; i < block_size_height; i++) {
+                for(size_t j = 0; j < block_size_width; j++) {
+                    printf("%d ", block[i * block_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            qconv_NTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+            qconv_pmul_mod_f_4(block_size, block, kernel_block, block);
+            qconv_INTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+
+            printf("Right Output block:\n");
+            for (size_t i = 0; i < block_size_height; i++) {
+                for(size_t j = 0; j < block_size_width; j++) {
+                    printf("%d ", block[i * block_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            //Slice output block back into valid size
+            size_t valid_output_subblock_size_width = output_size_width - output_offset_width;
+            qconv_uint32_mod valid_output[valid_output_subblock_size_width * valid_subblock_size_height];
+            qconv_slice_uint32_2D_array(block_size_width,
+                                        block_size_height,
+                                        valid_output_subblock_size_width,
+                                        valid_subblock_size_height,
+                                        discard_subblock_size_width,
+                                        discard_subblock_size_height,
+                                        block, valid_output);
+
+            printf("Right Output valid block:\n");
+            for (size_t i = 0; i < valid_subblock_size_height; i++) {
+                for(size_t j = 0; j < valid_output_subblock_size_width; j++) {
+                    printf("%d ", valid_output[i * valid_subblock_size_width + j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+
+            //Insert valid output block into output
+            qconv_insert_uint32_2D_array(output_size_width,
+                                         output_size_height,
+                                         valid_output_subblock_size_width,
+                                         valid_subblock_size_height,
+                                         output_offset_width,
+                                         output_offset_height,
+                                         valid_output, output);
+
 
 
             printf("Right Output:\n");
@@ -1723,8 +2022,9 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
         output_offset_height += valid_subblock_size_height;
 
     }
+*/
 
-        return status_success;
+    return status_success;
 }
 
 
