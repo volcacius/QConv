@@ -13,7 +13,7 @@ extern inline qconv_uint32_mod_f_4 qconv_subtract_uint32_mod_f_4(qconv_uint32_mo
 
 extern inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y);
 
-extern inline qconv_uint32_mod_f_4 qconv_reduce_uint32_mod_f_4(qconv_inner_uint32 x);
+extern inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 x);
 
 extern inline void qconv_pmul_mod_f_4(const size_t size,
                                       const qconv_uint32_mod a[static const size],
@@ -401,41 +401,6 @@ enum qconv_status qconv_NTT_1D_linear_convolution_uint32_mod_f_4(const size_t in
     return status;
 }
 
-void qconv_DIT_rev2std_2D_uint32_mod_f_4(const size_t size_width,
-                                         const size_t size_height,
-                                         const size_t log2_size_width,
-                                         const size_t log2_size_height,
-                                         qconv_uint32_mod a[static size_width * size_height],
-                                         qconv_uint32_mod row_p_root,
-                                         qconv_uint32_mod column_p_root,
-                                         const size_t row_p_root_size,
-                                         const size_t column_p_root_size) {
-    //row transform
-    //#pragma omp parallel for
-    for (size_t a_row = 0; a_row < size_height; a_row++) {
-        qconv_DIT_r2_rev2std_1D_uint32_mod_f_4(size_width, log2_size_width, &a[a_row * size_width], row_p_root,
-                                               row_p_root_size, false);
-    }
-
-    //transpose
-    qconv_uint32_mod a_transpose[size_height * size_width];
-    qconv_transpose_uint32_2D(size_width, size_height, a, a_transpose);
-
-    //column transform
-    //#pragma omp parallel for
-    for (size_t a_transpose_column = 0; a_transpose_column < size_width; a_transpose_column++) {
-        qconv_DIT_r2_rev2std_1D_uint32_mod_f_4(size_height,
-                                               log2_size_height,
-                                               &a_transpose[a_transpose_column * size_height],
-                                               column_p_root,
-                                               column_p_root_size,
-                                               false);
-    }
-
-    //transpose back
-    qconv_transpose_uint32_2D(size_height, size_width, a_transpose, a);
-}
-
 void qconv_DIT_std2std_2D_uint32_mod_f_4(const size_t size_width,
                                          const size_t size_height,
                                          const size_t log2_size_width,
@@ -466,40 +431,6 @@ void qconv_DIT_std2std_2D_uint32_mod_f_4(const size_t size_width,
                                                column_p_root,
                                                column_p_root_size,
                                                inverse);
-    }
-
-    //transpose back
-    qconv_transpose_uint32_2D(size_height, size_width, a_transpose, a);
-}
-
-void qconv_DIF_std2rev_2D_uint32_mod_f_4(const size_t size_width,
-                                         const size_t size_height,
-                                         const size_t log2_size_width,
-                                         const size_t log2_size_height,
-                                         qconv_uint32_mod a[static size_width * size_height],
-                                         qconv_uint32_mod row_p_root,
-                                         qconv_uint32_mod column_p_root,
-                                         const size_t row_p_root_size,
-                                         const size_t column_p_root_size) {
-    //row transform
-    //#pragma omp parallel for
-    for (size_t a_row = 0; a_row < size_height; a_row++) {
-        qconv_DIF_r2_std2rev_1D_uint32_mod_f_4(size_width, log2_size_width, &a[a_row * size_width], row_p_root,
-                                               row_p_root_size);
-    }
-
-    //transpose
-    qconv_uint32_mod a_transpose[size_height * size_width];
-    qconv_transpose_uint32_2D(size_width, size_height, a, a_transpose);
-
-    //column transform
-    //#pragma omp parallel for
-    for (size_t a_transpose_column = 0; a_transpose_column < size_width; a_transpose_column++) {
-        qconv_DIF_r2_std2rev_1D_uint32_mod_f_4(size_height,
-                                               log2_size_height,
-                                               &a_transpose[a_transpose_column * size_height],
-                                               column_p_root,
-                                               column_p_root_size);
     }
 
     //transpose back
@@ -608,17 +539,6 @@ enum qconv_status qconv_NTT_2D_uint32_mod_f_4_inner2x(const size_t size_width,
                                                         qconv_get_const_f_4_DIF_std2rev_forward(size_width),
                                                         qconv_get_const_f_4_DIF_std2rev_forward(size_height));
             return status_success;
-        case optimize_order:
-            qconv_DIF_std2rev_2D_uint32_mod_f_4(size_width,
-                                                size_height,
-                                                qconv_get_log2_power_of_two(size_width),
-                                                qconv_get_log2_power_of_two(size_height),
-                                                a,
-                                                row_p_root,
-                                                column_p_root,
-                                                row_p_root_size,
-                                                column_p_root_size);
-            return status_success;
         case optimize_precomp:
             qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(size_width,
                                                         size_height,
@@ -666,8 +586,7 @@ enum qconv_status qconv_NTT_2D_uint32_mod_f_4_inner(const size_t size_width,
         case QCONV_SIZE_64:
         case QCONV_SIZE_128:
         case QCONV_SIZE_256:
-        case optimize_order:
-            qconv_DIF_std2rev_2D_uint32_mod_f_4(size_width,
+            qconv_DIT_std2std_2D_uint32_mod_f_4(size_width,
                                                 size_height,
                                                 qconv_get_log2_power_of_two(size_width),
                                                 qconv_get_log2_power_of_two(size_height),
@@ -675,7 +594,8 @@ enum qconv_status qconv_NTT_2D_uint32_mod_f_4_inner(const size_t size_width,
                                                 row_p_root,
                                                 qconv_const_p_root_f_4_size_65536,
                                                 row_p_root_size,
-                                                QCONV_SIZE_65536);
+                                                QCONV_SIZE_65536,
+                                                false);
             return status_success;
         default:
             return status_invalid_input_size;
@@ -729,17 +649,6 @@ enum qconv_status qconv_INTT_2D_uint32_mod_f_4_inner2x(const size_t size_width,
                                                         qconv_get_const_f_4_DIT_rev2std_inverse(size_height));
             qconv_INTT_2D_size_norm_uint32_mod_f_4(size_width, size_height, a);
             return status_success;
-        case optimize_order:
-            qconv_DIT_rev2std_2D_uint32_mod_f_4(size_width,
-                                                size_height,
-                                                qconv_get_log2_power_of_two(size_width),
-                                                qconv_get_log2_power_of_two(size_height),
-                                                a,
-                                                row_p_root,
-                                                column_p_root,
-                                                row_p_root_size,
-                                                column_p_root_size);
-            qconv_INTT_2D_size_norm_uint32_mod_f_4(size_width, size_height, a);
         case optimize_precomp:
             qconv_DIT_std2std_2D_precomp_uint32_mod_f_4(size_width,
                                                         size_height,
@@ -789,7 +698,7 @@ enum qconv_status qconv_INTT_2D_uint32_mod_f_4_inner(const size_t size_width,
         case QCONV_SIZE_64:
         case QCONV_SIZE_128:
         case QCONV_SIZE_256:
-            qconv_DIT_rev2std_2D_uint32_mod_f_4(size_width,
+            qconv_DIT_std2std_2D_uint32_mod_f_4(size_width,
                                                 size_height,
                                                 qconv_get_log2_power_of_two(size_width),
                                                 qconv_get_log2_power_of_two(size_height),
@@ -797,7 +706,8 @@ enum qconv_status qconv_INTT_2D_uint32_mod_f_4_inner(const size_t size_width,
                                                 row_p_root,
                                                 qconv_const_p_root_f_4_size_65536,
                                                 row_p_root_size,
-                                                QCONV_SIZE_65536);
+                                                QCONV_SIZE_65536,
+                                                true);
             qconv_INTT_2D_size_norm_uint32_mod_f_4(size_width, size_height, a);
             return status_success;
         default:

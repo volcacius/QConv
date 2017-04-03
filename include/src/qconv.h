@@ -66,7 +66,6 @@ enum qconv_status {
  */
 enum qconv_optimize_transform {
     optimize_null,
-    optimize_order,
-    optimize_precomp_order,
-    optimize_precomp
+    optimize_precomp,
+    optimize_precomp_order
 };
