@@ -19,7 +19,7 @@
 
 inline qconv_uint32_mod_f_4 qconv_reduce_uint32_mod_f_4(qconv_inner_uint32 x) {
     qconv_inner_uint32 r = x & 0xffff;
-    qconv_inner_uint32 q = x >> 16;
+    qconv_inner_uint32 q = x >> QCONV_EXP_F_4;
     qconv_inner_int32 y = r - q;
     if (y < 0) {
         y += QCONV_F_4;

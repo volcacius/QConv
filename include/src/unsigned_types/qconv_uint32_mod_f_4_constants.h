@@ -13,7 +13,7 @@
 #include "qconv_uint16.h"
 #include "qconv_uint32.h"
 
-#define QCONV_EXP_F_4 8
+#define QCONV_EXP_F_4 16
 
 #define QCONV_MAX_F_4_NTT_2D_CIRC_8X8_INPUT_BITSIZE 5
 #define QCONV_MAX_F_4_NTT_2D_CIRC_8X8_KERNEL_BITSIZE 5

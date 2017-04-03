@@ -16,14 +16,9 @@
 #include "qconv_uint16_mod_f_3_constants.h"
 #include "qconv_utils.h"
 
-inline qconv_uint16_mod_f_3 qconv_reduce_uint32_mod_f_3(qconv_uint32 x) {
-    qconv_uint16_mod_f_3 y = {.value = x.value % qconv_const_f_3.mod_f_3.value};
-    return y;
-}
-
-inline qconv_uint16_mod_f_3 qconv_reduce_int_mod_f_3(qconv_inner_int32 x) {
-    qconv_inner_int32 r = x & 0xff;
-    qconv_inner_int32 q = qconv_int32_arishiftr(x, QCONV_EXP_F_3);
+inline qconv_uint16_mod_f_3 qconv_reduce_uint32_mod_f_3(qconv_inner_uint32 x) {
+    qconv_inner_uint32 r = x & 0xff;
+    qconv_inner_uint32 q = x >> QCONV_EXP_F_3;
     qconv_inner_int32 y = r - q;
     if (y < 0) {
         y += QCONV_F_3;
@@ -36,9 +31,8 @@ inline qconv_uint16_mod_f_3 qconv_reduce_int_mod_f_3(qconv_inner_int32 x) {
  * @brief Fast multiplication modulo F_3 = 2^8 + 1
  */
 inline qconv_uint16_mod_f_3 qconv_mul_uint16_mod_f_3(qconv_uint16_mod_f_3 x, qconv_uint16_mod_f_3 y) {
-    //The cast after the = is not optional!
-    qconv_inner_int32 z  = (qconv_inner_int32) x.value * (qconv_inner_int32) y.value;
-    qconv_uint16_mod_f_3 reduced = qconv_reduce_int_mod_f_3(z);
+    qconv_inner_uint32 z  = x.value * y.value;
+    qconv_uint16_mod_f_3 reduced = qconv_reduce_uint32_mod_f_3(z);
     return reduced;
 }
 

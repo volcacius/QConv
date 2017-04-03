@@ -21,8 +21,8 @@ enum qconv_status qconv_test_fast_reduction_mod_f_3() {
     for (int i = 0; i < TEST_ITERATIONS; i++) {
         qconv_uint16_mod_f_3 a = {.value =  (qconv_inner_uint16) rand()};
         qconv_uint16_mod_f_3 correct = {.value = (qconv_inner_uint16) (a.value % qconv_const_f_3.mod_f_3.value)};
-        qconv_inner_int32 z = (qconv_inner_int32) a.value;
-        qconv_uint16_mod_f_3 test = qconv_reduce_int_mod_f_3(z);
+        qconv_inner_uint32 z = (qconv_inner_uint32) a.value;
+        qconv_uint16_mod_f_3 test = qconv_reduce_uint32_mod_f_3(z);
         assert(test.value == correct.value);
     }
     return status_success;
