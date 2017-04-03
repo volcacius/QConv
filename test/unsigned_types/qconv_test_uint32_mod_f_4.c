@@ -613,8 +613,8 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
 
-    size_t input_size_width = 32;
-    size_t input_size_height = 32;
+    size_t input_size_width = 128;
+    size_t input_size_height = 128;
     size_t kernel_size_width = 7;
     size_t kernel_size_height = 7;
     size_t input_bit_size = 2;
@@ -636,7 +636,7 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
         qconv_test_util_random_uint32_2D_array(kernel_size_width, kernel_size_height, kernel, kernel_bit_size);
         //Direct linear convolution
         double direct_start_time = (double) clock() / CLOCKS_PER_SEC;
-        naive_convolution_output_no_padding(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
+        status = qconv_uint32_direct_2D_linear_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
         double direct_end_time = (double) clock() / CLOCKS_PER_SEC;
         direct_tot_time += (direct_end_time - direct_start_time);
         CHECK_TEST_STATUS(status);
@@ -735,7 +735,7 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_4_runall() {
 }
 
 void qconv_test_uint32_mod_f_4_runall() {
-    qconv_test_mul_mod_f_4();
+    /*qconv_test_mul_mod_f_4();
     qconv_test_mul_mod_f_4_union();
     qconv_test_power_mod_f_4();
     qconv_test_NTT_1D_identity_mod_f_4_runall();
@@ -744,7 +744,7 @@ void qconv_test_uint32_mod_f_4_runall() {
     qconv_test_NTT_2D_identity_mod_f_4_runall();
     qconv_test_NTT_2D_circular_convolution_mod_f_4_runall();
     qconv_test_NTT_2D_linear_convolution_mod_f_4_runall();
-    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();
-    //qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
+    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();*/
+    qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
 }
 

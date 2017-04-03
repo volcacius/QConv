@@ -86,7 +86,7 @@ bool qconv_test_util_compare_uint32_1D_array(const size_t size,
                                 const qconv_uint32_mod a[static const size],
                                 const qconv_uint32_mod b[static const size]) {
     for (size_t i = 0; i < size; i++) {
-        //printf("%d %d\n", a[i].uint32.value, b[i].uint32.value);
+        printf("%d %d\n", a[i].uint32.value, b[i].uint32.value);
         if (a[i].uint32.value != b[i].uint32.value) {
             printf("Error with %d %d\n", a[i].uint32.value, b[i].uint32.value);
             return false;
