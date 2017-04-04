@@ -5,6 +5,8 @@
 
 extern inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y);
 
+extern inline qconv_uint32_mod_f_4 qconv_short_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y);
+
 extern inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y);
 
 extern inline qconv_uint32_mod_f_4 qconv_subtract_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y);
@@ -12,8 +14,6 @@ extern inline qconv_uint32_mod_f_4 qconv_subtract_uint32_mod_f_4(qconv_uint32_mo
 extern inline qconv_uint32_mod_f_4 qconv_subtract_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y);
 
 extern inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y);
-
-extern inline qconv_uint32_mod_f_4 qconv_reduce_uint32_mod_f_4(qconv_inner_uint32 x);
 
 extern inline void qconv_pmul_mod_f_4(const size_t size,
                                       const qconv_uint32_mod a[static const size],
@@ -160,7 +160,7 @@ void qconv_DIF_r2_std2rev_precomp_1D_uint32_mod_f_4(const size_t size,
                 const qconv_uint32_mod_f_4 v = a[t2].mod_f_4;
                 a[t1].mod_f_4 = qconv_add_uint32_mod_f_4(u, v);
                 a[t2].mod_f_4 = qconv_subtract_uint32_mod_f_4(u, v);
-                a[t2].mod_f_4 = qconv_mul_uint32_mod_f_4(a[t2].mod_f_4, w);
+                a[t2].mod_f_4 = qconv_short_mul_uint32_mod_f_4(a[t2].mod_f_4, w);
                 power_index++;
             }
         }
@@ -1373,7 +1373,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
         /*
          * STEP 3.3: BOTTOM RIGHT BLOCKS THAT REQUIRES BOTTOM RIGHT PADDING
          */
-        
+
         for (input_offset_width; input_offset_width < input_size_width; input_offset_width += valid_subblock_size_width) {
 
             size_t valid_input_subblock_size_width = input_size_width - input_offset_width;
@@ -1448,6 +1448,15 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
     status = get_block_size(kernel_size_height, &block_size_height);
     CHECK_STATUS(status);
 
+    size_t block_log_size_width = qconv_get_log2_power_of_two(block_size_width);
+    size_t block_log_size_height = qconv_get_log2_power_of_two(block_size_height);
+
+    qconv_inner_uint16 *forward_row_powers = qconv_get_const_f_4_DIF_std2rev_forward(block_size_width);
+    qconv_inner_uint16 *forward_column_powers = qconv_get_const_f_4_DIF_std2rev_forward(block_size_height);
+
+    qconv_inner_uint16 *inverse_row_powers = qconv_get_const_f_4_DIT_rev2std_inverse(block_size_width);
+    qconv_inner_uint16 *inverse_column_powers = qconv_get_const_f_4_DIT_rev2std_inverse(block_size_height);
+
     size_t output_size_width = input_size_width - kernel_size_width + 1;
     size_t output_size_height = input_size_height - kernel_size_height + 1;
 
@@ -1492,9 +1501,22 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
                                         input_offset_height,
                                         input, block);
 
-            qconv_NTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+            qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                forward_row_powers,
+                                                forward_column_powers);
             qconv_pmul_mod_f_4(block_size, block, kernel_block, block);
-            qconv_INTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+            qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                inverse_row_powers,
+                                                inverse_column_powers);
+            qconv_INTT_2D_size_norm_uint32_mod_f_4(block_size_width, block_size_height, block);
 
             //Slice output block back into valid size
             qconv_uint32_mod valid_output_subblock[valid_subblock_size_width * valid_subblock_size_height];
@@ -1545,9 +1567,22 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
                                              valid_input_subblock_size_width,
                                              valid_input_subblock, block);
 
-        qconv_NTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+        qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                forward_row_powers,
+                                                forward_column_powers);
         qconv_pmul_mod_f_4(block_size, block, kernel_block, block);
-        qconv_INTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+        qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                inverse_row_powers,
+                                                inverse_column_powers);
+        qconv_INTT_2D_size_norm_uint32_mod_f_4(block_size_width, block_size_height, block);
 
         //Slice output block back into valid size
         size_t valid_output_subblock_size_width = output_size_width - output_offset_width;
@@ -1610,9 +1645,22 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
                                               valid_input,
                                               block);
 
-        qconv_NTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+        qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                forward_row_powers,
+                                                forward_column_powers);
         qconv_pmul_mod_f_4(block_size, block, kernel_block, block);
-        qconv_INTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+        qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                inverse_row_powers,
+                                                inverse_column_powers);
+        qconv_INTT_2D_size_norm_uint32_mod_f_4(block_size_width, block_size_height, block);
 
         //Slice output block back into valid size
         qconv_uint32_mod valid_output[valid_subblock_size_width * valid_output_subblock_size_height];
@@ -1665,9 +1713,22 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
                                                 valid_input_subblock_size_height,
                                                 valid_input, block);
 
-    qconv_NTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+    qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                forward_row_powers,
+                                                forward_column_powers);
     qconv_pmul_mod_f_4(block_size, block, kernel_block, block);
-    qconv_INTT_2D_uint32_mod_f_4(block_size_width, block_size_height, block, optimize_level);
+    qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(block_size_width,
+                                                block_size_height,
+                                                block_log_size_width,
+                                                block_log_size_height,
+                                                block,
+                                                inverse_row_powers,
+                                                inverse_column_powers);
+    qconv_INTT_2D_size_norm_uint32_mod_f_4(block_size_width, block_size_height, block);
 
     //Slice output block back into valid size
     size_t valid_output_subblock_size_width = output_size_width - output_offset_width;

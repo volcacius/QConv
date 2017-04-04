@@ -43,14 +43,24 @@ inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 
 }
 
 /*
+ * @brief Fast multiplication modulo F_4 = 2^16 + 1 without check for max sized inputs,
+ * useful when one of the operands is capped, e.g. precomputed roots
+ */
+inline qconv_uint32_mod_f_4 qconv_short_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
+    qconv_inner_uint32 z = x.value *  y.value;
+    return qconv_reduce_uint32_mod_f_4(z);
+}
+
+/*
  * @brief Addition modulo F_4 = 2^16 + 1
  */
 inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y) {
     qconv_uint32_mod_f_4 result = {.value = x.value + y.value};
-    if (result.value < qconv_const_f_4.mod_f_4.value) {
+    qconv_inner_int32 diff = result.value - qconv_const_f_4.mod_f_4.value;
+    if (diff < 0) {
         return result;
     } else {
-        result.value = result.value - qconv_const_f_4.mod_f_4.value;
+        result.value = diff;
         return result;
     }
 }
@@ -60,11 +70,11 @@ inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qco
  */
 inline qconv_uint32_mod_f_4 qconv_subtract_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y) {
     qconv_uint32_mod_f_4 result;
-    if (x.value >= y.value) {
-        result.value = x.value - y.value;
+    qconv_inner_int32 diff = x.value - y.value;
+    if (diff >= 0) {
+        result.value = diff;
     } else {
-        result.value = qconv_const_f_4.mod_f_4.value + x.value;
-        result.value = result.value - y.value;
+        result.value = qconv_const_f_4.mod_f_4.value + diff;
     }
     return result;
 }
