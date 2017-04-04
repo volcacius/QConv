@@ -651,12 +651,12 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
 
-    size_t input_size_width = 300;
-    size_t input_size_height = 300;
-    size_t kernel_size_width = 3;
-    size_t kernel_size_height = 3;
-    size_t block_size_width = 8;
-    size_t block_size_height = 8;
+    size_t input_size_width = 32;
+    size_t input_size_height = 32;
+    size_t kernel_size_width = 5;
+    size_t kernel_size_height = 5;
+    size_t block_size_width = 32;
+    size_t block_size_height = 32;
     size_t input_bit_size = 4;
     size_t kernel_bit_size = 4;
     enum qconv_optimize_transform optimize_level = optimize_precomp_order;
@@ -710,14 +710,14 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
         }
         printf("\n");
 
-        /*printf("Direct Linear Output:\n");
+        printf("Direct Linear Output:\n");
         for (size_t i = 0; i < output_size_height; i++) {
             for(size_t j = 0; j < output_size_width; j++) {
                 printf("%d ", conv[i * output_size_width + j]);
             }
             printf("\n");
         }
-        printf("\n");*/
+        printf("\n");
 
         bool error = qconv_test_util_compare_uint32_2D_array(output_size_width, output_size_height, ntt, conv);
         assert(error);

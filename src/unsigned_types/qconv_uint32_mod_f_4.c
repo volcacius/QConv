@@ -1090,10 +1090,6 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
                                                                        enum qconv_optimize_transform optimize_level) {
 
     enum qconv_status status;
-    status = get_block_size(kernel_size_width, &block_size_width);
-    CHECK_STATUS(status);
-    status = get_block_size(kernel_size_height, &block_size_height);
-    CHECK_STATUS(status);
 
     size_t output_size_width = input_size_width + kernel_size_width - 1;
     size_t output_size_height = input_size_height + kernel_size_height - 1;
@@ -1125,17 +1121,18 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
     /*
      * STEP 1.1: TOP LEFT BLOCK THAT REQUIRES TOP LEFT PADDING
      */
-
-    qconv_block_convolution_uint32_mod_f_4_top_left_pad(input_size_width, input_size_height,
-                                                           block_size_width, block_size_height,
-                                                           block_size,
-                                                           output_size_width, output_size_height,
-                                                           input_offset_width, input_offset_height,
-                                                           output_offset_width, output_offset_height,
-                                                           discard_subblock_size_width, discard_subblock_size_height,
-                                                           valid_subblock_size_width, valid_subblock_size_height,
-                                                           input, kernel_block, output,
-                                                           optimize_level);
+    if (block_size_width <= input_size_width && block_size_height <= input_size_height) {
+        qconv_block_convolution_uint32_mod_f_4_top_left_pad(input_size_width, input_size_height,
+                                                            block_size_width, block_size_height,
+                                                            block_size,
+                                                            output_size_width, output_size_height,
+                                                            input_offset_width, input_offset_height,
+                                                            output_offset_width, output_offset_height,
+                                                            discard_subblock_size_width, discard_subblock_size_height,
+                                                            valid_subblock_size_width, valid_subblock_size_height,
+                                                            input, kernel_block, output,
+                                                            optimize_level);
+    }
 
     /*
      * STEP 1.2: INNER TOP ROW OF BLOCKS THAT REQUIRE TOP PADDING
@@ -1267,16 +1264,18 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
          * STEP 3.1: BOTTOM LEFT BLOCK
          */
 
-        qconv_block_convolution_uint32_mod_f_4_bottom_left_pad(input_size_width, input_size_height,
-                                                         block_size_width, block_size_height,
-                                                         block_size, output_size_width, output_size_height,
-                                                         input_offset_width, input_offset_height,
-                                                         output_offset_width, output_offset_height,
-                                                         discard_subblock_size_width, discard_subblock_size_height,
-                                                         valid_subblock_size_width, valid_subblock_size_height,
-                                                         valid_input_subblock_size_height, valid_output_subblock_size_height,
-                                                         input, kernel_block, output,
-                                                         optimize_level);
+        if (input_size_width <= block_size) {
+            qconv_block_convolution_uint32_mod_f_4_bottom_left_pad(input_size_width, input_size_height,
+                                                                   block_size_width, block_size_height,
+                                                                   block_size, output_size_width, output_size_height,
+                                                                   input_offset_width, input_offset_height,
+                                                                   output_offset_width, output_offset_height,
+                                                                   discard_subblock_size_width, discard_subblock_size_height,
+                                                                   valid_subblock_size_width, valid_subblock_size_height,
+                                                                   valid_input_subblock_size_height, valid_output_subblock_size_height,
+                                                                   input, kernel_block, output,
+                                                                   optimize_level);
+        }
 
         /*
          * STEP 3.2: INNER BOTTOM ROW OF BLOCKS THAT REQUIRES BOTTOM PADDING
