@@ -399,6 +399,7 @@ enum qconv_status qconv_uint32_direct_2D_cnn_convolution(const size_t input_size
             }
         }
     }
+    return status_success;
 }
 
 void qconv_clone_uint32_2D_array(const size_t size_width,
