@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "qconv.h"
+#include "qconv_constants.h"
 
 #define TEST_ITERATIONS 10
 

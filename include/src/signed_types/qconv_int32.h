@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 #include "qconv_uint32.h"
 
 /*

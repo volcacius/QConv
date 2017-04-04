@@ -47,6 +47,8 @@
 #define QCONV_LOG_SIZE_2048 11
 #define QCONV_LOG_SIZE_65536 16
 
+#define QCONV_STRIDE 1
+
 #define CHECK_STATUS(status)({if (status) {return status;}})
 #define CHECK_TEST_STATUS(status)(assert(!status))
 

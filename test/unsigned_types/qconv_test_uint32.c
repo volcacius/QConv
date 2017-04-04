@@ -124,11 +124,29 @@ void qconv_test_slice_uint32_2D_array() {
     assert(qconv_test_util_compare_uint32_2D_array(inner_size_width, inner_size_height, test, output));
 }
 
+void qconv_test_direct_2D_cnn_convolution_uint32() {
+    size_t input_size_width = 3;
+    size_t input_size_height = 3;
+    size_t kernel_size_width = 2;
+    size_t kernel_size_height = 2;
+    qconv_uint32_mod input[] = {{.uint32.value = 0}, {.uint32.value = 1}, {.uint32.value = 6},
+                                {.uint32.value = 2}, {.uint32.value = 3}, {.uint32.value = 7},
+                                {.uint32.value = 4}, {.uint32.value = 5}, {.uint32.value = 8}};
+    qconv_uint32_mod kernel[] = {{.uint32.value = 0}, {.uint32.value = 1},
+                                 {.uint32.value = 2}, {.uint32.value = 3}};
+    qconv_uint32_mod output[] = {{.uint32.value = 0 * 0 + 1 * 1 + 2 * 2 + 3 * 3}, {.uint32.value = 0 * 1 + 6 * 1 + 3 * 2 + 7 * 3},
+                                 {.uint32.value = 2 * 0 + 3 * 1 + 4 * 2 + 5 * 3}, {.uint32.value = 3 * 0 + 7 * 1 + 5 * 2 + 8 * 3}};
+    qconv_uint32_mod test[4];
+    qconv_uint32_direct_2D_cnn_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, test);
+    assert(qconv_test_util_compare_uint32_2D_array(2, 2, test, output));
+}
+
 void qconv_test_uint32_runall() {
     qconv_test_zero_pad_uint32_1D_array();
     qconv_test_zero_pad_uint32_2D_array();
     qconv_test_slice_uint32_1D_array();
     qconv_test_slice_uint32_2D_array();
     qconv_test_convolution_uint32_runall();
+    qconv_test_direct_2D_cnn_convolution_uint32();
 }
 

@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 
 #define QCONV_MAX_UINT32_CONV_BITSIZE 16
 
@@ -177,13 +177,13 @@ enum qconv_status qconv_uint32_direct_2D_linear_convolution (const size_t input_
                                                              const qconv_uint32_mod kernel[static const kernel_size_width * kernel_size_height],
                                                              qconv_uint32_mod output[static (input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)]);
 
-enum qconv_status qconv_uint32_direct_1D_cnn_convolution(size_t input_size,
-                                                         size_t kernel_size,
-                                                         size_t stride,
-                                                         qconv_uint32_mod input[input_size],
-                                                         qconv_uint32_mod kernel[kernel_size],
-                                                         qconv_uint32_mod output[input_size + kernel_size - 1],
-                                                         enum qconv_optimize_transform optimize_level);
+enum qconv_status qconv_uint32_direct_2D_cnn_convolution(const size_t input_size_width,
+                                                         const size_t input_size_height,
+                                                         const size_t kernel_size_width,
+                                                         const size_t kernel_size_height,
+                                                         const qconv_uint32_mod input[static const input_size_width * input_size_height],
+                                                         const qconv_uint32_mod kernel[static const kernel_size_width * kernel_size_height],
+                                                         qconv_uint32_mod output[static (input_size_width - kernel_size_width + 1) * (input_size_height - kernel_size_height + 1)]);
 
 void qconv_clone_uint32_2D_array(const size_t size_width,
                                  const size_t size_height,

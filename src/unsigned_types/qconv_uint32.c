@@ -350,21 +350,54 @@ enum qconv_status qconv_uint32_direct_2D_circular_convolution(const size_t size_
     return status_success;
 }
 
-enum qconv_status qconv_uint32_direct_1D_cnn_convolution(size_t input_size,
-                                                         size_t kernel_size,
-                                                         size_t stride,
-                                                         qconv_uint32_mod input[input_size],
-                                                         qconv_uint32_mod kernel[kernel_size],
-                                                         qconv_uint32_mod output[input_size - kernel_size + 1],
-                                                         enum qconv_optimize_transform optimize_level) {
-    size_t output_size = input_size - kernel_size + 1;
-    size_t offset = 0;
-    for (size_t i = 0; i < output_size; i++) {
-        output[i].uint32.value = 0;
-        for (size_t k = 0; k < kernel_size; k++) {
-            output[i].uint32.value = kernel[k].uint32.value * input[offset + k].uint32.value;
+enum qconv_status qconv_uint32_direct_2D_cnn_convolution(const size_t input_size_width,
+                                                         const size_t input_size_height,
+                                                         const size_t kernel_size_width,
+                                                         const size_t kernel_size_height,
+                                                         const qconv_uint32_mod input[static const input_size_width * input_size_height],
+                                                         const qconv_uint32_mod kernel[static const kernel_size_width * kernel_size_height],
+                                                         qconv_uint32_mod output[static (input_size_width - kernel_size_width + 1) * (input_size_height - kernel_size_height + 1)]) {
+    //define offset of the current portion of input that overlaps with the kernel,
+    //defined as positive index starting at 0,0 on upper left corner
+    size_t i_row_offset = 0;
+    size_t i_column_offset = 0;
+
+    size_t output_size_width = input_size_width - kernel_size_width + 1;
+    size_t output_size_height = input_size_height - kernel_size_height + 1;
+
+    //iterate over output rows
+    for(size_t o_row = 0; o_row < output_size_height; o_row++) {
+
+        //iterate over output columns
+        for (size_t o_column = 0; o_column < output_size_width; o_column++) {
+
+            //set the starting value of a single point of output to 0.
+            //a single point of output is the sum of the dot product between the
+            //shifted kernel and the overlapped region of input
+            //the current overlapped region of input is retrived from i_row_offset, i_column_offset
+            output[o_row * output_size_width + o_column].uint32.value = 0;
+
+            //iterate over kernel rows
+            for (size_t k_row = 0; k_row < kernel_size_height; k_row++) {
+
+                //iterate over kernel columns
+                for (size_t k_column = 0; k_column < kernel_size_width; k_column++) {
+                    size_t i_row = i_row_offset + k_row;
+                    size_t i_column = i_column_offset + k_column;
+                    output[o_row * output_size_width + o_column].uint32.value +=
+                            input[i_row * input_size_width + i_column].uint32.value * kernel[k_row * kernel_size_width + k_column].uint32.value;
+                }
+            }
+            //at the end of the computation of a single output point, compute the new offset for the next point.
+            //we shift first the kernel to the right, and when it reaches the end of the input we start again on the left by going down one row
+            //
+            if (i_column_offset + kernel_size_width == input_size_width) {
+                i_column_offset = 0;
+                i_row_offset += QCONV_STRIDE;
+            } else {
+                i_column_offset += QCONV_STRIDE;
+            }
         }
-        offset += stride;
     }
 }
 

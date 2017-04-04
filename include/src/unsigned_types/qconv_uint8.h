@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 
 //Typedef a 64bit unsigned data type to a project wide inner 64bit representation
 typedef uint8_t qconv_inner_uint8;

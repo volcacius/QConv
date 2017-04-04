@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 #include "qconv_uint32.h"
 #include "qconv_int32.h"
 #include "qconv_int64.h"
@@ -83,7 +83,6 @@ inline void qconv_pmul_mod_f_4(const size_t size,
                                const qconv_uint32_mod b[static const size],
                                qconv_uint32_mod c[static size]) {
 
-    #pragma omp parallel for
     for (size_t i = 0; i < size; i++) {
         c[i].mod_f_4 = qconv_mul_uint32_mod_f_4(a[i].mod_f_4, b[i].mod_f_4);
     }

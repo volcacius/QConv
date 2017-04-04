@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 #include "qconv_uint8.h"
 #include "qconv_uint16.h"
 #include "qconv_uint32.h"

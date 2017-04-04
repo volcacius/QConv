@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 #include "qconv_int32.h"
 #include "qconv_int64.h"
 

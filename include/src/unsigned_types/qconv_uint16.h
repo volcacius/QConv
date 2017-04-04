@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 
 #define QCONV_MAX_UINT16_BITSIZE 8
 

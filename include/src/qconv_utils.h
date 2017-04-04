@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "qconv.h"
+#include "qconv_constants.h"
 
 size_t qconv_get_log2_power_of_two(size_t power_of_two);
 
