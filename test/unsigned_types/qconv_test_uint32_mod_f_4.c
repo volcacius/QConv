@@ -559,14 +559,14 @@ enum qconv_status qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall() {
     return status_success;
 }
 
-enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
+enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     enum qconv_status status;
 
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
 
-    size_t input_size_width = 512;
-    size_t input_size_height = 512;
+    size_t input_size_width = 128;
+    size_t input_size_height = 128;
     size_t kernel_size_width = 13;
     size_t kernel_size_height = 13;
     size_t input_bit_size = 5;
@@ -581,7 +581,7 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     qconv_uint32_mod *ntt = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
     qconv_uint32_mod *conv = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
 
-    printf("Test 2D NTT mod F_4 random block linear convolution\n, input size %dx%d %dbit, kernel size %dx%d %dbit\n",
+    printf("Test 2D NTT mod F_4 random block CNN convolution\n, input size %dx%d %dbit, kernel size %dx%d %dbit\n",
            input_size_width, input_size_height, input_bit_size, kernel_size_width, kernel_size_height, kernel_bit_size);
 
     for (int i = 0; i < TEST_ITERATIONS; i++) {
@@ -625,6 +625,91 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
         for (size_t i = 0; i < conv_size_height; i++) {
             for(size_t j = 0; j < conv_size_width; j++) {
                 printf("%d ", conv[i * conv_size_width + j]);
+            }
+            printf("\n");
+        }
+        printf("\n");*/
+
+        bool error = qconv_test_util_compare_uint32_2D_array(output_size_width, output_size_height, ntt, conv);
+        assert(error);
+    }
+
+    free(input);
+    free(kernel);
+    free(ntt);
+    free(conv);
+
+    printf(" Direct: %fs, NTT %fs, Speed ratio over direct: %f\n\n",
+           direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);
+
+    return status_success;
+}
+
+enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
+    enum qconv_status status;
+
+    double direct_tot_time = 0;
+    double ntt_tot_time = 0;
+
+    size_t input_size_width = 128;
+    size_t input_size_height = 128;
+    size_t kernel_size_width = 7;
+    size_t kernel_size_height = 7;
+    size_t input_bit_size = 2;
+    size_t kernel_bit_size = 2;
+    enum qconv_optimize_transform optimize_level = optimize_precomp_order;
+
+    size_t output_size_width = input_size_width + kernel_size_width - 1;
+    size_t output_size_height = input_size_height + kernel_size_height - 1;
+
+    qconv_uint32_mod *input = malloc(input_size_width * input_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *kernel = malloc(kernel_size_width * kernel_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *ntt = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *conv = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
+
+    printf("Test 2D NTT mod F_4 random block linear convolution\n, input size %dx%d %dbit, kernel size %dx%d %dbit\n",
+           input_size_width, input_size_height, input_bit_size, kernel_size_width, kernel_size_height, kernel_bit_size);
+
+    for (int i = 0; i < TEST_ITERATIONS; i++) {
+
+        //Generate random input
+        qconv_test_util_random_uint32_2D_array(input_size_width, input_size_height, input, input_bit_size);
+        qconv_test_util_random_uint32_2D_array(kernel_size_width, kernel_size_height, kernel, kernel_bit_size);
+
+        //Direct linear convolution
+        double direct_start_time = (double) clock() / CLOCKS_PER_SEC;
+        status = qconv_uint32_direct_2D_linear_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
+        double direct_end_time = (double) clock() / CLOCKS_PER_SEC;
+        direct_tot_time += (direct_end_time - direct_start_time);
+        CHECK_TEST_STATUS(status);
+
+        //NTT linear convolution
+        double ntt_start_time = (double) clock() / CLOCKS_PER_SEC;
+        status = qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(input_size_width,
+                                                                   input_size_height,
+                                                                   kernel_size_width,
+                                                                   kernel_size_height,
+                                                                   input,
+                                                                   kernel,
+                                                                   ntt,
+                                                                   optimize_level);
+        double ntt_end_time = (double) clock() / CLOCKS_PER_SEC;
+        ntt_tot_time += ntt_end_time - ntt_start_time;
+        CHECK_TEST_STATUS(status);
+
+        printf("NTT Linear Output:\n");
+        for (size_t i = 0; i < output_size_height; i++) {
+            for(size_t j = 0; j < output_size_width; j++) {
+                printf("%d ", ntt[i * output_size_width + j]);
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        /*printf("Direct Linear Output:\n");
+        for (size_t i = 0; i < output_size_height; i++) {
+            for(size_t j = 0; j < output_size_width; j++) {
+                printf("%d ", conv[i * output_size_width + j]);
             }
             printf("\n");
         }
@@ -707,7 +792,7 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_4_runall() {
 }
 
 void qconv_test_uint32_mod_f_4_runall() {
-    qconv_test_mul_mod_f_4();
+    /*qconv_test_mul_mod_f_4();
     qconv_test_mul_mod_f_4_union();
     qconv_test_power_mod_f_4();
     qconv_test_NTT_1D_identity_mod_f_4_runall();
@@ -716,7 +801,7 @@ void qconv_test_uint32_mod_f_4_runall() {
     qconv_test_NTT_2D_identity_mod_f_4_runall();
     qconv_test_NTT_2D_circular_convolution_mod_f_4_runall();
     qconv_test_NTT_2D_linear_convolution_mod_f_4_runall();
-    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();
+    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();*/
     qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
     //qconv_test_NTT_1D_max_identity_mod_f_4(32, 2, optimize_null);
 }
