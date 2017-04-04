@@ -176,7 +176,7 @@ void qconv_DIF_r2_std2rev_precomp_1D_uint32_mod_f_4(const size_t size,
 void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4(const size_t size,
                                                     const size_t log2_size,
                                                     qconv_uint32_mod a[static size],
-                                                    const qconv_inner_uint16 *powers) {
+                                                    const qconv_inner_int16 *powers) {
     qconv_bit_reverse_uint32_array_order(size, a);
     qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4(size, log2_size, a, powers);
 
@@ -185,7 +185,7 @@ void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4(const size_t size,
 void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4(const size_t size,
                                                     const size_t log2_size,
                                                     qconv_uint32_mod a[static size],
-                                                    const qconv_inner_uint16 *powers) {
+                                                    const qconv_inner_int16 *powers) {
     //optimize first iteration of outermost loop
     for (size_t first_iter = 0; first_iter < size; first_iter+= 2) {
         const qconv_uint32_mod temp = a[first_iter + 1];
@@ -202,8 +202,7 @@ void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4(const size_t size,
                 const size_t t1 = r + j;
                 const size_t t2 = t1 + mh;
                 const qconv_uint32_mod_f_4 u = a[t1].mod_f_4;
-                const qconv_uint32_mod_f_4 w = {.value = powers[power_index]};
-                const qconv_uint32_mod_f_4 v = qconv_mul_uint32_mod_f_4(a[t2].mod_f_4, w);
+                const qconv_uint32_mod_f_4 v = qconv_short_mul_int32_mod_f_4(a[t2].mod_f_4, powers[power_index]);
                 a[t1].mod_f_4 = qconv_add_uint32_mod_f_4(u, v);
                 a[t2].mod_f_4 = qconv_subtract_uint32_mod_f_4(u, v);
                 power_index++;

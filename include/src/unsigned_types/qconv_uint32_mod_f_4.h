@@ -28,6 +28,17 @@ inline qconv_uint32_mod_f_4 qconv_reduce_uint32_mod_f_4(qconv_inner_uint32 x) {
     return z;
 }
 
+inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 x) {
+    qconv_inner_int32 r = x & 0xffff;
+    qconv_inner_int32 q = x >> QCONV_EXP_F_4;
+    qconv_inner_int32 y = r - q;
+    if (y < 0) {
+        y += QCONV_F_4;
+    }
+    qconv_uint32_mod_f_4 z = {.value = (qconv_inner_uint32) y};
+    return z;
+}
+
 /*
  * @brief Fast multiplication modulo F_4 = 2^16 + 1
  */
@@ -49,6 +60,22 @@ inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 
 inline qconv_uint32_mod_f_4 qconv_short_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
     qconv_inner_uint32 z = x.value *  y.value;
     return qconv_reduce_uint32_mod_f_4(z);
+}
+
+/*
+ * @brief Fast multiplication modulo F_4 = 2^16 + 1 with a signed operand and without check for max sized inputs,
+ * useful when one of the operands is capped, e.g. precomputed roots
+ * Checking for 1 is necessary but saves having a possible operand = -65536,
+ * which would require both a max check and an addition to make it stay within signed boundaries
+ */
+inline qconv_uint32_mod_f_4 qconv_short_mul_int32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y) {
+    if (y == 1) {
+        return x;
+    } else {
+        qconv_inner_int32 z = x.value * y;
+        return qconv_reduce_int32_mod_f_4(z);
+    }
+
 }
 
 /*
@@ -114,7 +141,7 @@ void qconv_DIT_r2_std2std_1D_uint32_mod_f_4(const size_t size,
 void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4(const size_t size,
                                                     const size_t log2_size,
                                                     qconv_uint32_mod a[static size],
-                                                    const qconv_inner_uint16 *powers);
+                                                    const qconv_inner_int16 *powers);
 
 void qconv_DIT_r2_rev2std_1D_uint32_mod_f_4(const size_t size,
                                             const size_t log2_size,
@@ -137,7 +164,7 @@ void qconv_DIF_r2_std2rev_precomp_1D_uint32_mod_f_4(const size_t size,
 void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4(const size_t size,
                                                     const size_t log2_size,
                                                     qconv_uint32_mod a[static size],
-                                                    const qconv_inner_uint16 *powers);
+                                                    const qconv_inner_int16 *powers);
 
 
 /*

@@ -581,7 +581,7 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     qconv_uint32_mod *ntt = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
     qconv_uint32_mod *conv = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < TEST_ITERATIONS; i++) {
 
         //Generate random input
         qconv_test_util_random_uint32_2D_array(input_size_width, input_size_height, input, input_bit_size);
