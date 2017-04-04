@@ -283,6 +283,8 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
                                                                        size_t input_size_height,
                                                                        size_t kernel_size_width,
                                                                        size_t kernel_size_height,
+                                                                       size_t block_size_width,
+                                                                       size_t block_size_height,
                                                                        qconv_uint32_mod input[static input_size_width * input_size_height],
                                                                        qconv_uint32_mod kernel[static kernel_size_width * kernel_size_height],
                                                                        qconv_uint32_mod output[static (input_size_width + kernel_size_width - 1)

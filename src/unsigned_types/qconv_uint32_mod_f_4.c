@@ -1081,6 +1081,8 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
                                                                        size_t input_size_height,
                                                                        size_t kernel_size_width,
                                                                        size_t kernel_size_height,
+                                                                       size_t block_size_width,
+                                                                       size_t block_size_height,
                                                                        qconv_uint32_mod input[static input_size_width * input_size_height],
                                                                        qconv_uint32_mod kernel[static kernel_size_width * kernel_size_height],
                                                                        qconv_uint32_mod output[static (input_size_width + kernel_size_width - 1)
@@ -1088,8 +1090,6 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
                                                                        enum qconv_optimize_transform optimize_level) {
 
     enum qconv_status status;
-    size_t block_size_width;
-    size_t block_size_height;
     status = get_block_size(kernel_size_width, &block_size_width);
     CHECK_STATUS(status);
     status = get_block_size(kernel_size_height, &block_size_height);

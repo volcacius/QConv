@@ -651,12 +651,14 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
 
-    size_t input_size_width = 128;
-    size_t input_size_height = 128;
-    size_t kernel_size_width = 7;
-    size_t kernel_size_height = 7;
-    size_t input_bit_size = 2;
-    size_t kernel_bit_size = 2;
+    size_t input_size_width = 300;
+    size_t input_size_height = 300;
+    size_t kernel_size_width = 3;
+    size_t kernel_size_height = 3;
+    size_t block_size_width = 8;
+    size_t block_size_height = 8;
+    size_t input_bit_size = 4;
+    size_t kernel_bit_size = 4;
     enum qconv_optimize_transform optimize_level = optimize_precomp_order;
 
     size_t output_size_width = input_size_width + kernel_size_width - 1;
@@ -689,6 +691,8 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
                                                                    input_size_height,
                                                                    kernel_size_width,
                                                                    kernel_size_height,
+                                                                   block_size_width,
+                                                                   block_size_height,
                                                                    input,
                                                                    kernel,
                                                                    ntt,
