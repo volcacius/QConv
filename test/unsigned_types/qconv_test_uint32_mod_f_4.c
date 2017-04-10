@@ -67,7 +67,7 @@ enum qconv_status qconv_test_NTT_2D_max_identity_mod_f_4(size_t size_width,
            size_width, size_height, bit_size);
     qconv_uint32_mod max[size_width * size_height], original[size_width * size_height];
     qconv_test_util_max_uint32_2D_array(size_width, size_height, max, bit_size);
-    qconv_clone_uint32_2D_array(size_width, size_height, max, original);
+    qconv_clone_uint32_array(size_width * size_height, max, original);
     status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, max, optimize_level);
     CHECK_TEST_STATUS(status);
     status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, max, optimize_level);
@@ -105,7 +105,7 @@ enum qconv_status qconv_test_NTT_2D_random_identity_mod_f_4(size_t size_width,
     for (int i = 0; i < TEST_ITERATIONS; i++) {
         qconv_uint32_mod random[size_width * size_height], original[size_width * size_height];
         qconv_test_util_random_uint32_2D_array(size_width, size_height, random, bit_size);
-        qconv_clone_uint32_2D_array(size_width, size_height, random, original);
+        qconv_clone_uint32_array(size_width * size_height, random, original);
         status = qconv_NTT_2D_uint32_mod_f_4(size_width, size_height, random, optimize_level);
         CHECK_TEST_STATUS(status);
         status = qconv_INTT_2D_uint32_mod_f_4(size_width, size_height, random, optimize_level);

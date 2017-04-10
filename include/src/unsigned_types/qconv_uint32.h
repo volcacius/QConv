@@ -185,11 +185,6 @@ enum qconv_status qconv_uint32_direct_2D_cnn_convolution(const size_t input_size
                                                          const qconv_uint32_mod kernel[static const kernel_size_width * kernel_size_height],
                                                          qconv_uint32_mod output[static (input_size_width - kernel_size_width + 1) * (input_size_height - kernel_size_height + 1)]);
 
-void qconv_clone_uint32_2D_array(const size_t size_width,
-                                 const size_t size_height,
-                                 const qconv_uint32_mod source[static const size_width * size_height],
-                                 qconv_uint32_mod destination[static size_width * size_height]);
-
 void qconv_clone_uint32_array(const size_t size,
                               const qconv_uint32_mod source[static const size],
                               qconv_uint32_mod destination[static size]);

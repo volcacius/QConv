@@ -218,4 +218,26 @@ enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_3(const size_t in
                                                                  qconv_uint16_mod ntt[(input_size_width + kernel_size_width - 1) * (input_size_height + kernel_size_height - 1)],
                                                                  const enum qconv_optimize_transform optimize_level);
 
+void qconv_block_convolution_uint16_mod_f_3_output_subblock(size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                            size_t output_size_width, size_t output_size_height,
+                                                            size_t output_offset_width, size_t output_offset_height,
+                                                            size_t discard_subblock_size_width, size_t discard_subblock_size_height,
+                                                            size_t valid_output_subblock_size_width, size_t valid_output_subblock_size_height,
+                                                            qconv_uint16_mod *block,
+                                                            const qconv_uint16_mod *kernel_block,
+                                                            qconv_uint16_mod *output,
+                                                            enum qconv_optimize_transform optimize_level);
+
+enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input_size_width,
+                                                                    size_t input_size_height,
+                                                                    size_t kernel_size_width,
+                                                                    size_t kernel_size_height,
+                                                                    size_t block_size_width,
+                                                                    size_t block_size_height,
+                                                                    qconv_uint16_mod input[static input_size_width * input_size_height],
+                                                                    qconv_uint16_mod kernel[static kernel_size_width * kernel_size_height],
+                                                                    qconv_uint16_mod output[static (input_size_width - kernel_size_width + 1)
+                                                                                                   * (input_size_height - kernel_size_height + 1)],
+                                                                    enum qconv_optimize_transform optimize_level);
+
 

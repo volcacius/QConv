@@ -29,8 +29,8 @@ void qconv_test_lin_circ_convolution_uint16(size_t input_bit_size,
     qconv_test_util_random_uint16_1D_array(kernel_size, kernel, kernel_bit_size);
     qconv_uint16_direct_1D_linear_convolution(input_size, kernel_size, input, kernel, lin);
 
-    qconv_zero_pad_uint16_1D_array(size, input_size, input, padded_input);
-    qconv_zero_pad_uint16_1D_array(size, kernel_size, kernel, padded_kernel);
+    qconv_right_zero_pad_uint16_1D_array(size, input_size, input, padded_input);
+    qconv_right_zero_pad_uint16_1D_array(size, kernel_size, kernel, padded_kernel);
     qconv_uint16_direct_1D_circular_convolution(size, padded_input, padded_kernel, circ);
     qconv_slice_uint16_1D_array(size, input_size + kernel_size - 1, 0, circ, sliced_circ);
 
@@ -71,7 +71,7 @@ void qconv_test_zero_pad_uint16_1D_array() {
                                {.uint16.value = 0},
                                {.uint16.value = 0}};
     qconv_uint16_mod output[outer_size];
-    qconv_zero_pad_uint16_1D_array(outer_size, inner_size, input, output);
+    qconv_right_zero_pad_uint16_1D_array(outer_size, inner_size, input, output);
     assert(qconv_test_util_compare_uint16_1D_array(outer_size, test, output));
 }
 
@@ -86,7 +86,7 @@ void qconv_test_zero_pad_uint16_2D_array() {
                                {.uint16.value = 2}, {.uint16.value = 3}, {.uint16.value = 0},
                                {.uint16.value = 0}, {.uint16.value = 0}, {.uint16.value = 0}};
     qconv_uint16_mod output[outer_size_width * outer_size_height];
-    qconv_zero_pad_uint16_2D_array(outer_size_width, outer_size_height, inner_size_width, inner_size_height, input, output);
+    qconv_bottom_right_zero_pad_uint16_2D_array(outer_size_width, outer_size_height, inner_size_width, inner_size_height, input, output);
     assert(qconv_test_util_compare_uint16_2D_array(outer_size_width, outer_size_height, test, output));
 }
 

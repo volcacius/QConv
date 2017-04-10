@@ -83,12 +83,6 @@ enum qconv_status qconv_left_zero_pad_uint32_1D_array(const size_t outer_size,
                                                       qconv_uint32_mod output[outer_size]) {
     size_t pad_size = outer_size - inner_size;
 
-    /*printf("1D to left pad:\n");
-    for (size_t i = 0; i <inner_size; i++) {
-        printf("%d ", input[i].uint32.value);
-    }
-    printf("\n");*/
-
     for (size_t i = 0; i < pad_size; i++) {
         output[i].uint32.value = 0;
     }
@@ -400,13 +394,6 @@ enum qconv_status qconv_uint32_direct_2D_cnn_convolution(const size_t input_size
         }
     }
     return status_success;
-}
-
-void qconv_clone_uint32_2D_array(const size_t size_width,
-                                 const size_t size_height,
-                                 const qconv_uint32_mod source[static size_width * size_height],
-                                 qconv_uint32_mod destination[static size_width * size_height]) {
-    qconv_clone_uint32_array(size_width * size_height, source, destination);
 }
 
 void qconv_clone_uint32_array(size_t size,

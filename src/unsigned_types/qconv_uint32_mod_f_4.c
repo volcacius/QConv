@@ -563,7 +563,7 @@ void qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4_unsigned_powers(const size_t si
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
     }
 
-    qconv_clone_uint32_2D_array(size_height, size_width, a_transpose, a);
+    qconv_clone_uint32_array(size_height * size_width, a_transpose, a);
 }
 
 void qconv_DIT_std2std_2D_precomp_uint32_mod_f_4_signed_powers(const size_t size_width,
@@ -613,7 +613,7 @@ void qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4_signed_powers(const size_t size
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
     }
 
-    qconv_clone_uint32_2D_array(size_height, size_width, a_transpose, a);
+    qconv_clone_uint32_array(size_height * size_width, a_transpose, a);
 }
 
 void qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(const size_t size_width,
@@ -640,7 +640,7 @@ void qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(const size_t size_width,
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
     }
 
-    qconv_clone_uint32_2D_array(size_height, size_width, a_transpose, a);
+    qconv_clone_uint32_array(size_height * size_width, a_transpose, a);
 }
 
 enum qconv_status qconv_NTT_2D_uint32_mod_f_4_inner2x(const size_t size_width,
@@ -1708,15 +1708,6 @@ void qconv_block_convolution_uint32_mod_f_4_output_subblock(size_t block_size_wi
                                     discard_subblock_size_height,
                                     block, valid_output_subblock);
 
-    /*printf("Output valid block:\n");
-    for (size_t i = 0; i < valid_output_subblock_size_height; i++) {
-        for(size_t j = 0; j < valid_output_subblock_size_width; j++) {
-            printf("%d ", valid_output_subblock[i * valid_output_subblock_size_width + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");*/
-
     //Insert valid output block into output
     qconv_insert_uint32_2D_array(output_size_width,
                                      output_size_height,
@@ -1725,15 +1716,6 @@ void qconv_block_convolution_uint32_mod_f_4_output_subblock(size_t block_size_wi
                                      output_offset_width,
                                      output_offset_height,
                                      valid_output_subblock, output);
-
-    /*printf("Output:\n");
-    for (size_t i = 0; i < output_size_height; i++) {
-        for(size_t j = 0; j < output_size_width; j++) {
-            printf("%d ", output[i * output_size_width + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");*/
 }
 
 enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input_size_width,
@@ -1747,12 +1729,6 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
                                                                     qconv_uint32_mod output[static (input_size_width - kernel_size_width + 1)
                                                                                                    * (input_size_height - kernel_size_height + 1)],
                                                                     enum qconv_optimize_transform optimize_level) {
-
-    size_t block_log_size_width = qconv_get_log2_power_of_two(block_size_width);
-    size_t block_log_size_height = qconv_get_log2_power_of_two(block_size_height);
-
-    qconv_inner_uint16 *forward_row_powers = qconv_get_const_f_4_DIF_std2rev_forward(block_size_width);
-    qconv_inner_uint16 *forward_column_powers = qconv_get_const_f_4_DIF_std2rev_forward(block_size_height);
 
     size_t output_size_width = input_size_width - kernel_size_width + 1;
     size_t output_size_height = input_size_height - kernel_size_height + 1;
