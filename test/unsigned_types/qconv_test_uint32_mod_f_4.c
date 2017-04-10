@@ -404,6 +404,160 @@ enum qconv_status qconv_test_NTT_2D_random_linear_convolution_mod_f_4(size_t inp
     return status_success;
 }
 
+enum qconv_status qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(size_t input_size_width,
+                                                                         size_t input_size_height,
+                                                                         size_t kernel_size_width,
+                                                                         size_t kernel_size_height,
+                                                                      size_t block_size_width,
+                                                                      size_t block_size_height,
+                                                                         size_t input_bit_size,
+                                                                         size_t kernel_bit_size,
+                                                                         enum qconv_optimize_transform optimize_level) {
+    enum qconv_status status;
+
+    double direct_tot_time = 0;
+    double ntt_tot_time = 0;
+
+    size_t output_size_width = input_size_width - kernel_size_width + 1;
+    size_t output_size_height = input_size_height - kernel_size_height + 1;
+
+    qconv_uint32_mod *input = malloc(input_size_width * input_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *kernel = malloc(kernel_size_width * kernel_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *ntt = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *conv = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
+
+    printf("Test 2D NTT mod F_4 max block CNN convolution\n input size %dx%d %dbit, kernel size %dx%d %dbit, block size %dx%d\n",
+           input_size_width, input_size_height, input_bit_size, kernel_size_width, kernel_size_height, kernel_bit_size, block_size_width, block_size_height);
+
+    //Generate max input and kernel
+    qconv_test_util_max_uint32_2D_array(input_size_width, input_size_height, input, input_bit_size);
+    qconv_test_util_max_uint32_2D_array(kernel_size_width, kernel_size_height, kernel, kernel_bit_size);
+
+    //Direct CNN convolution
+    struct timeval direct_start, direct_end;
+    gettimeofday(&direct_start, NULL);
+
+    status = qconv_uint32_direct_2D_cnn_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
+
+    gettimeofday(&direct_end, NULL);
+    direct_tot_time += ((direct_end.tv_sec - direct_start.tv_sec) * 1000000 + direct_end.tv_usec - direct_start.tv_usec);
+
+    CHECK_TEST_STATUS(status);
+
+    //NTT linear convolution
+
+    struct timeval ntt_start, ntt_end;
+    gettimeofday(&ntt_start, NULL);
+
+    qconv_reverse_uint32_array(kernel_size_width * kernel_size_height, kernel);
+    status = qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(input_size_width,
+                                                               input_size_height,
+                                                               kernel_size_width,
+                                                               kernel_size_height,
+                                                               block_size_width,
+                                                               block_size_height,
+                                                               input,
+                                                               kernel,
+                                                               ntt,
+                                                               optimize_level);
+    gettimeofday(&ntt_end, NULL);
+
+    ntt_tot_time += ((ntt_end.tv_sec - ntt_start.tv_sec) * 1000000 + ntt_end.tv_usec - ntt_start.tv_usec);
+
+    CHECK_TEST_STATUS(status);
+
+    bool correct = qconv_test_util_compare_uint32_2D_array(output_size_width, output_size_height, ntt, conv);
+    assert(correct);
+
+    free(input);
+    free(kernel);
+    free(ntt);
+    free(conv);
+
+    printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time/TEST_ITERATIONS, ntt_tot_time/TEST_ITERATIONS, direct_tot_time/ntt_tot_time);
+
+    return status_success;
+}
+
+enum qconv_status qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(size_t input_size_width,
+                                                                  size_t input_size_height,
+                                                                  size_t kernel_size_width,
+                                                                  size_t kernel_size_height,
+                                                                         size_t block_size_width,
+                                                                         size_t block_size_height,
+                                                                  size_t input_bit_size,
+                                                                  size_t kernel_bit_size,
+                                                                  enum qconv_optimize_transform optimize_level) {
+    enum qconv_status status;
+
+    double direct_tot_time = 0;
+    double ntt_tot_time = 0;
+
+    size_t output_size_width = input_size_width - kernel_size_width + 1;
+    size_t output_size_height = input_size_height - kernel_size_height + 1;
+
+    qconv_uint32_mod *input = malloc(input_size_width * input_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *kernel = malloc(kernel_size_width * kernel_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *ntt = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
+    qconv_uint32_mod *conv = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
+
+    printf("Test 2D NTT mod F_4 random block CNN convolution\n input size %dx%d %dbit, kernel size %dx%d %dbit, block size %dx%d\n",
+           input_size_width, input_size_height, input_bit_size, kernel_size_width, kernel_size_height, kernel_bit_size, block_size_width, block_size_height);
+
+    for (int i = 0; i < TEST_ITERATIONS; i++) {
+
+        //Generate random input and kernel
+        qconv_test_util_random_uint32_2D_array(input_size_width, input_size_height, input, input_bit_size);
+        qconv_test_util_random_uint32_2D_array(kernel_size_width, kernel_size_height, kernel, kernel_bit_size);
+
+        //Direct CNN convolution
+
+        struct timeval direct_start, direct_end;
+        gettimeofday(&direct_start, NULL);
+
+        status = qconv_uint32_direct_2D_cnn_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
+
+        gettimeofday(&direct_end, NULL);
+        direct_tot_time += ((direct_end.tv_sec - direct_start.tv_sec) * 1000000 + direct_end.tv_usec - direct_start.tv_usec);
+
+        CHECK_TEST_STATUS(status);
+
+        //NTT linear convolution
+
+        struct timeval ntt_start, ntt_end;
+        gettimeofday(&ntt_start, NULL);
+
+        qconv_reverse_uint32_array(kernel_size_width * kernel_size_height, kernel);
+        status = qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(input_size_width,
+                                                                   input_size_height,
+                                                                   kernel_size_width,
+                                                                   kernel_size_height,
+                                                                   block_size_width,
+                                                                   block_size_height,
+                                                                   input,
+                                                                   kernel,
+                                                                   ntt,
+                                                                   optimize_level);
+        gettimeofday(&ntt_end, NULL);
+
+        ntt_tot_time += ((ntt_end.tv_sec - ntt_start.tv_sec) * 1000000 + ntt_end.tv_usec - ntt_start.tv_usec);
+
+        CHECK_TEST_STATUS(status);
+
+        bool correct = qconv_test_util_compare_uint32_2D_array(output_size_width, output_size_height, ntt, conv);
+        assert(correct);
+    }
+
+    free(input);
+    free(kernel);
+    free(ntt);
+    free(conv);
+
+    printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time/TEST_ITERATIONS, ntt_tot_time/TEST_ITERATIONS, direct_tot_time/ntt_tot_time);
+
+    return status_success;
+}
+
 enum qconv_status qconv_test_NTT_1D_identity_mod_f_4(size_t size,
                                                      size_t bit_size,
                                                      enum qconv_optimize_transform optimize_level) {
@@ -499,6 +653,38 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_4(size_t input_size
     return status;
 }
 
+enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_size_width,
+                                                               size_t input_size_height,
+                                                               size_t kernel_size_width,
+                                                               size_t kernel_size_height,
+                                                                  size_t block_size_width,
+                                                                  size_t block_size_height,
+                                                               size_t input_bit_size,
+                                                               size_t kernel_bit_size,
+                                                               enum qconv_optimize_transform optimize_level) {
+    enum qconv_status status;
+    status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
+                                                              input_size_height,
+                                                              kernel_size_width,
+                                                              kernel_size_height,
+                                                                 block_size_width,
+                                                                 block_size_height,
+                                                              input_bit_size,
+                                                              kernel_bit_size,
+                                                              optimize_level);
+    CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(input_size_width,
+                                                                 input_size_height,
+                                                                 kernel_size_width,
+                                                                 kernel_size_height,
+                                                                    block_size_width,
+                                                                    block_size_height,
+                                                                 input_bit_size,
+                                                                 kernel_bit_size,
+                                                                 optimize_level);
+    return status;
+}
+
 enum qconv_status qconv_test_NTT_1D_identity_mod_f_4_runall() {
     enum qconv_status status;
     for (size_t optimize_level = optimize_null; optimize_level <= optimize_precomp_order; optimize_level++) {
@@ -563,118 +749,89 @@ enum qconv_status qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall() {
 enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     enum qconv_status status;
 
-    double direct_tot_time = 0;
-    double ntt_tot_time = 0;
-
-    size_t input_size_width = 2048;
-    size_t input_size_height = 2048;
-    size_t kernel_size_width = 7;
-    size_t kernel_size_height = 7;
-    size_t block_size_width = 32;
-    size_t block_size_height = 32;
-    size_t input_bit_size = 2;
-    size_t kernel_bit_size = 2;
-    enum qconv_optimize_transform optimize_level = optimize_precomp_order;
-
-    size_t output_size_width = input_size_width - kernel_size_width + 1;
-    size_t output_size_height = input_size_height - kernel_size_height + 1;
-
-    qconv_uint32_mod *input = malloc(input_size_width * input_size_height * sizeof(qconv_uint32_mod));
-    qconv_uint32_mod *kernel = malloc(kernel_size_width * kernel_size_height * sizeof(qconv_uint32_mod));
-    qconv_uint32_mod *ntt = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
-    qconv_uint32_mod *conv = malloc(output_size_width * output_size_height * sizeof(qconv_uint32_mod));
-
-    printf("Test 2D NTT mod F_4 random block CNN convolution\n, input size %dx%d %dbit, kernel size %dx%d %dbit\n",
-           input_size_width, input_size_height, input_bit_size, kernel_size_width, kernel_size_height, kernel_bit_size);
-
-
-    /*printf("input:\n");
-    for (size_t k = 0; k < input_size_height; k++) {
-        for(size_t j = 0; j < input_size_width; j++) {
-            printf("%d, ", input[k * input_size_width + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-
-    qconv_test_util_random_uint32_2D_array(kernel_size_width, kernel_size_height, kernel, kernel_bit_size);
-
-    printf("kernel:\n");
-    for (size_t k = 0; k < kernel_size_height; k++) {
-        for(size_t j = 0; j < kernel_size_width; j++) {
-            printf("%d, ", kernel[k * kernel_size_width + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");*/
-
-
-    for (int i = 0; i < 100; i++) {
-
-        //Generate random input
-        qconv_test_util_random_uint32_2D_array(input_size_width, input_size_height, input, input_bit_size);
-
-        //Direct linear convolution
-        struct timeval convStart, convEnd;
-        gettimeofday(&convStart, NULL);
-
-        status = qconv_uint32_direct_2D_cnn_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
-
-        gettimeofday(&convEnd, NULL);
-        direct_tot_time += ((convEnd.tv_sec - convStart.tv_sec) * 1000000 + convEnd.tv_usec - convStart.tv_usec);
-
+    for (size_t input_index = 6; input_index < 7; input_index++) {
+        //Kernel size = 3x3
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                        QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
+                                                        QCONV_SIZE_8, QCONV_SIZE_8,
+                                                        6, 6,
+                                                        optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
+                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
+                                                                 6, 6,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
+                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
+                                                                 6, 6,
+                                                                 optimize_precomp_order);
+        //Kernel size = 5x5
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
+                                                                 QCONV_SIZE_8, QCONV_SIZE_8,
+                                                                 6, 5,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
+                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
+                                                                 6, 5,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
+                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
+                                                                 6, 5,
+                                                                 optimize_precomp_order);
         CHECK_TEST_STATUS(status);
 
-        //NTT linear convolution
-
-        struct timeval timeStart, timeEnd;
-        gettimeofday(&timeStart, NULL);
-
-        qconv_reverse_uint32_array(kernel_size_width * kernel_size_height, kernel);
-        status = qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(input_size_width,
-                                                                      input_size_height,
-                                                                      kernel_size_width,
-                                                                      kernel_size_height,
-                                                                   block_size_width,
-                                                                   block_size_height,
-                                                                      input,
-                                                                      kernel,
-                                                                      ntt,
-                                                                      optimize_level);
-        gettimeofday(&timeEnd, NULL);
-
-        ntt_tot_time += ((timeEnd.tv_sec - timeStart.tv_sec) * 1000000 + timeEnd.tv_usec - timeStart.tv_usec);
-
+        //kernel size = 7x7
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
+                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
+                                                                 5, 5,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
+                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
+                                                                 5, 5,
+                                                                 optimize_precomp_order);
         CHECK_TEST_STATUS(status);
 
-        /*printf("NTT Linear Output:\n");
-        for (size_t i = 0; i < ntt_size_height; i++) {
-            for(size_t j = 0; j < ntt_size_width; j++) {
-                printf("%d ", ntt[i * ntt_size_width + j]);
-            }
-            printf("\n");
-        }
-        printf("\n");
+        //kernel size = 9x9
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
+                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
+                                                                 5, 4,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
+                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
+                                                                 5, 4,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
 
-        printf("Direct CNN Output:\n");
-        for (size_t i = 0; i < conv_size_height; i++) {
-            for(size_t j = 0; j < conv_size_width; j++) {
-                printf("%d ", conv[i * conv_size_width + j]);
-            }
-            printf("\n");
-        }
-        printf("\n");*/
+        //kernel size = 11x11
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_11, QCONV_KERNEL_SIZE_11,
+                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
+                                                                 5, 4,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
 
-        bool error = qconv_test_util_compare_uint32_2D_array(output_size_width, output_size_height, ntt, conv);
-        assert(error);
+        //kernel size = 13x13
+        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
+                                                                 QCONV_KERNEL_SIZE_13, QCONV_KERNEL_SIZE_13,
+                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
+                                                                 4, 4,
+                                                                 optimize_precomp_order);
+        CHECK_TEST_STATUS(status);
     }
-
-    free(input);
-    free(kernel);
-    free(ntt);
-    free(conv);
-
-    printf("Direct %f, NTT %f, NTT/Direct %f", direct_tot_time/100, ntt_tot_time/100, direct_tot_time/ntt_tot_time);
 
     return status_success;
 }
