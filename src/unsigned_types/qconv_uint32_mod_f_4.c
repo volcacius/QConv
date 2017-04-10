@@ -563,8 +563,7 @@ void qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4_unsigned_powers(const size_t si
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
     }
 
-    //transpose back
-    qconv_transpose_uint32_2D(size_height, size_width, a_transpose, a);
+    qconv_clone_uint32_2D_array(size_height, size_width, a_transpose, a);
 }
 
 void qconv_DIT_std2std_2D_precomp_uint32_mod_f_4_signed_powers(const size_t size_width,
@@ -589,7 +588,6 @@ void qconv_DIT_std2std_2D_precomp_uint32_mod_f_4_signed_powers(const size_t size
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
     }
 
-    //transpose back
     qconv_transpose_uint32_2D(size_height, size_width, a_transpose, a);
 }
 
@@ -615,8 +613,7 @@ void qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4_signed_powers(const size_t size
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
     }
 
-    //transpose back
-    qconv_transpose_uint32_2D(size_height, size_width, a_transpose, a);
+    qconv_clone_uint32_2D_array(size_height, size_width, a_transpose, a);
 }
 
 void qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(const size_t size_width,
@@ -643,8 +640,7 @@ void qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(const size_t size_width,
                                                        &a_transpose[a_transpose_column * size_height], column_powers);
     }
 
-    //transpose back
-    qconv_transpose_uint32_2D(size_height, size_width, a_transpose, a);
+    qconv_clone_uint32_2D_array(size_height, size_width, a_transpose, a);
 }
 
 enum qconv_status qconv_NTT_2D_uint32_mod_f_4_inner2x(const size_t size_width,

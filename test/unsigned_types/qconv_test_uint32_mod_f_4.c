@@ -2,6 +2,7 @@
 // Created by alessandro on 3/7/17.
 //
 
+#include <sys/time.h>
 #include "qconv_test_uint32_mod_f_4.h"
 
 enum qconv_status qconv_test_mul_mod_f_4() {
@@ -565,14 +566,14 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     double direct_tot_time = 0;
     double ntt_tot_time = 0;
 
-    size_t input_size_width = 301;
-    size_t input_size_height = 301;
-    size_t kernel_size_width = 9;
-    size_t kernel_size_height = 9;
+    size_t input_size_width = 2048;
+    size_t input_size_height = 2048;
+    size_t kernel_size_width = 7;
+    size_t kernel_size_height = 7;
     size_t block_size_width = 32;
     size_t block_size_height = 32;
-    size_t input_bit_size = 5;
-    size_t kernel_bit_size = 5;
+    size_t input_bit_size = 2;
+    size_t kernel_bit_size = 2;
     enum qconv_optimize_transform optimize_level = optimize_precomp_order;
 
     size_t output_size_width = input_size_width - kernel_size_width + 1;
@@ -586,21 +587,49 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     printf("Test 2D NTT mod F_4 random block CNN convolution\n, input size %dx%d %dbit, kernel size %dx%d %dbit\n",
            input_size_width, input_size_height, input_bit_size, kernel_size_width, kernel_size_height, kernel_bit_size);
 
-    for (int i = 0; i < TEST_ITERATIONS; i++) {
+
+    /*printf("input:\n");
+    for (size_t k = 0; k < input_size_height; k++) {
+        for(size_t j = 0; j < input_size_width; j++) {
+            printf("%d, ", input[k * input_size_width + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+
+    qconv_test_util_random_uint32_2D_array(kernel_size_width, kernel_size_height, kernel, kernel_bit_size);
+
+    printf("kernel:\n");
+    for (size_t k = 0; k < kernel_size_height; k++) {
+        for(size_t j = 0; j < kernel_size_width; j++) {
+            printf("%d, ", kernel[k * kernel_size_width + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");*/
+
+
+    for (int i = 0; i < 100; i++) {
 
         //Generate random input
         qconv_test_util_random_uint32_2D_array(input_size_width, input_size_height, input, input_bit_size);
-        qconv_test_util_random_uint32_2D_array(kernel_size_width, kernel_size_height, kernel, kernel_bit_size);
 
         //Direct linear convolution
-        double direct_start_time = (double) clock() / CLOCKS_PER_SEC;
+        struct timeval convStart, convEnd;
+        gettimeofday(&convStart, NULL);
+
         status = qconv_uint32_direct_2D_cnn_convolution(input_size_width, input_size_height, kernel_size_width, kernel_size_height, input, kernel, conv);
-        double direct_end_time = (double) clock() / CLOCKS_PER_SEC;
-        direct_tot_time += (direct_end_time - direct_start_time);
+
+        gettimeofday(&convEnd, NULL);
+        direct_tot_time += ((convEnd.tv_sec - convStart.tv_sec) * 1000000 + convEnd.tv_usec - convStart.tv_usec);
+
         CHECK_TEST_STATUS(status);
 
         //NTT linear convolution
-        double ntt_start_time = (double) clock() / CLOCKS_PER_SEC;
+
+        struct timeval timeStart, timeEnd;
+        gettimeofday(&timeStart, NULL);
+
         qconv_reverse_uint32_array(kernel_size_width * kernel_size_height, kernel);
         status = qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(input_size_width,
                                                                       input_size_height,
@@ -612,8 +641,10 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
                                                                       kernel,
                                                                       ntt,
                                                                       optimize_level);
-        double ntt_end_time = (double) clock() / CLOCKS_PER_SEC;
-        ntt_tot_time += ntt_end_time - ntt_start_time;
+        gettimeofday(&timeEnd, NULL);
+
+        ntt_tot_time += ((timeEnd.tv_sec - timeStart.tv_sec) * 1000000 + timeEnd.tv_usec - timeStart.tv_usec);
+
         CHECK_TEST_STATUS(status);
 
         /*printf("NTT Linear Output:\n");
@@ -643,8 +674,7 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     free(ntt);
     free(conv);
 
-    printf(" Direct: %fs, NTT %fs, Speed ratio over direct: %f\n\n",
-           direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);
+    printf("Direct %f, NTT %f, NTT/Direct %f", direct_tot_time/100, ntt_tot_time/100, direct_tot_time/ntt_tot_time);
 
     return status_success;
 }
