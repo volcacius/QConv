@@ -474,7 +474,7 @@ enum qconv_status qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(size_t inp
     free(ntt);
     free(conv);
 
-    printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time/TEST_ITERATIONS, ntt_tot_time/TEST_ITERATIONS, direct_tot_time/ntt_tot_time);
+    printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);
 
     return status_success;
 }
