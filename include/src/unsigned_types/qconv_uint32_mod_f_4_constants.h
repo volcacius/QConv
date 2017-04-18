@@ -13,6 +13,7 @@
 #include "qconv_int16.h"
 #include "qconv_uint16.h"
 #include "qconv_uint32.h"
+#include "qconv_uint8.h"
 
 #define QCONV_EXP_F_4 16
 
@@ -38,32 +39,28 @@ extern const qconv_uint32_mod qconv_const_f_4;
 extern const qconv_uint32_mod qconv_const_p_root_f_4_size_32;
 extern const qconv_uint32_mod qconv_const_p_root_f_4_size_65536;
 
-extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_8_forward[];
-extern const qconv_inner_int16 qconv_const_f_4_DIT_r2_std2std_size_8_inverse[];
+extern const qconv_inner_uint8 qconv_const_f_4_DIT_r2_std2std_size_8_forward[];
+extern const qconv_inner_uint8 qconv_const_f_4_DIT_r2_std2std_size_8_inverse[];
 
-extern const qconv_inner_uint16 qconv_const_f_4_DIF_r2_std2rev_size_8_forward[];
-extern const qconv_inner_int16 *qconv_const_f_4_DIT_r2_rev2std_size_8_inverse;
+extern const qconv_inner_uint8 qconv_const_f_4_DIF_r2_std2rev_size_8_forward[];
+extern const qconv_inner_uint8 *qconv_const_f_4_DIT_r2_rev2std_size_8_inverse;
 
-extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_16_forward[];
-extern const qconv_inner_int16 qconv_const_f_4_DIT_r2_std2std_size_16_inverse[];
+extern const qconv_inner_uint8 qconv_const_f_4_DIT_r2_std2std_size_16_forward[];
+extern const qconv_inner_uint8 qconv_const_f_4_DIT_r2_std2std_size_16_inverse[];
 
-extern const qconv_inner_uint16 qconv_const_f_4_DIF_r2_std2rev_size_16_forward[];
-extern const qconv_inner_int16 *qconv_const_f_4_DIT_r2_rev2std_size_16_inverse;
+extern const qconv_inner_uint8 qconv_const_f_4_DIF_r2_std2rev_size_16_forward[];
+extern const qconv_inner_uint8 *qconv_const_f_4_DIT_r2_rev2std_size_16_inverse;
 
-extern const qconv_inner_uint16 qconv_const_f_4_DIF_r2_std2rev_size_32_forward[];
-extern const qconv_inner_uint16 *qconv_const_f_4_DIT_r2_rev2std_size_32_inverse;
+extern const qconv_inner_uint8 qconv_const_f_4_DIF_r2_std2rev_size_32_forward[];
+extern const qconv_inner_uint8 *qconv_const_f_4_DIT_r2_rev2std_size_32_inverse;
 
-extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_32_forward[];
-extern const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_32_inverse[];
+extern const qconv_inner_uint8 qconv_const_f_4_DIT_r2_std2std_size_32_forward[];
+extern const qconv_inner_uint8 qconv_const_f_4_DIT_r2_std2std_size_32_inverse[];
 
-qconv_inner_uint16 *qconv_get_const_f_4_DIF_std2rev_forward(size_t size);
+qconv_inner_uint8 *qconv_get_const_f_4_DIF_std2rev_forward(size_t size);
 
-qconv_inner_uint16 *qconv_get_const_f_4_DIT_std2std_forward(size_t size);
+qconv_inner_uint8 *qconv_get_const_f_4_DIT_std2std_forward(size_t size);
 
-qconv_inner_uint16 *qconv_get_const_f_4_DIT_std2std_inverse_unsigned(size_t size);
+qconv_inner_uint8 *qconv_get_const_f_4_DIT_std2std_inverse(size_t size);
 
-qconv_inner_uint16 *qconv_get_const_f_4_DIT_rev2std_inverse_unsigned(size_t size);
-
-qconv_inner_int16 *qconv_get_const_f_4_DIT_std2std_inverse_signed(size_t size);
-
-qconv_inner_int16 *qconv_get_const_f_4_DIT_rev2std_inverse_signed(size_t size);
+qconv_inner_uint8 *qconv_get_const_f_4_DIT_rev2std_inverse(size_t size);

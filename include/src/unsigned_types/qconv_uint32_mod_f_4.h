@@ -135,15 +135,10 @@ void qconv_DIT_r2_std2std_1D_uint32_mod_f_4(const size_t size,
 /*
  * @brief CT transform with input scrambling and precomputed root powers
  */
-void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4_signed_powers(const size_t size,
+void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4(const size_t size,
                                                     const size_t log2_size,
                                                     qconv_uint32_mod a[static size],
-                                                    const qconv_inner_int16 *powers);
-
-void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4_unsigned_powers(const size_t size,
-                                                    const size_t log2_size,
-                                                    qconv_uint32_mod a[static size],
-                                                    const qconv_inner_uint16 *powers);
+                                                    const qconv_inner_uint8 *powers);
 
 void qconv_DIT_r2_rev2std_1D_uint32_mod_f_4(const size_t size,
                                             const size_t log2_size,
@@ -161,17 +156,13 @@ void qconv_DIF_r2_std2rev_1D_uint32_mod_f_4(const size_t size,
 void qconv_DIF_r2_std2rev_precomp_1D_uint32_mod_f_4(const size_t size,
                                                     const size_t log2_size,
                                                     qconv_uint32_mod a[static size],
-                                                    const qconv_inner_uint16 *powers);
+                                                    const qconv_inner_uint8 *powers);
 
-void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4_signed_powers(const size_t size,
-                                                    const size_t log2_size,
-                                                    qconv_uint32_mod a[static size],
-                                                    const qconv_inner_int16 *powers);
 
-void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4_unsigned_powers(const size_t size,
+void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4(const size_t size,
                                                                   const size_t log2_size,
                                                                   qconv_uint32_mod a[static size],
-                                                                  const qconv_inner_uint16 *powers);
+                                                                  const qconv_inner_uint8 *powers);
 
 /*
  * @brief NTT of length up to 32 mod F_4
