@@ -1708,8 +1708,8 @@ void qconv_block_convolution_uint32_mod_f_4_output_subblock(size_t block_size_wi
 
     qconv_DIF_std2rev_2D_precomp_uint32_mod_f_4(block_size_width,
                                                 block_size_height,
-                                                qconv_get_log2_power_of_two(block_size_width),
-                                                qconv_get_log2_power_of_two(block_size_height),
+                                                log2_block_size_width,
+                                                log2_block_size_height,
                                                 block,
                                                 forward_row_powers,
                                                 forward_column_powers);
@@ -1718,8 +1718,8 @@ void qconv_block_convolution_uint32_mod_f_4_output_subblock(size_t block_size_wi
 
     qconv_DIT_rev2std_2D_precomp_uint32_mod_f_4(block_size_width,
                                                 block_size_height,
-                                                qconv_get_log2_power_of_two(block_size_width),
-                                                qconv_get_log2_power_of_two(block_size_height),
+                                                log2_block_size_width,
+                                                log2_block_size_height,
                                                 block,
                                                 inverse_row_powers,
                                                 inverse_column_powers);

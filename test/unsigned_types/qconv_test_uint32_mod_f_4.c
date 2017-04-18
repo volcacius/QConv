@@ -742,7 +742,7 @@ enum qconv_status qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall() {
 enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     enum qconv_status status;
 
-    size_t size = 224;
+    size_t size = 256;
 
     status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
                                                              QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
