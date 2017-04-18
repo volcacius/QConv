@@ -475,7 +475,10 @@ enum qconv_status qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(size_t inp
     free(conv);
 
     printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);
-
+    printf("Opcount/output: mul %f, shift %f, add %f, zero cmp %f\n\n", (float)(op_count_f_4.mul/(output_size_width * output_size_height)),
+           (float)(op_count_f_4.shift/(output_size_width * output_size_height)),
+           (float)(op_count_f_4.add/(output_size_width * output_size_height)),
+           (float)(op_count_f_4.zero_cmp/(output_size_width * output_size_height)));
     return status_success;
 }
 
@@ -554,7 +557,10 @@ enum qconv_status qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(size_t 
     free(conv);
 
     printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time/TEST_ITERATIONS, ntt_tot_time/TEST_ITERATIONS, direct_tot_time/ntt_tot_time);
-
+    printf("Opcount/output: mul %f, shift %f, add %f, zero cmp %f\n\n", (float)(op_count_f_4.mul/(output_size_width * output_size_height)),
+           (float)(op_count_f_4.shift/(output_size_width * output_size_height)),
+           (float)(op_count_f_4.add/(output_size_width * output_size_height)),
+           (float)(op_count_f_4.zero_cmp/(output_size_width * output_size_height)));
     return status_success;
 }
 
@@ -663,7 +669,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                                size_t kernel_bit_size,
                                                                enum qconv_optimize_transform optimize_level) {
     enum qconv_status status;
-    status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
+    /*status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
                                                               input_size_height,
                                                               kernel_size_width,
                                                               kernel_size_height,
@@ -672,7 +678,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                               input_bit_size,
                                                               kernel_bit_size,
                                                               optimize_level);
-    CHECK_TEST_STATUS(status);
+    CHECK_TEST_STATUS(status);*/
     status = qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(input_size_width,
                                                                  input_size_height,
                                                                  kernel_size_width,

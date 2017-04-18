@@ -25,7 +25,7 @@ const qconv_inner_int16 *qconv_const_f_4_DIT_r2_rev2std_size_8_inverse =
 const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_16_forward[] =
         {1, 256, 1, 256, 1, 256, 1, 256, 1, 16, 256, 4096, 1, 16, 256, 4096, 1, 4, 16, 64, 256, 1024, 4096, 16384};
 
-const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_32_forward[] = 
+const qconv_inner_uint16 qconv_const_f_4_DIT_r2_std2std_size_32_forward[64] =
         {1, 256, 1, 256, 1, 256, 1, 256, 1, 256, 1, 256, 1, 256, 1, 256,
          1, 16, 256, 4096, 1, 16, 256, 4096, 1, 16, 256, 4096, 1, 16, 256, 4096,
          1, 4, 16, 64, 256, 1024, 4096, 16384, 1, 4, 16, 64, 256, 1024, 4096, 16384,

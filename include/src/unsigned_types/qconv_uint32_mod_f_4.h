@@ -17,12 +17,22 @@
 #include "qconv_uint32_mod_f_4_constants.h"
 #include "qconv_utils.h"
 
+#define SIGNED_MUL_REDUCE_FACTOR 16384 * 65537
+
 inline qconv_uint32_mod_f_4 qconv_reduce_uint32_mod_f_4(qconv_inner_uint32 x) {
+    op_count_f_4.land++;
     qconv_inner_uint32 r = x & 0xffff;
+
+    op_count_f_4.shift++;
     qconv_inner_uint32 q = x >> QCONV_EXP_F_4;
+
+    op_count_f_4.add++;
     qconv_inner_int32 y = r - q;
+
+    op_count_f_4.zero_cmp;
     if (y < 0) {
         y += QCONV_F_4;
+        op_count_f_4.add++;
     }
     qconv_uint32_mod_f_4 z = {.value = (qconv_inner_uint32) y};
     return z;
@@ -44,6 +54,7 @@ inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 x) {
  */
 inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
     qconv_uint32_mod_f_4 reduced;
+    op_count_f_4.mul++;
     if (x.value == QCONV_F_4 - 1 && y.value == QCONV_F_4 - 1) {
         reduced.value = 1;
     } else {
@@ -58,7 +69,13 @@ inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 
  * useful when one of the operands is capped, e.g. precomputed roots
  */
 inline qconv_uint32_mod_f_4 qconv_short_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
-    qconv_inner_uint32 z = x.value *  y.value;
+    if (y.value == 1U || (y.value % 2) == 0) {
+        op_count_f_4.shift++;
+    } else {
+        printf("Number is %d\n", y);
+        op_count_f_4.mul++;
+    }
+    qconv_inner_uint32 z = x.value * y.value;
     return qconv_reduce_uint32_mod_f_4(z);
 }
 
@@ -70,19 +87,19 @@ inline qconv_uint32_mod_f_4 qconv_short_mul_uint32_mod_f_4(const qconv_uint32_mo
  */
 inline qconv_uint32_mod_f_4 qconv_short_mul_int32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y) {
     if (y == 1) {
+        op_count_f_4.shift++;
         return x;
     } else {
+        if ((y % 2) == 0) {
+            op_count_f_4.shift++;
+        } else {
+            printf("Number is %d\n", y);
+            op_count_f_4.mul++;
+        }
         qconv_inner_int32 z = x.value * y;
-        return qconv_reduce_int32_mod_f_4(z);
-    }
 
-}
+        //z += SIGNED_MUL_REDUCE_FACTOR;
 
-inline qconv_uint32_mod_f_4 qconv_mul_int32_mod_f_4_for_(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y) {
-    if (y == 1) {
-        return x;
-    } else {
-        qconv_inner_int32 z = x.value * y;
         return qconv_reduce_int32_mod_f_4(z);
     }
 
@@ -92,8 +109,11 @@ inline qconv_uint32_mod_f_4 qconv_mul_int32_mod_f_4_for_(const qconv_uint32_mod_
  * @brief Addition modulo F_4 = 2^16 + 1
  */
 inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y) {
+    op_count_f_4.add += 2;
     qconv_uint32_mod_f_4 result = {.value = x.value + y.value};
     qconv_inner_int32 diff = result.value - qconv_const_f_4.mod_f_4.value;
+
+    op_count_f_4.zero_cmp++;
     if (diff < 0) {
         return result;
     } else {
@@ -107,7 +127,11 @@ inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qco
  */
 inline qconv_uint32_mod_f_4 qconv_subtract_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y) {
     qconv_uint32_mod_f_4 result;
+
+    op_count_f_4.add++;
     qconv_inner_int32 diff = x.value - y.value;
+
+    op_count_f_4.zero_cmp++;
     if (diff >= 0) {
         result.value = diff;
     } else {

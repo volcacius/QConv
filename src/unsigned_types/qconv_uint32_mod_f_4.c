@@ -42,7 +42,6 @@ void qconv_INTT_1D_size_norm_uint32_mod_f_4(const size_t size, qconv_uint32_mod 
     qconv_uint32_mod to_invert = {.uint32.value = size};
     qconv_uint32_mod_f_4 inv = qconv_inverse_uint32_mod_f_4(to_invert);
 
-    //#pragma omp parallel for
     for (size_t j = 0; j < size; j++) {
         a[j].mod_f_4 = qconv_mul_uint32_mod_f_4(a[j].mod_f_4, inv);
     }
@@ -1729,6 +1728,11 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
                                                                     qconv_uint32_mod output[static (input_size_width - kernel_size_width + 1)
                                                                                                    * (input_size_height - kernel_size_height + 1)],
                                                                     enum qconv_optimize_transform optimize_level) {
+
+    op_count_f_4.mul = 0;
+    op_count_f_4.add = 0;
+    op_count_f_4.shift = 0;
+    op_count_f_4.zero_cmp = 0;
 
     size_t output_size_width = input_size_width - kernel_size_width + 1;
     size_t output_size_height = input_size_height - kernel_size_height + 1;

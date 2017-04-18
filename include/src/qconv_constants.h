@@ -52,6 +52,16 @@
 #define CHECK_STATUS(status)({if (status) {return status;}})
 #define CHECK_TEST_STATUS(status)(assert(!status))
 
+typedef struct op_count op_count;
+struct op_count {
+    size_t land;
+    size_t add;
+    size_t mul;
+    size_t shift;
+    size_t zero_cmp;
+};
+op_count op_count_f_4;
+
 /*
  * @brief Status code for QConv function calls.
  */

@@ -8,6 +8,8 @@
 #include "qconv_test_uint32_mod_f_4.h"
 #include "qconv_test_crt.h"
 
+op_count op_count_f_4 = {0};
+
 int main() {
     //srand(time(NULL));
     //qconv_test_uint16_runall();
