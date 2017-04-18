@@ -658,7 +658,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                                size_t input_bit_size,
                                                                size_t kernel_bit_size) {
     enum qconv_status status;
-    status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
+    /*status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
                                                               input_size_height,
                                                               kernel_size_width,
                                                               kernel_size_height,
@@ -666,7 +666,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                                  block_size_height,
                                                               input_bit_size,
                                                               kernel_bit_size);
-    CHECK_TEST_STATUS(status);
+    CHECK_TEST_STATUS(status);*/
     status = qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(input_size_width,
                                                                  input_size_height,
                                                                  kernel_size_width,
@@ -742,77 +742,70 @@ enum qconv_status qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall() {
 enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     enum qconv_status status;
 
-    for (size_t input_index = 6; input_index < 7; input_index++) {
-        //Kernel size = 3x3
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                        QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
-                                                        QCONV_SIZE_8, QCONV_SIZE_8,
-                                                        6, 6);
-        CHECK_TEST_STATUS(status);
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
-                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 6, 6);
-        CHECK_TEST_STATUS(status);
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
-                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 6, 6);
-        //Kernel size = 5x5
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
-                                                                 QCONV_SIZE_8, QCONV_SIZE_8,
-                                                                 6, 5);
-        CHECK_TEST_STATUS(status);
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
-                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 6, 5);
-        CHECK_TEST_STATUS(status);
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
-                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 6, 5);
-        CHECK_TEST_STATUS(status);
+    size_t size = 224;
 
-        //kernel size = 7x7
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
-                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 5, 5);
-        CHECK_TEST_STATUS(status);
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
-                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 5, 5);
-        CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
+                                                             QCONV_SIZE_8, QCONV_SIZE_8,
+                                                             6, 6);
+    CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
+                                                             QCONV_SIZE_16, QCONV_SIZE_16,
+                                                             6, 6);
+    CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             6, 6);
+    //Kernel size = 5x5
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
+                                                             QCONV_SIZE_8, QCONV_SIZE_8,
+                                                             6, 5);
+    CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
+                                                             QCONV_SIZE_16, QCONV_SIZE_16,
+                                                             6, 5);
+    CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             6, 5);
+    CHECK_TEST_STATUS(status);
 
-        //kernel size = 9x9
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
-                                                                 QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 5, 4);
-        CHECK_TEST_STATUS(status);
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
-                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 5, 4);
-        CHECK_TEST_STATUS(status);
+    //kernel size = 7x7
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
+                                                             QCONV_SIZE_16, QCONV_SIZE_16,
+                                                             5, 5);
+    CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             5, 5);
+    CHECK_TEST_STATUS(status);
 
-        //kernel size = 11x11
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_11, QCONV_KERNEL_SIZE_11,
-                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 5, 4);
-        CHECK_TEST_STATUS(status);
+    //kernel size = 9x9
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
+                                                             QCONV_SIZE_16, QCONV_SIZE_16,
+                                                             5, 4);
+    CHECK_TEST_STATUS(status);
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             5, 4);
+    CHECK_TEST_STATUS(status);
 
-        //kernel size = 13x13
-        status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
-                                                                 QCONV_KERNEL_SIZE_13, QCONV_KERNEL_SIZE_13,
-                                                                 QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 4, 4);
-        CHECK_TEST_STATUS(status);
-    }
+    //kernel size = 11x11
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_11, QCONV_KERNEL_SIZE_11,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             5, 4);
+    CHECK_TEST_STATUS(status);
+
 
     return status_success;
 }

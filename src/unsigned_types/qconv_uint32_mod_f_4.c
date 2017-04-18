@@ -965,6 +965,9 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
                                                                                                       * (input_size_height + kernel_size_height - 1)]) {
     enum qconv_optimize_transform optimize_level = optimize_precomp_order_nonorm;
 
+    size_t log2_block_size_width = qconv_get_log2_power_of_two(block_size_width);
+    size_t log2_block_size_height = qconv_get_log2_power_of_two(block_size_height);
+
     size_t output_size_width = input_size_width + kernel_size_width - 1;
     size_t output_size_height = input_size_height + kernel_size_height - 1;
 
@@ -1008,6 +1011,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
         qconv_block_convolution_uint32_mod_f_4_top_left_pad(input_size_width, input_size_height,
                                                             block_size_width, block_size_height,
                                                             block_size,
+                                                            log2_block_size_width, log2_block_size_height,
                                                             output_size_width, output_size_height,
                                                             input_offset_width, input_offset_height,
                                                             output_offset_width, output_offset_height,
@@ -1031,6 +1035,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
 
         qconv_block_convolution_uint32_mod_f_4_top_pad(input_size_width, input_size_height,
                                                        block_size_width, block_size_height, block_size,
+                                                       log2_block_size_width, log2_block_size_height,
                                                        output_size_width, output_size_height,
                                                        discard_subblock_size_width, discard_subblock_size_height,
                                                        valid_subblock_size_width, valid_subblock_size_height,
@@ -1057,6 +1062,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
 
         qconv_block_convolution_uint32_mod_f_4_top_right_pad(input_size_width, input_size_height,
                                                              block_size_width, block_size_height, block_size,
+                                                             log2_block_size_width, log2_block_size_height,
                                                              output_size_width, output_size_height,
                                                              input_offset_width, input_offset_height,
                                                              output_offset_width, output_offset_height,
@@ -1090,6 +1096,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
         qconv_block_convolution_uint32_mod_f_4_left_pad(input_size_width, input_size_height,
                                                         block_size_width, block_size_height,
                                                         block_size,
+                                                        log2_block_size_width, log2_block_size_height,
                                                         output_size_width, output_size_height,
                                                         input_offset_width, input_offset_height,
                                                         output_offset_width, output_offset_height,
@@ -1113,6 +1120,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
             qconv_block_convolution_uint32_mod_f_4_no_pad(input_size_width, input_size_height,
                                                           block_size_width, block_size_height,
                                                           block_size,
+                                                          log2_block_size_width, log2_block_size_height,
                                                           output_size_width, output_size_height,
                                                           input_offset_width, input_offset_height,
                                                           output_offset_width, output_offset_height,
@@ -1139,7 +1147,9 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
 
             qconv_block_convolution_uint32_mod_f_4_right_pad(input_size_width, input_size_height,
                                                             block_size_width, block_size_height,
-                                                          block_size, output_size_width, output_size_height,
+                                                          block_size,
+                                                             log2_block_size_width, log2_block_size_height,
+                                                             output_size_width, output_size_height,
                                                           input_offset_width, input_offset_height,
                                                           output_offset_width, output_offset_height,
                                                           discard_subblock_size_width, discard_subblock_size_height,
@@ -1180,7 +1190,9 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
         if (input_size_width <= block_size) {
             qconv_block_convolution_uint32_mod_f_4_bottom_left_pad(input_size_width, input_size_height,
                                                                    block_size_width, block_size_height,
-                                                                   block_size, output_size_width, output_size_height,
+                                                                   block_size,
+                                                                   log2_block_size_width, log2_block_size_height,
+                                                                   output_size_width, output_size_height,
                                                                    input_offset_width, input_offset_height,
                                                                    output_offset_width, output_offset_height,
                                                                    discard_subblock_size_width, discard_subblock_size_height,
@@ -1204,7 +1216,9 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
 
             qconv_block_convolution_uint32_mod_f_4_bottom_pad(input_size_width, input_size_height,
                                                                    block_size_width, block_size_height,
-                                                                   block_size, output_size_width, output_size_height,
+                                                                   block_size,
+                                                              log2_block_size_width, log2_block_size_height,
+                                                              output_size_width, output_size_height,
                                                                    input_offset_width, input_offset_height,
                                                                    output_offset_width, output_offset_height,
                                                                    discard_subblock_size_width, discard_subblock_size_height,
@@ -1231,7 +1245,9 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
 
             qconv_block_convolution_uint32_mod_f_4_bottom_right_pad(input_size_width, input_size_height,
                                                               block_size_width, block_size_height,
-                                                              block_size, output_size_width, output_size_height,
+                                                              block_size,
+                                                                    log2_block_size_width, log2_block_size_height,
+                                                                    output_size_width, output_size_height,
                                                               input_offset_width, input_offset_height,
                                                               output_offset_width, output_offset_height,
                                                               discard_subblock_size_width, discard_subblock_size_height,
@@ -1254,6 +1270,7 @@ enum qconv_status qconv_NTT_2D_block_linear_convolution_uint32_mod_f_4(size_t in
 
 void qconv_block_convolution_uint32_mod_f_4_no_pad(size_t input_size_width, size_t input_size_height,
                                                    size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                   size_t log2_block_size_width, size_t log2_block_size_height,
                                                    size_t output_size_width, size_t output_size_height,
                                                    size_t input_offset_width, size_t input_offset_height,
                                                    size_t output_offset_width, size_t output_offset_height,
@@ -1277,6 +1294,7 @@ void qconv_block_convolution_uint32_mod_f_4_no_pad(size_t input_size_width, size
                                 input, block);
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
@@ -1290,7 +1308,8 @@ void qconv_block_convolution_uint32_mod_f_4_no_pad(size_t input_size_width, size
 
 void qconv_block_convolution_uint32_mod_f_4_bottom_pad(size_t input_size_width, size_t input_size_height,
                                                          size_t block_size_width, size_t block_size_height, size_t block_size,
-                                                         size_t output_size_width, size_t output_size_height,
+                                                       size_t log2_block_size_width, size_t log2_block_size_height,
+                                                       size_t output_size_width, size_t output_size_height,
                                                          size_t input_offset_width, size_t input_offset_height,
                                                          size_t output_offset_width, size_t output_offset_height,
                                                          size_t discard_subblock_size_width, size_t discard_subblock_size_height,
@@ -1322,6 +1341,7 @@ void qconv_block_convolution_uint32_mod_f_4_bottom_pad(size_t input_size_width, 
                                           block);
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
@@ -1335,7 +1355,8 @@ void qconv_block_convolution_uint32_mod_f_4_bottom_pad(size_t input_size_width, 
 
 void qconv_block_convolution_uint32_mod_f_4_bottom_right_pad(size_t input_size_width, size_t input_size_height,
                                                        size_t block_size_width, size_t block_size_height, size_t block_size,
-                                                       size_t output_size_width, size_t output_size_height,
+                                                             size_t log2_block_size_width, size_t log2_block_size_height,
+                                                             size_t output_size_width, size_t output_size_height,
                                                        size_t input_offset_width, size_t input_offset_height,
                                                        size_t output_offset_width, size_t output_offset_height,
                                                        size_t discard_subblock_size_width, size_t discard_subblock_size_height,
@@ -1373,6 +1394,7 @@ void qconv_block_convolution_uint32_mod_f_4_bottom_right_pad(size_t input_size_w
     valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_output_subblock_size_width,
@@ -1388,6 +1410,7 @@ void qconv_block_convolution_uint32_mod_f_4_bottom_right_pad(size_t input_size_w
 
 void qconv_block_convolution_uint32_mod_f_4_top_left_pad(size_t input_size_width, size_t input_size_height,
                                                          size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                         size_t log2_block_size_width, size_t log2_block_size_height,
                                                          size_t output_size_width, size_t output_size_height,
                                                          size_t input_offset_width, size_t input_offset_height,
                                                          size_t output_offset_width, size_t output_offset_height,
@@ -1420,6 +1443,7 @@ void qconv_block_convolution_uint32_mod_f_4_top_left_pad(size_t input_size_width
                                             block);
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
@@ -1433,6 +1457,7 @@ void qconv_block_convolution_uint32_mod_f_4_top_left_pad(size_t input_size_width
 
 void qconv_block_convolution_uint32_mod_f_4_left_pad(size_t input_size_width, size_t input_size_height,
                                                      size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                     size_t log2_block_size_width, size_t log2_block_size_height,
                                                      size_t output_size_width, size_t output_size_height,
                                                      size_t input_offset_width, size_t input_offset_height,
                                                      size_t output_offset_width, size_t output_offset_height,
@@ -1465,6 +1490,7 @@ void qconv_block_convolution_uint32_mod_f_4_left_pad(size_t input_size_width, si
                                         block);
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
@@ -1478,6 +1504,7 @@ void qconv_block_convolution_uint32_mod_f_4_left_pad(size_t input_size_width, si
 
 void qconv_block_convolution_uint32_mod_f_4_right_pad(size_t input_size_width, size_t input_size_height,
                                                       size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                      size_t log2_block_size_width, size_t log2_block_size_height,
                                                       size_t output_size_width, size_t output_size_height,
                                                       size_t input_offset_width, size_t input_offset_height,
                                                       size_t output_offset_width, size_t output_offset_height,
@@ -1512,6 +1539,7 @@ void qconv_block_convolution_uint32_mod_f_4_right_pad(size_t input_size_width, s
     valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_output_subblock_size_width,
@@ -1525,7 +1553,8 @@ void qconv_block_convolution_uint32_mod_f_4_right_pad(size_t input_size_width, s
 
 void qconv_block_convolution_uint32_mod_f_4_bottom_left_pad(size_t input_size_width, size_t input_size_height,
                                                           size_t block_size_width, size_t block_size_height, size_t block_size,
-                                                          size_t output_size_width, size_t output_size_height,
+                                                            size_t log2_block_size_width, size_t log2_block_size_height,
+                                                            size_t output_size_width, size_t output_size_height,
                                                           size_t input_offset_width, size_t input_offset_height,
                                                           size_t output_offset_width, size_t output_offset_height,
                                                           size_t discard_subblock_size_width, size_t discard_subblock_size_height,
@@ -1557,6 +1586,7 @@ void qconv_block_convolution_uint32_mod_f_4_bottom_left_pad(size_t input_size_wi
                                                block);
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
@@ -1571,6 +1601,7 @@ void qconv_block_convolution_uint32_mod_f_4_bottom_left_pad(size_t input_size_wi
 
 void qconv_block_convolution_uint32_mod_f_4_top_right_pad(size_t input_size_width, size_t input_size_height,
                                                           size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                          size_t log2_block_size_width, size_t log2_block_size_height,
                                                           size_t output_size_width, size_t output_size_height,
                                                           size_t input_offset_width, size_t input_offset_height,
                                                           size_t output_offset_width, size_t output_offset_height,
@@ -1606,6 +1637,7 @@ void qconv_block_convolution_uint32_mod_f_4_top_right_pad(size_t input_size_widt
     valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_output_subblock_size_width,
@@ -1620,7 +1652,8 @@ void qconv_block_convolution_uint32_mod_f_4_top_right_pad(size_t input_size_widt
 }
 
 void qconv_block_convolution_uint32_mod_f_4_top_pad(size_t input_size_width, size_t input_size_height,
-                                                    size_t block_size_width, size_t block_size_height, size_t block_size, 
+                                                    size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                    size_t log2_block_size_width, size_t log2_block_size_height,
                                                     size_t output_size_width, size_t output_size_height, 
                                                     size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                     size_t valid_subblock_size_width, size_t valid_subblock_size_height,
@@ -1646,6 +1679,7 @@ void qconv_block_convolution_uint32_mod_f_4_top_pad(size_t input_size_width, siz
     qconv_top_zero_pad_uint32_2D_array(block_size_width, block_size_height, valid_subblock_size_height, valid_input_subblock, block);
 
     qconv_block_convolution_uint32_mod_f_4_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
@@ -1658,7 +1692,8 @@ void qconv_block_convolution_uint32_mod_f_4_top_pad(size_t input_size_width, siz
 
 }
 
-void qconv_block_convolution_uint32_mod_f_4_output_subblock(size_t block_size_width, size_t block_size_height, size_t block_size, 
+void qconv_block_convolution_uint32_mod_f_4_output_subblock(size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                            size_t log2_block_size_width, size_t log2_block_size_height,
                                                             size_t output_size_width, size_t output_size_height, 
                                                             size_t output_offset_width, size_t output_offset_height,
                                                             size_t discard_subblock_size_width, size_t discard_subblock_size_height,
@@ -1727,6 +1762,9 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
     size_t output_size_width = input_size_width - kernel_size_width + 1;
     size_t output_size_height = input_size_height - kernel_size_height + 1;
 
+    size_t log2_block_size_width = qconv_get_log2_power_of_two(block_size_width);
+    size_t log2_block_size_height = qconv_get_log2_power_of_two(block_size_height);
+
     size_t discard_subblock_size_width = kernel_size_width - 1;
     size_t discard_subblock_size_height = kernel_size_height - 1;
     size_t valid_subblock_size_width = block_size_width - discard_subblock_size_width;
@@ -1774,6 +1812,7 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
             qconv_block_convolution_uint32_mod_f_4_no_pad(input_size_width, input_size_height,
                                                           block_size_width, block_size_height,
                                                           block_size,
+                                                          log2_block_size_width, log2_block_size_height,
                                                           output_size_width, output_size_height,
                                                           input_offset_width, input_offset_height,
                                                           output_offset_width, output_offset_height,
@@ -1801,7 +1840,9 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
 
             qconv_block_convolution_uint32_mod_f_4_right_pad(input_size_width, input_size_height,
                                                              block_size_width, block_size_height,
-                                                             block_size, output_size_width, output_size_height,
+                                                             block_size,
+                                                             log2_block_size_width, log2_block_size_height,
+                                                             output_size_width, output_size_height,
                                                              input_offset_width, input_offset_height,
                                                              output_offset_width, output_offset_height,
                                                              discard_subblock_size_width, discard_subblock_size_height,
@@ -1842,7 +1883,9 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
 
             qconv_block_convolution_uint32_mod_f_4_bottom_pad(input_size_width, input_size_height,
                                                               block_size_width, block_size_height,
-                                                              block_size, output_size_width, output_size_height,
+                                                              block_size,
+                                                              log2_block_size_width, log2_block_size_height,
+                                                              output_size_width, output_size_height,
                                                               input_offset_width, input_offset_height,
                                                               output_offset_width, output_offset_height,
                                                               discard_subblock_size_width, discard_subblock_size_height,
@@ -1869,7 +1912,9 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint32_mod_f_4(size_t input
 
             qconv_block_convolution_uint32_mod_f_4_bottom_right_pad(input_size_width, input_size_height,
                                                                     block_size_width, block_size_height,
-                                                                    block_size, output_size_width, output_size_height,
+                                                                    block_size,
+                                                                    log2_block_size_width, log2_block_size_height,
+                                                                    output_size_width, output_size_height,
                                                                     input_offset_width, input_offset_height,
                                                                     output_offset_width, output_offset_height,
                                                                     discard_subblock_size_width, discard_subblock_size_height,
