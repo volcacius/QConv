@@ -472,7 +472,7 @@ enum qconv_status qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(size_t inp
     free(ntt);
     free(conv);
 
-    printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time, ntt_tot_time, direct_tot_time/ntt_tot_time);
+    printf(" Direct %f, NTT %f, NTT/Direct %f\n\n", direct_tot_time/TEST_ITERATIONS, ntt_tot_time/TEST_ITERATIONS, direct_tot_time/ntt_tot_time);
 
     return status_success;
 }
@@ -658,7 +658,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                                size_t input_bit_size,
                                                                size_t kernel_bit_size) {
     enum qconv_status status;
-    /*status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
+/*    status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
                                                               input_size_height,
                                                               kernel_size_width,
                                                               kernel_size_height,
@@ -742,7 +742,7 @@ enum qconv_status qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall() {
 enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
     enum qconv_status status;
 
-    size_t size = 256;
+    size_t size = 224;
 
     status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
                                                              QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
@@ -758,6 +758,8 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
                                                              QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
                                                              QCONV_SIZE_32, QCONV_SIZE_32,
                                                              6, 6);
+    CHECK_TEST_STATUS(status);
+
     //Kernel size = 5x5
     status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
                                                              QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
@@ -804,6 +806,25 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
                                                              QCONV_KERNEL_SIZE_11, QCONV_KERNEL_SIZE_11,
                                                              QCONV_SIZE_32, QCONV_SIZE_32,
                                                              5, 4);
+
+    //kernel size = 13x13
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_13, QCONV_KERNEL_SIZE_13,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             4, 4);
+
+    //kernel size = 15x15
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_15, QCONV_KERNEL_SIZE_15,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             4, 4);
+
+    //kernel size = 17x17
+    status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size, size,
+                                                             QCONV_KERNEL_SIZE_17, QCONV_KERNEL_SIZE_17,
+                                                             QCONV_SIZE_32, QCONV_SIZE_32,
+                                                             4, 4);
+    CHECK_TEST_STATUS(status);
     CHECK_TEST_STATUS(status);
 
 
