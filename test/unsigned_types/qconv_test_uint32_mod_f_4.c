@@ -411,8 +411,7 @@ enum qconv_status qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(size_t inp
                                                                       size_t block_size_width,
                                                                       size_t block_size_height,
                                                                          size_t input_bit_size,
-                                                                         size_t kernel_bit_size,
-                                                                         enum qconv_optimize_transform optimize_level) {
+                                                                         size_t kernel_bit_size) {
     enum qconv_status status;
 
     double direct_tot_time = 0;
@@ -458,8 +457,7 @@ enum qconv_status qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(size_t inp
                                                                block_size_height,
                                                                input,
                                                                kernel,
-                                                               ntt,
-                                                               optimize_level);
+                                                               ntt);
     gettimeofday(&ntt_end, NULL);
 
     ntt_tot_time += ((ntt_end.tv_sec - ntt_start.tv_sec) * 1000000 + ntt_end.tv_usec - ntt_start.tv_usec);
@@ -486,8 +484,7 @@ enum qconv_status qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(size_t 
                                                                          size_t block_size_width,
                                                                          size_t block_size_height,
                                                                   size_t input_bit_size,
-                                                                  size_t kernel_bit_size,
-                                                                  enum qconv_optimize_transform optimize_level) {
+                                                                  size_t kernel_bit_size) {
     enum qconv_status status;
 
     double direct_tot_time = 0;
@@ -536,8 +533,7 @@ enum qconv_status qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(size_t 
                                                                    block_size_height,
                                                                    input,
                                                                    kernel,
-                                                                   ntt,
-                                                                   optimize_level);
+                                                                   ntt);
         gettimeofday(&ntt_end, NULL);
 
         ntt_tot_time += ((ntt_end.tv_sec - ntt_start.tv_sec) * 1000000 + ntt_end.tv_usec - ntt_start.tv_usec);
@@ -660,8 +656,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                                   size_t block_size_width,
                                                                   size_t block_size_height,
                                                                size_t input_bit_size,
-                                                               size_t kernel_bit_size,
-                                                               enum qconv_optimize_transform optimize_level) {
+                                                               size_t kernel_bit_size) {
     enum qconv_status status;
     status = qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_4(input_size_width,
                                                               input_size_height,
@@ -670,8 +665,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                                  block_size_width,
                                                                  block_size_height,
                                                               input_bit_size,
-                                                              kernel_bit_size,
-                                                              optimize_level);
+                                                              kernel_bit_size);
     CHECK_TEST_STATUS(status);
     status = qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_4(input_size_width,
                                                                  input_size_height,
@@ -680,8 +674,7 @@ enum qconv_status qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(size_t input_s
                                                                     block_size_width,
                                                                     block_size_height,
                                                                  input_bit_size,
-                                                                 kernel_bit_size,
-                                                                 optimize_level);
+                                                                 kernel_bit_size);
     return status;
 }
 
@@ -754,82 +747,70 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall() {
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                         QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
                                                         QCONV_SIZE_8, QCONV_SIZE_8,
-                                                        6, 6,
-                                                        optimize_precomp_order);
+                                                        6, 6);
         CHECK_TEST_STATUS(status);
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
                                                                  QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 6, 6,
-                                                                 optimize_precomp_order);
+                                                                 6, 6);
         CHECK_TEST_STATUS(status);
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_3, QCONV_KERNEL_SIZE_3,
                                                                  QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 6, 6,
-                                                                 optimize_precomp_order);
+                                                                 6, 6);
         //Kernel size = 5x5
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
                                                                  QCONV_SIZE_8, QCONV_SIZE_8,
-                                                                 6, 5,
-                                                                 optimize_precomp_order);
+                                                                 6, 5);
         CHECK_TEST_STATUS(status);
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
                                                                  QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 6, 5,
-                                                                 optimize_precomp_order);
+                                                                 6, 5);
         CHECK_TEST_STATUS(status);
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_5, QCONV_KERNEL_SIZE_5,
                                                                  QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 6, 5,
-                                                                 optimize_precomp_order);
+                                                                 6, 5);
         CHECK_TEST_STATUS(status);
 
         //kernel size = 7x7
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
                                                                  QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 5, 5,
-                                                                 optimize_precomp_order);
+                                                                 5, 5);
         CHECK_TEST_STATUS(status);
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_7, QCONV_KERNEL_SIZE_7,
                                                                  QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 5, 5,
-                                                                 optimize_precomp_order);
+                                                                 5, 5);
         CHECK_TEST_STATUS(status);
 
         //kernel size = 9x9
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
                                                                  QCONV_SIZE_16, QCONV_SIZE_16,
-                                                                 5, 4,
-                                                                 optimize_precomp_order);
+                                                                 5, 4);
         CHECK_TEST_STATUS(status);
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_9, QCONV_KERNEL_SIZE_9,
                                                                  QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 5, 4,
-                                                                 optimize_precomp_order);
+                                                                 5, 4);
         CHECK_TEST_STATUS(status);
 
         //kernel size = 11x11
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_11, QCONV_KERNEL_SIZE_11,
                                                                  QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 5, 4,
-                                                                 optimize_precomp_order);
+                                                                 5, 4);
         CHECK_TEST_STATUS(status);
 
         //kernel size = 13x13
         status = qconv_test_NTT_2D_block_cnn_convolution_mod_f_4(qconv_test_sizes[input_index], qconv_test_sizes[input_index],
                                                                  QCONV_KERNEL_SIZE_13, QCONV_KERNEL_SIZE_13,
                                                                  QCONV_SIZE_32, QCONV_SIZE_32,
-                                                                 4, 4,
-                                                                 optimize_precomp_order);
+                                                                 4, 4);
         CHECK_TEST_STATUS(status);
     }
 
@@ -850,7 +831,6 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
     size_t block_size_height = 32;
     size_t input_bit_size = 2;
     size_t kernel_bit_size = 2;
-    enum qconv_optimize_transform optimize_level = optimize_precomp_order;
 
     size_t output_size_width = input_size_width + kernel_size_width - 1;
     size_t output_size_height = input_size_height + kernel_size_height - 1;
@@ -886,8 +866,7 @@ enum qconv_status qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall() {
                                                                    block_size_height,
                                                                    input,
                                                                    kernel,
-                                                                   ntt,
-                                                                   optimize_level);
+                                                                   ntt);
         double ntt_end_time = (double) clock() / CLOCKS_PER_SEC;
         ntt_tot_time += ntt_end_time - ntt_start_time;
         CHECK_TEST_STATUS(status);
