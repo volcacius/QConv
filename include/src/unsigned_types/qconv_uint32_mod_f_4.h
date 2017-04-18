@@ -28,17 +28,6 @@ inline qconv_uint32_mod_f_4 qconv_reduce_uint32_mod_f_4(qconv_inner_uint32 x) {
     return z;
 }
 
-inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 x) {
-    qconv_inner_int32 r = x & 0xffff;
-    qconv_inner_int32 q = x >> QCONV_EXP_F_4;
-    qconv_inner_int32 y = r - q;
-    if (y < 0) {
-        y += QCONV_F_4;
-    }
-    qconv_uint32_mod_f_4 z = {.value = (qconv_inner_uint32) y};
-    return z;
-}
-
 /*
  * @brief Fast multiplication modulo F_4 = 2^16 + 1
  */
@@ -53,10 +42,6 @@ inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 
     return reduced;
 }
 
-/*
- * @brief Fast multiplication modulo F_4 = 2^16 + 1 without check for max sized inputs,
- * useful when one of the operands is capped, e.g. precomputed roots
- */
 inline qconv_uint32_mod_f_4 qconv_forward_shift_uint32_mod_f_4(const qconv_uint32_mod_f_4 x,
                                                                const qconv_uint32_mod_f_4 y) {
     qconv_inner_uint32 z = x.value << y.value;
