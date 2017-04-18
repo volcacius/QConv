@@ -439,33 +439,15 @@ enum qconv_status qconv_NTT_1D_linear_convolution_uint32_mod_f_4(const size_t in
     qconv_uint32_mod kernel_padded[size];
     qconv_uint32_mod ntt_padded[size];
 
-    //Zero pad input and kernel
-    #pragma omp parallel sections
-    {
-        #pragma omp section
-        {
-            status = qconv_right_zero_pad_uint32_1D_array(size, input_size, input, input_padded);
-        }
-        #pragma omp section
-        {
-            status_bis = qconv_right_zero_pad_uint32_1D_array(size, kernel_size, kernel, kernel_padded);
-        }
-    }
+    status = qconv_right_zero_pad_uint32_1D_array(size, input_size, input, input_padded);
+    status_bis = qconv_right_zero_pad_uint32_1D_array(size, kernel_size, kernel, kernel_padded);
+
     CHECK_STATUS(status);
     CHECK_STATUS(status_bis);
 
-    //Perform transform
-    #pragma omp parallel sections
-    {
-        #pragma omp section
-        {
-            status = qconv_NTT_1D_uint32_mod_f_4(size, input_padded, optimize_level);
-        }
-        #pragma omp section
-        {
-            status_bis = qconv_NTT_1D_uint32_mod_f_4(size, kernel_padded, optimize_level);
-        }
-    }
+    status = qconv_NTT_1D_uint32_mod_f_4(size, input_padded, optimize_level);
+    status_bis = qconv_NTT_1D_uint32_mod_f_4(size, kernel_padded, optimize_level);
+
     CHECK_STATUS(status);
     CHECK_STATUS(status_bis);
 

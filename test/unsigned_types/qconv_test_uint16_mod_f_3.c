@@ -783,7 +783,7 @@ enum qconv_status qconv_test_NTT_2D_block_CNN_convolution_mod_f_3_runall() {
 }
 
 void qconv_test_uint16_mod_f_3_runall() {
-    qconv_test_fast_reduction_mod_f_3();
+    /*qconv_test_fast_reduction_mod_f_3();
     qconv_test_mul_mod_f_3();
     qconv_test_mul_mod_f_3_union();
     qconv_test_power_mod_f_3();
@@ -792,7 +792,7 @@ void qconv_test_uint16_mod_f_3_runall() {
     qconv_test_NTT_1D_linear_convolution_mod_f_3_runall();
     qconv_test_NTT_2D_identity_mod_f_3_runall();
     qconv_test_NTT_2D_circular_convolution_mod_f_3_runall();
-    qconv_test_NTT_2D_linear_convolution_mod_f_3_runall();
+    qconv_test_NTT_2D_linear_convolution_mod_f_3_runall();*/
     qconv_test_NTT_2D_block_CNN_convolution_mod_f_3_runall();
 }
 
