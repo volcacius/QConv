@@ -959,7 +959,7 @@ enum qconv_status qconv_test_NTT_2D_linear_convolution_mod_f_4_runall() {
 }
 
 void qconv_test_uint32_mod_f_4_runall() {
-    /*qconv_test_mul_mod_f_4();
+    qconv_test_mul_mod_f_4();
     qconv_test_mul_mod_f_4_union();
     qconv_test_power_mod_f_4();
     qconv_test_NTT_1D_identity_mod_f_4_runall();
@@ -968,9 +968,8 @@ void qconv_test_uint32_mod_f_4_runall() {
     qconv_test_NTT_2D_identity_mod_f_4_runall();
     qconv_test_NTT_2D_circular_convolution_mod_f_4_runall();
     qconv_test_NTT_2D_linear_convolution_mod_f_4_runall();
-    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();*/
-    //qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
+    qconv_test_NTT_1D_block_linear_convolution_mod_f_4_runall();
+    qconv_test_NTT_2D_block_linear_convolution_mod_f_4_runall();
     qconv_test_NTT_2D_block_CNN_convolution_mod_f_4_runall();
-    //qconv_test_NTT_1D_max_identity_mod_f_4(32, 2, optimize_null);
 }
 

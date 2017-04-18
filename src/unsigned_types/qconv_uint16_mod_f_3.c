@@ -47,6 +47,16 @@ void qconv_INTT_1D_size_norm_uint16_mod_f_3(const size_t size, qconv_uint16_mod 
     }
 }
 
+void qconv_INTT_2D_size_norm_precomp_uint16_mod_f_3(const size_t size_width,
+                                                    const size_t size_height,
+                                                    qconv_uint16_mod_f_3 norm_const,
+                                                    qconv_uint16_mod a[static size_width * size_height]) {
+    size_t size = size_width * size_height;
+    for (size_t j = 0; j < size; j++) {
+        a[j].mod_f_3 = qconv_mul_uint16_mod_f_3(a[j].mod_f_3, norm_const);
+    }
+}
+
 void qconv_INTT_2D_size_norm_uint16_mod_f_3(const size_t size_width,
                                             const size_t size_height,
                                             qconv_uint16_mod a[static size_width * size_height]) {
@@ -551,6 +561,7 @@ enum qconv_status qconv_NTT_2D_uint16_mod_f_3_inner2x(const size_t size_width,
                                                       const size_t row_p_root_size,
                                                       const size_t column_p_root_size) {
     switch(optimize_level) {
+        case optimize_precomp_order_nonorm:
         case optimize_precomp_order:
             qconv_DIF_std2rev_2D_precomp_uint16_mod_f_3(size_width,
                                                         size_height,
@@ -660,6 +671,14 @@ enum qconv_status qconv_INTT_2D_uint16_mod_f_3_inner2x(const size_t size_width,
                                                        const size_t row_p_root_size,
                                                        const size_t column_p_root_size) {
     switch(optimize_level) {
+        case optimize_precomp_order_nonorm:
+            qconv_DIT_rev2std_2D_precomp_uint16_mod_f_3(size_width,
+                                                        size_height,
+                                                        qconv_get_log2_power_of_two(size_width),
+                                                        qconv_get_log2_power_of_two(size_height),
+                                                        a,
+                                                        qconv_get_const_f_3_DIT_rev2std_inverse(size_width),
+                                                        qconv_get_const_f_3_DIT_rev2std_inverse(size_height));
         case optimize_precomp_order:
             qconv_DIT_rev2std_2D_precomp_uint16_mod_f_3(size_width,
                                                         size_height,
@@ -837,13 +856,332 @@ enum qconv_status qconv_NTT_2D_linear_convolution_uint16_mod_f_3(const size_t in
 }
 
 
+enum qconv_status qconv_NTT_2D_block_linear_convolution_uint16_mod_f_3(size_t input_size_width,
+                                                                       size_t input_size_height,
+                                                                       size_t kernel_size_width,
+                                                                       size_t kernel_size_height,
+                                                                       size_t block_size_width,
+                                                                       size_t block_size_height,
+                                                                       qconv_uint16_mod input[static input_size_width * input_size_height],
+                                                                       qconv_uint16_mod kernel[static kernel_size_width * kernel_size_height],
+                                                                       qconv_uint16_mod output[static (input_size_width + kernel_size_width - 1)
+                                                                                                      * (input_size_height + kernel_size_height - 1)]) {
+    enum qconv_optimize_transform optimize_level = optimize_precomp_order_nonorm;
+
+    size_t log2_block_size_width = qconv_get_log2_power_of_two(block_size_width);
+    size_t log2_block_size_height = qconv_get_log2_power_of_two(block_size_height);
+
+    size_t output_size_width = input_size_width + kernel_size_width - 1;
+    size_t output_size_height = input_size_height + kernel_size_height - 1;
+
+    size_t discard_subblock_size_width = kernel_size_width - 1;
+    size_t discard_subblock_size_height = kernel_size_height - 1;
+    size_t valid_subblock_size_width = block_size_width - discard_subblock_size_width;
+    size_t valid_subblock_size_height = block_size_height - discard_subblock_size_height;
+
+    size_t block_size = block_size_width * block_size_height;
+
+    size_t input_offset_width = 0;
+    size_t input_offset_height = 0;
+
+    size_t output_offset_width = 0;
+    size_t output_offset_height = 0;
+
+    qconv_uint16_mod to_inv = {.mod_f_3.value = block_size};
+    qconv_uint16_mod_f_3 norm_const = qconv_inverse_uint16_mod_f_3(to_inv);
+
+    qconv_inner_uint8 *forward_row_powers = qconv_get_const_f_3_DIF_std2rev_forward(block_size_width);
+    qconv_inner_uint8 *forward_column_powers = qconv_get_const_f_3_DIF_std2rev_forward(block_size_height);
+
+    qconv_inner_uint8 *inverse_row_powers = qconv_get_const_f_3_DIT_rev2std_inverse(block_size_width);
+    qconv_inner_uint8 *inverse_column_powers = qconv_get_const_f_3_DIT_rev2std_inverse(block_size_height);
+
+    //pad and transform kernel
+    qconv_uint16_mod kernel_block[block_size];
+    qconv_bottom_right_zero_pad_uint16_2D_array(block_size_width, block_size_height, kernel_size_width,
+                                                kernel_size_height, kernel, kernel_block);
+
+    qconv_NTT_2D_uint16_mod_f_3(block_size_width, block_size_height, kernel_block, optimize_level);
+
+    /*
+     * STEP 1: TOP ROW OF BLOCKS
+     */
+
+    /*
+     * STEP 1.1: TOP LEFT BLOCK THAT REQUIRES TOP LEFT PADDING
+     */
+    if (block_size_width <= input_size_width && block_size_height <= input_size_height) {
+        qconv_block_convolution_uint16_mod_f_3_top_left_pad(input_size_width, input_size_height,
+                                                            block_size_width, block_size_height,
+                                                            block_size,
+                                                            log2_block_size_width, log2_block_size_height,
+                                                            output_size_width, output_size_height,
+                                                            input_offset_width, input_offset_height,
+                                                            output_offset_width, output_offset_height,
+                                                            discard_subblock_size_width, discard_subblock_size_height,
+                                                            valid_subblock_size_width, valid_subblock_size_height,
+                                                            norm_const,
+                                                            forward_row_powers, forward_column_powers,
+                                                            inverse_row_powers, inverse_column_powers,
+                                                            input, kernel_block, output,
+                                                            optimize_level);
+    }
+
+    /*
+     * STEP 1.2: INNER TOP ROW OF BLOCKS THAT REQUIRE TOP PADDING
+     */
+
+    input_offset_width = valid_subblock_size_width - discard_subblock_size_width;
+    output_offset_width = valid_subblock_size_width;
+
+    while (input_offset_width <= input_size_width - block_size_width) {
+
+        qconv_block_convolution_uint16_mod_f_3_top_pad(input_size_width, input_size_height,
+                                                       block_size_width, block_size_height, block_size,
+                                                       log2_block_size_width, log2_block_size_height,
+                                                       output_size_width, output_size_height,
+                                                       discard_subblock_size_width, discard_subblock_size_height,
+                                                       valid_subblock_size_width, valid_subblock_size_height,
+                                                       input_offset_width, input_offset_height,
+                                                       output_offset_width, output_offset_height,
+                                                       norm_const,
+                                                       forward_row_powers, forward_column_powers,
+                                                       inverse_row_powers, inverse_column_powers,
+                                                       input, kernel_block, output,
+                                                       optimize_level);
+
+        input_offset_width += valid_subblock_size_width;
+        output_offset_width += valid_subblock_size_width;
+    }
+
+    /*
+     * STEP 1.3: TOP RIGHT BLOCKS THAT REQUIRE TOP RIGHT PADDING
+     */
+
+    while (input_offset_width < input_size_width) {
+
+        size_t valid_output_subblock_size_width = output_size_width - output_offset_width;
+        valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
+
+        qconv_block_convolution_uint16_mod_f_3_top_right_pad(input_size_width, input_size_height,
+                                                             block_size_width, block_size_height, block_size,
+                                                             log2_block_size_width, log2_block_size_height,
+                                                             output_size_width, output_size_height,
+                                                             input_offset_width, input_offset_height,
+                                                             output_offset_width, output_offset_height,
+                                                             discard_subblock_size_width, discard_subblock_size_height,
+                                                             valid_subblock_size_width, valid_subblock_size_height,
+                                                             norm_const,
+                                                             forward_row_powers, forward_column_powers,
+                                                             inverse_row_powers, inverse_column_powers,
+                                                             input, kernel_block, output,
+                                                             optimize_level);
+        input_offset_width += valid_subblock_size_width;
+        output_offset_width += valid_output_subblock_size_width;
+    }
+
+    //Compute new height offset
+    input_offset_height = valid_subblock_size_height - discard_subblock_size_height;
+    output_offset_height += valid_subblock_size_height;
+
+    /*
+     * STEP 2: INNER ROWS OF BLOCKS
+     */
+    while (input_offset_height <= input_size_height - block_size_height) {
+
+        input_offset_width = 0;
+        output_offset_width = 0;
+
+        /*
+         * STEP 2.1: LEFT BLOCK THAT REQUIRES LEFT PADDING
+         */
+
+        qconv_block_convolution_uint16_mod_f_3_left_pad(input_size_width, input_size_height,
+                                                        block_size_width, block_size_height,
+                                                        block_size,
+                                                        log2_block_size_width, log2_block_size_height,
+                                                        output_size_width, output_size_height,
+                                                        input_offset_width, input_offset_height,
+                                                        output_offset_width, output_offset_height,
+                                                        discard_subblock_size_width, discard_subblock_size_height,
+                                                        valid_subblock_size_width, valid_subblock_size_height,
+                                                        norm_const,
+                                                        forward_row_powers, forward_column_powers,
+                                                        inverse_row_powers, inverse_column_powers,
+                                                        input, kernel_block, output,
+                                                        optimize_level);
+
+        /*
+         * STEP 2.2: INNER ROW OF BLOCKS THAT DOESN'T REQUIRE PADDING
+         */
+
+        input_offset_width = valid_subblock_size_width - discard_subblock_size_width;
+        output_offset_width = valid_subblock_size_width;
+
+        while (input_offset_width <= input_size_width - block_size_width) {
+
+            qconv_block_convolution_uint16_mod_f_3_no_pad(input_size_width, input_size_height,
+                                                          block_size_width, block_size_height,
+                                                          block_size,
+                                                          log2_block_size_width, log2_block_size_height,
+                                                          output_size_width, output_size_height,
+                                                          input_offset_width, input_offset_height,
+                                                          output_offset_width, output_offset_height,
+                                                          discard_subblock_size_width, discard_subblock_size_height,
+                                                          valid_subblock_size_width, valid_subblock_size_height,
+                                                          norm_const,
+                                                          forward_row_powers, forward_column_powers,
+                                                          inverse_row_powers, inverse_column_powers,
+                                                          input, kernel_block, output,
+                                                          optimize_level);
+
+            input_offset_width += valid_subblock_size_width;
+            output_offset_width += valid_subblock_size_width;
+        }
+
+        /*
+         * STEP 2.3: RIGHT BLOCKS THAT REQUIRE RIGHT PADDING
+         */
+
+        while (input_offset_width < input_size_width) {
+
+            size_t valid_output_subblock_size_width = output_size_width - output_offset_width;
+            valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
+
+            qconv_block_convolution_uint16_mod_f_3_right_pad(input_size_width, input_size_height,
+                                                             block_size_width, block_size_height,
+                                                             block_size,
+                                                             log2_block_size_width, log2_block_size_height,
+                                                             output_size_width, output_size_height,
+                                                             input_offset_width, input_offset_height,
+                                                             output_offset_width, output_offset_height,
+                                                             discard_subblock_size_width, discard_subblock_size_height,
+                                                             valid_subblock_size_width, valid_subblock_size_height,
+                                                             norm_const,
+                                                             forward_row_powers, forward_column_powers,
+                                                             inverse_row_powers, inverse_column_powers,
+                                                             input, kernel_block, output,
+                                                             optimize_level);
+
+            input_offset_width += valid_subblock_size_width;
+            output_offset_width += valid_output_subblock_size_width;
+        }
+
+        input_offset_height += valid_subblock_size_height;
+        output_offset_height += valid_subblock_size_height;
+
+    }
+
+    /*
+     * STEP 3: BOTTOM ROWS OF BLOCKS
+     */
+
+    while (input_offset_height < input_size_height) {
+
+        input_offset_width = 0;
+        output_offset_width = 0;
+
+        size_t valid_input_subblock_size_height = input_size_height - input_offset_height;
+
+        size_t valid_output_subblock_size_height = output_size_height - output_offset_height;
+        valid_output_subblock_size_height = valid_output_subblock_size_height < valid_subblock_size_height ? valid_output_subblock_size_height : valid_subblock_size_height;
+
+        /*
+         * STEP 3.1: BOTTOM LEFT BLOCK
+         */
+
+        if (input_size_width <= block_size) {
+            qconv_block_convolution_uint16_mod_f_3_bottom_left_pad(input_size_width, input_size_height,
+                                                                   block_size_width, block_size_height,
+                                                                   block_size,
+                                                                   log2_block_size_width, log2_block_size_height,
+                                                                   output_size_width, output_size_height,
+                                                                   input_offset_width, input_offset_height,
+                                                                   output_offset_width, output_offset_height,
+                                                                   discard_subblock_size_width, discard_subblock_size_height,
+                                                                   valid_subblock_size_width, valid_subblock_size_height,
+                                                                   valid_input_subblock_size_height, valid_output_subblock_size_height,
+                                                                   norm_const,
+                                                                   forward_row_powers, forward_column_powers,
+                                                                   inverse_row_powers, inverse_column_powers,
+                                                                   input, kernel_block, output,
+                                                                   optimize_level);
+        }
+
+        /*
+         * STEP 3.2: INNER BOTTOM ROW OF BLOCKS THAT REQUIRES BOTTOM PADDING
+         */
+
+        input_offset_width = valid_subblock_size_width - discard_subblock_size_width;
+        output_offset_width = valid_subblock_size_width;
+
+        while (input_offset_width <= input_size_width - block_size_width) {
+
+            qconv_block_convolution_uint16_mod_f_3_bottom_pad(input_size_width, input_size_height,
+                                                              block_size_width, block_size_height,
+                                                              block_size,
+                                                              log2_block_size_width, log2_block_size_height,
+                                                              output_size_width, output_size_height,
+                                                              input_offset_width, input_offset_height,
+                                                              output_offset_width, output_offset_height,
+                                                              discard_subblock_size_width, discard_subblock_size_height,
+                                                              valid_subblock_size_width, valid_subblock_size_height,
+                                                              valid_input_subblock_size_height, valid_output_subblock_size_height,
+                                                              norm_const,
+                                                              forward_row_powers, forward_column_powers,
+                                                              inverse_row_powers, inverse_column_powers,
+                                                              input, kernel_block, output,
+                                                              optimize_level);
+
+            input_offset_width += valid_subblock_size_width;
+            output_offset_width += valid_subblock_size_width;
+        }
+
+        /*
+         * STEP 3.3: BOTTOM RIGHT BLOCKS THAT REQUIRES BOTTOM RIGHT PADDING
+         */
+
+        while (input_offset_width < input_size_width) {
+
+            size_t valid_output_subblock_size_width = output_size_width - output_offset_width;
+            valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
+
+            qconv_block_convolution_uint16_mod_f_3_bottom_right_pad(input_size_width, input_size_height,
+                                                                    block_size_width, block_size_height,
+                                                                    block_size,
+                                                                    log2_block_size_width, log2_block_size_height,
+                                                                    output_size_width, output_size_height,
+                                                                    input_offset_width, input_offset_height,
+                                                                    output_offset_width, output_offset_height,
+                                                                    discard_subblock_size_width, discard_subblock_size_height,
+                                                                    valid_subblock_size_width, valid_subblock_size_height,
+                                                                    valid_input_subblock_size_height, valid_output_subblock_size_height,
+                                                                    norm_const,
+                                                                    forward_row_powers, forward_column_powers,
+                                                                    inverse_row_powers, inverse_column_powers,
+                                                                    input, kernel_block, output,
+                                                                    optimize_level);
+
+            input_offset_width += valid_subblock_size_width;
+            output_offset_width += valid_output_subblock_size_width;
+        }
+        input_offset_height += valid_subblock_size_height;
+        output_offset_height += valid_output_subblock_size_height;
+    }
+    return status_success;
+}
+
 void qconv_block_convolution_uint16_mod_f_3_no_pad(size_t input_size_width, size_t input_size_height,
                                                    size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                   size_t log2_block_size_width, size_t log2_block_size_height,
                                                    size_t output_size_width, size_t output_size_height,
                                                    size_t input_offset_width, size_t input_offset_height,
                                                    size_t output_offset_width, size_t output_offset_height,
                                                    size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                    size_t valid_subblock_size_width, size_t valid_subblock_size_height,
+                                                   qconv_uint16_mod_f_3 norm_const,
+                                                   qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                   qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                    const qconv_uint16_mod *input,
                                                    const qconv_uint16_mod *kernel_block,
                                                    qconv_uint16_mod *output,
@@ -859,21 +1197,30 @@ void qconv_block_convolution_uint16_mod_f_3_no_pad(size_t input_size_width, size
                                 input, block);
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
-                                                           valid_subblock_size_height, block, kernel_block, output,
+                                                           valid_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 }
 
 void qconv_block_convolution_uint16_mod_f_3_bottom_pad(size_t input_size_width, size_t input_size_height,
                                                        size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                       size_t log2_block_size_width, size_t log2_block_size_height,
                                                        size_t output_size_width, size_t output_size_height,
                                                        size_t input_offset_width, size_t input_offset_height,
                                                        size_t output_offset_width, size_t output_offset_height,
                                                        size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                        size_t valid_subblock_size_width, size_t valid_subblock_size_height,
                                                        size_t valid_input_subblock_size_height, size_t valid_output_subblock_size_height,
+                                                       qconv_uint16_mod_f_3 norm_const,
+                                                       qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                       qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                        const qconv_uint16_mod *input,
                                                        const qconv_uint16_mod *kernel_block,
                                                        qconv_uint16_mod *output,
@@ -897,21 +1244,30 @@ void qconv_block_convolution_uint16_mod_f_3_bottom_pad(size_t input_size_width, 
                                           block);
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
-                                                           valid_output_subblock_size_height, block, kernel_block, output,
+                                                           valid_output_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 }
 
 void qconv_block_convolution_uint16_mod_f_3_bottom_right_pad(size_t input_size_width, size_t input_size_height,
                                                              size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                             size_t log2_block_size_width, size_t log2_block_size_height,
                                                              size_t output_size_width, size_t output_size_height,
                                                              size_t input_offset_width, size_t input_offset_height,
                                                              size_t output_offset_width, size_t output_offset_height,
                                                              size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                              size_t valid_subblock_size_width, size_t valid_subblock_size_height,
                                                              size_t valid_input_subblock_size_height, size_t valid_output_subblock_size_height,
+                                                             qconv_uint16_mod_f_3 norm_const,
+                                                             qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                             qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                              const qconv_uint16_mod *input,
                                                              const qconv_uint16_mod *kernel_block,
                                                              qconv_uint16_mod *output,
@@ -941,10 +1297,15 @@ void qconv_block_convolution_uint16_mod_f_3_bottom_right_pad(size_t input_size_w
     valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_output_subblock_size_width,
-                                                           valid_output_subblock_size_height, block, kernel_block, output,
+                                                           valid_output_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 }
 
@@ -952,11 +1313,15 @@ void qconv_block_convolution_uint16_mod_f_3_bottom_right_pad(size_t input_size_w
 
 void qconv_block_convolution_uint16_mod_f_3_top_left_pad(size_t input_size_width, size_t input_size_height,
                                                          size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                         size_t log2_block_size_width, size_t log2_block_size_height,
                                                          size_t output_size_width, size_t output_size_height,
                                                          size_t input_offset_width, size_t input_offset_height,
                                                          size_t output_offset_width, size_t output_offset_height,
                                                          size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                          size_t valid_subblock_size_width, size_t valid_subblock_size_height,
+                                                         qconv_uint16_mod_f_3 norm_const,
+                                                         qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                         qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                          const qconv_uint16_mod *input,
                                                          const qconv_uint16_mod *kernel_block,
                                                          qconv_uint16_mod *output,
@@ -981,20 +1346,29 @@ void qconv_block_convolution_uint16_mod_f_3_top_left_pad(size_t input_size_width
                                             block);
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
-                                                           valid_subblock_size_height, block, kernel_block, output,
+                                                           valid_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 }
 
 void qconv_block_convolution_uint16_mod_f_3_left_pad(size_t input_size_width, size_t input_size_height,
                                                      size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                     size_t log2_block_size_width, size_t log2_block_size_height,
                                                      size_t output_size_width, size_t output_size_height,
                                                      size_t input_offset_width, size_t input_offset_height,
                                                      size_t output_offset_width, size_t output_offset_height,
                                                      size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                      size_t valid_subblock_size_width, size_t valid_subblock_size_height,
+                                                     qconv_uint16_mod_f_3 norm_const,
+                                                     qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                     qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                      const qconv_uint16_mod *input,
                                                      const qconv_uint16_mod *kernel_block,
                                                      qconv_uint16_mod *output,
@@ -1019,20 +1393,29 @@ void qconv_block_convolution_uint16_mod_f_3_left_pad(size_t input_size_width, si
                                         block);
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
-                                                           valid_subblock_size_height, block, kernel_block, output,
+                                                           valid_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 }
 
 void qconv_block_convolution_uint16_mod_f_3_right_pad(size_t input_size_width, size_t input_size_height,
                                                       size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                      size_t log2_block_size_width, size_t log2_block_size_height,
                                                       size_t output_size_width, size_t output_size_height,
                                                       size_t input_offset_width, size_t input_offset_height,
                                                       size_t output_offset_width, size_t output_offset_height,
                                                       size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                       size_t valid_subblock_size_width, size_t valid_subblock_size_height,
+                                                      qconv_uint16_mod_f_3 norm_const,
+                                                      qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                      qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                       const qconv_uint16_mod *input,
                                                       const qconv_uint16_mod *kernel_block,
                                                       qconv_uint16_mod *output,
@@ -1059,21 +1442,30 @@ void qconv_block_convolution_uint16_mod_f_3_right_pad(size_t input_size_width, s
     valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_output_subblock_size_width,
-                                                           valid_subblock_size_height, block, kernel_block, output,
+                                                           valid_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 }
 
 void qconv_block_convolution_uint16_mod_f_3_bottom_left_pad(size_t input_size_width, size_t input_size_height,
                                                             size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                            size_t log2_block_size_width, size_t log2_block_size_height,
                                                             size_t output_size_width, size_t output_size_height,
                                                             size_t input_offset_width, size_t input_offset_height,
                                                             size_t output_offset_width, size_t output_offset_height,
                                                             size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                             size_t valid_subblock_size_width, size_t valid_subblock_size_height,
                                                             size_t valid_input_subblock_size_height, size_t valid_output_subblock_size_height,
+                                                            qconv_uint16_mod_f_3 norm_const,
+                                                            qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                            qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                             const qconv_uint16_mod *input,
                                                             const qconv_uint16_mod *kernel_block,
                                                             qconv_uint16_mod *output,
@@ -1097,21 +1489,30 @@ void qconv_block_convolution_uint16_mod_f_3_bottom_left_pad(size_t input_size_wi
                                                block);
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
-                                                           valid_output_subblock_size_height, block, kernel_block, output,
+                                                           valid_output_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 
 }
 
 void qconv_block_convolution_uint16_mod_f_3_top_right_pad(size_t input_size_width, size_t input_size_height,
                                                           size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                          size_t log2_block_size_width, size_t log2_block_size_height,
                                                           size_t output_size_width, size_t output_size_height,
                                                           size_t input_offset_width, size_t input_offset_height,
                                                           size_t output_offset_width, size_t output_offset_height,
                                                           size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                           size_t valid_subblock_size_width, size_t valid_subblock_size_height,
+                                                          qconv_uint16_mod_f_3 norm_const,
+                                                          qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                          qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                           const qconv_uint16_mod *input,
                                                           const qconv_uint16_mod *kernel_block,
                                                           qconv_uint16_mod *output,
@@ -1139,10 +1540,15 @@ void qconv_block_convolution_uint16_mod_f_3_top_right_pad(size_t input_size_widt
     valid_output_subblock_size_width = valid_output_subblock_size_width < valid_subblock_size_width ? valid_output_subblock_size_width : valid_subblock_size_width;
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_output_subblock_size_width,
-                                                           valid_subblock_size_height, block, kernel_block, output,
+                                                           valid_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 
 
@@ -1150,11 +1556,15 @@ void qconv_block_convolution_uint16_mod_f_3_top_right_pad(size_t input_size_widt
 
 void qconv_block_convolution_uint16_mod_f_3_top_pad(size_t input_size_width, size_t input_size_height,
                                                     size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                    size_t log2_block_size_width, size_t log2_block_size_height,
                                                     size_t output_size_width, size_t output_size_height,
                                                     size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                     size_t valid_subblock_size_width, size_t valid_subblock_size_height,
                                                     size_t input_offset_width, size_t input_offset_height,
                                                     size_t output_offset_width, size_t output_offset_height,
+                                                    qconv_uint16_mod_f_3 norm_const,
+                                                    qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                    qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                     const qconv_uint16_mod *input,
                                                     const qconv_uint16_mod *kernel_block,
                                                     qconv_uint16_mod *output,
@@ -1172,26 +1582,50 @@ void qconv_block_convolution_uint16_mod_f_3_top_pad(size_t input_size_width, siz
     qconv_top_zero_pad_uint16_2D_array(block_size_width, block_size_height, valid_subblock_size_height, valid_input_subblock, block);
 
     qconv_block_convolution_uint16_mod_f_3_output_subblock(block_size_width, block_size_height, block_size,
+                                                           log2_block_size_width, log2_block_size_height,
                                                            output_size_width, output_size_height, output_offset_width,
                                                            output_offset_height, discard_subblock_size_width,
                                                            discard_subblock_size_height, valid_subblock_size_width,
-                                                           valid_subblock_size_height, block, kernel_block, output,
+                                                           valid_subblock_size_height,
+                                                           norm_const,
+                                                           forward_row_powers, forward_column_powers,
+                                                           inverse_row_powers, inverse_column_powers,
+                                                           block, kernel_block, output,
                                                            optimize_level);
 
 }
 
 void qconv_block_convolution_uint16_mod_f_3_output_subblock(size_t block_size_width, size_t block_size_height, size_t block_size,
+                                                            size_t log2_block_size_width, size_t log2_block_size_height,
                                                             size_t output_size_width, size_t output_size_height,
                                                             size_t output_offset_width, size_t output_offset_height,
                                                             size_t discard_subblock_size_width, size_t discard_subblock_size_height,
                                                             size_t valid_output_subblock_size_width, size_t valid_output_subblock_size_height,
+                                                            qconv_uint16_mod_f_3 norm_const,
+                                                            qconv_inner_uint8 *forward_row_powers, qconv_inner_uint8 *forward_column_powers,
+                                                            qconv_inner_uint8 *inverse_row_powers, qconv_inner_uint8 *inverse_column_powers,
                                                             qconv_uint16_mod *block,
                                                             const qconv_uint16_mod *kernel_block,
                                                             qconv_uint16_mod *output,
                                                             enum qconv_optimize_transform optimize_level) {
-    qconv_NTT_2D_uint16_mod_f_3(block_size_width, block_size_height, block, optimize_level);
+
+    qconv_DIF_std2rev_2D_precomp_uint16_mod_f_3(block_size_width,
+                                                block_size_height,
+                                                log2_block_size_width,
+                                                log2_block_size_height,
+                                                block,
+                                                forward_row_powers,
+                                                forward_column_powers);
+
     qconv_pmul_mod_f_3(block_size, block, kernel_block, block);
-    qconv_INTT_2D_uint16_mod_f_3(block_size_width, block_size_height, block, optimize_level);
+
+    qconv_DIT_rev2std_2D_precomp_uint16_mod_f_3(block_size_width,
+                                                block_size_height,
+                                                log2_block_size_width,
+                                                log2_block_size_height,
+                                                block,
+                                                inverse_row_powers,
+                                                inverse_column_powers);
 
     //Slice output block back into valid size
     qconv_uint16_mod valid_output_subblock[valid_output_subblock_size_width * valid_output_subblock_size_height];
@@ -1202,6 +1636,9 @@ void qconv_block_convolution_uint16_mod_f_3_output_subblock(size_t block_size_wi
                                 discard_subblock_size_width,
                                 discard_subblock_size_height,
                                 block, valid_output_subblock);
+
+    //Normalize output subblock
+    qconv_INTT_2D_size_norm_precomp_uint16_mod_f_3(valid_output_subblock_size_width, valid_output_subblock_size_height, norm_const, valid_output_subblock);
 
     //Insert valid output block into output
     qconv_insert_uint16_2D_array(output_size_width,
@@ -1222,11 +1659,14 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
                                                                     qconv_uint16_mod input[static input_size_width * input_size_height],
                                                                     qconv_uint16_mod kernel[static kernel_size_width * kernel_size_height],
                                                                     qconv_uint16_mod output[static (input_size_width - kernel_size_width + 1)
-                                                                                                   * (input_size_height - kernel_size_height + 1)],
-                                                                    enum qconv_optimize_transform optimize_level) {
+                                                                                                   * (input_size_height - kernel_size_height + 1)]) {
+    enum qconv_optimize_transform optimize_level = optimize_precomp_order_nonorm;
 
     size_t output_size_width = input_size_width - kernel_size_width + 1;
     size_t output_size_height = input_size_height - kernel_size_height + 1;
+
+    size_t log2_block_size_width = qconv_get_log2_power_of_two(block_size_width);
+    size_t log2_block_size_height = qconv_get_log2_power_of_two(block_size_height);
 
     size_t discard_subblock_size_width = kernel_size_width - 1;
     size_t discard_subblock_size_height = kernel_size_height - 1;
@@ -1240,6 +1680,15 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
 
     size_t output_offset_width = 0;
     size_t output_offset_height = 0;
+
+    qconv_uint16_mod to_inv = {.mod_f_3.value = block_size};
+    qconv_uint16_mod_f_3 norm_const = qconv_inverse_uint16_mod_f_3(to_inv);
+
+    qconv_inner_uint8 *forward_row_powers = qconv_get_const_f_3_DIF_std2rev_forward(block_size_width);
+    qconv_inner_uint8 *forward_column_powers = qconv_get_const_f_3_DIF_std2rev_forward(block_size_height);
+
+    qconv_inner_uint8 *inverse_row_powers = qconv_get_const_f_3_DIT_rev2std_inverse(block_size_width);
+    qconv_inner_uint8 *inverse_column_powers = qconv_get_const_f_3_DIT_rev2std_inverse(block_size_height);
 
     //pad and transform kernel
     qconv_uint16_mod kernel_block[block_size];
@@ -1266,11 +1715,15 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
             qconv_block_convolution_uint16_mod_f_3_no_pad(input_size_width, input_size_height,
                                                           block_size_width, block_size_height,
                                                           block_size,
+                                                          log2_block_size_width, log2_block_size_height,
                                                           output_size_width, output_size_height,
                                                           input_offset_width, input_offset_height,
                                                           output_offset_width, output_offset_height,
                                                           discard_subblock_size_width, discard_subblock_size_height,
                                                           valid_subblock_size_width, valid_subblock_size_height,
+                                                          norm_const,
+                                                          forward_row_powers, forward_column_powers,
+                                                          inverse_row_powers, inverse_column_powers,
                                                           input, kernel_block, output,
                                                           optimize_level);
 
@@ -1290,11 +1743,16 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
 
             qconv_block_convolution_uint16_mod_f_3_right_pad(input_size_width, input_size_height,
                                                              block_size_width, block_size_height,
-                                                             block_size, output_size_width, output_size_height,
+                                                             block_size,
+                                                             log2_block_size_width, log2_block_size_height,
+                                                             output_size_width, output_size_height,
                                                              input_offset_width, input_offset_height,
                                                              output_offset_width, output_offset_height,
                                                              discard_subblock_size_width, discard_subblock_size_height,
                                                              valid_subblock_size_width, valid_subblock_size_height,
+                                                             norm_const,
+                                                             forward_row_powers, forward_column_powers,
+                                                             inverse_row_powers, inverse_column_powers,
                                                              input, kernel_block, output,
                                                              optimize_level);
 
@@ -1328,12 +1786,17 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
 
             qconv_block_convolution_uint16_mod_f_3_bottom_pad(input_size_width, input_size_height,
                                                               block_size_width, block_size_height,
-                                                              block_size, output_size_width, output_size_height,
+                                                              block_size,
+                                                              log2_block_size_width, log2_block_size_height,
+                                                              output_size_width, output_size_height,
                                                               input_offset_width, input_offset_height,
                                                               output_offset_width, output_offset_height,
                                                               discard_subblock_size_width, discard_subblock_size_height,
                                                               valid_subblock_size_width, valid_subblock_size_height,
                                                               valid_input_subblock_size_height, valid_output_subblock_size_height,
+                                                              norm_const,
+                                                              forward_row_powers, forward_column_powers,
+                                                              inverse_row_powers, inverse_column_powers,
                                                               input, kernel_block, output,
                                                               optimize_level);
 
@@ -1342,7 +1805,7 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
         }
 
         /*
-         * STEP 3.3: BOTTOM RIGHT BLOCKS THAT REQUIRES BOTTOM RIGHT PADDING
+         * BOTTOM RIGHT BLOCKS THAT REQUIRES BOTTOM RIGHT PADDING
          */
 
         while (input_offset_width < input_size_width) {
@@ -1352,12 +1815,17 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
 
             qconv_block_convolution_uint16_mod_f_3_bottom_right_pad(input_size_width, input_size_height,
                                                                     block_size_width, block_size_height,
-                                                                    block_size, output_size_width, output_size_height,
+                                                                    block_size,
+                                                                    log2_block_size_width, log2_block_size_height,
+                                                                    output_size_width, output_size_height,
                                                                     input_offset_width, input_offset_height,
                                                                     output_offset_width, output_offset_height,
                                                                     discard_subblock_size_width, discard_subblock_size_height,
                                                                     valid_subblock_size_width, valid_subblock_size_height,
                                                                     valid_input_subblock_size_height, valid_output_subblock_size_height,
+                                                                    norm_const,
+                                                                    forward_row_powers, forward_column_powers,
+                                                                    inverse_row_powers, inverse_column_powers,
                                                                     input, kernel_block, output,
                                                                     optimize_level);
 
@@ -1369,7 +1837,5 @@ enum qconv_status qconv_NTT_2D_block_CNN_convolution_uint16_mod_f_3(size_t input
     }
     return status_success;
 }
-
-
 
 

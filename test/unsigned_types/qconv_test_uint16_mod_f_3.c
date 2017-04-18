@@ -516,8 +516,7 @@ enum qconv_status qconv_test_NTT_2D_max_block_CNN_convolution_mod_f_3(size_t inp
                                                                block_size_height,
                                                                input,
                                                                kernel,
-                                                               ntt,
-                                                               optimize_level);
+                                                               ntt);
     gettimeofday(&ntt_end, NULL);
 
     ntt_tot_time += ((ntt_end.tv_sec - ntt_start.tv_sec) * 1000000 + ntt_end.tv_usec - ntt_start.tv_usec);
@@ -594,8 +593,7 @@ enum qconv_status qconv_test_NTT_2D_random_block_CNN_convolution_mod_f_3(size_t 
                                                                    block_size_height,
                                                                    input,
                                                                    kernel,
-                                                                   ntt,
-                                                                   optimize_level);
+                                                                   ntt);
         gettimeofday(&ntt_end, NULL);
 
         ntt_tot_time += ((ntt_end.tv_sec - ntt_start.tv_sec) * 1000000 + ntt_end.tv_usec - ntt_start.tv_usec);

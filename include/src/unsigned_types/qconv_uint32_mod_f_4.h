@@ -49,12 +49,12 @@ inline qconv_uint32_mod_f_4 qconv_forward_shift_uint32_mod_f_4(const qconv_uint3
 }
 
 
-inline qconv_uint32_mod_f_4 qconv_inverse_shift_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y) {
-    if (y == QCONV_EXP_F_4) {
+inline qconv_uint32_mod_f_4 qconv_inverse_shift_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
+    if (y.value == QCONV_EXP_F_4) {
         return x;
     } else {
         qconv_inner_uint32 z = QCONV_F_4 - x.value;
-        z = z << y;
+        z = z << y.value;
         return qconv_reduce_uint32_mod_f_4(z);
     }
 
@@ -120,7 +120,12 @@ void qconv_DIT_r2_std2std_1D_uint32_mod_f_4(const size_t size,
 /*
  * @brief CT transform with input scrambling and precomputed root powers
  */
-void qconv_DIT_r2_std2std_precomp_1D_uint32_mod_f_4(const size_t size,
+void qconv_DIT_r2_std2std_forward_precomp_1D_uint32_mod_f_4(const size_t size,
+                                                    const size_t log2_size,
+                                                    qconv_uint32_mod a[static size],
+                                                    const qconv_inner_uint8 *powers);
+
+void qconv_DIT_r2_std2std_inverse_precomp_1D_uint32_mod_f_4(const size_t size,
                                                     const size_t log2_size,
                                                     qconv_uint32_mod a[static size],
                                                     const qconv_inner_uint8 *powers);
