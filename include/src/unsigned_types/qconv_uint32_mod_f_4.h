@@ -45,7 +45,7 @@ inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 x) {
 inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
     qconv_uint32_mod_f_4 reduced;
     if (x.value == QCONV_F_4 - 1 && y.value == QCONV_F_4 - 1) {
-        reduced.value = 1;
+        reduced.value = 1U;
     } else {
         qconv_inner_uint32 z = x.value *  y.value;
         reduced = qconv_reduce_uint32_mod_f_4(z);
@@ -57,33 +57,20 @@ inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 
  * @brief Fast multiplication modulo F_4 = 2^16 + 1 without check for max sized inputs,
  * useful when one of the operands is capped, e.g. precomputed roots
  */
-inline qconv_uint32_mod_f_4 qconv_short_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y) {
-    qconv_inner_uint32 z = x.value *  y.value;
+inline qconv_uint32_mod_f_4 qconv_forward_shift_uint32_mod_f_4(const qconv_uint32_mod_f_4 x,
+                                                               const qconv_uint32_mod_f_4 y) {
+    qconv_inner_uint32 z = x.value << y.value;
     return qconv_reduce_uint32_mod_f_4(z);
 }
 
-/*
- * @brief Fast multiplication modulo F_4 = 2^16 + 1 with a signed operand and without check for max sized inputs,
- * useful when one of the operands is capped, e.g. precomputed roots
- * Checking for 1 is necessary but saves having a possible operand = -65536,
- * which would require both a max check and an addition to make it stay within signed boundaries
- */
-inline qconv_uint32_mod_f_4 qconv_short_mul_int32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y) {
-    if (y == 1) {
+
+inline qconv_uint32_mod_f_4 qconv_inverse_shift_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y) {
+    if (y == QCONV_EXP_F_4) {
         return x;
     } else {
-        qconv_inner_int32 z = x.value * y;
-        return qconv_reduce_int32_mod_f_4(z);
-    }
-
-}
-
-inline qconv_uint32_mod_f_4 qconv_mul_int32_mod_f_4_for_(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y) {
-    if (y == 1) {
-        return x;
-    } else {
-        qconv_inner_int32 z = x.value * y;
-        return qconv_reduce_int32_mod_f_4(z);
+        qconv_inner_uint32 z = QCONV_F_4 - x.value;
+        z = z << y;
+        return qconv_reduce_uint32_mod_f_4(z);
     }
 
 }

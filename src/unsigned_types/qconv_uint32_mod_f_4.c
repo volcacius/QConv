@@ -9,9 +9,11 @@ extern inline qconv_uint32_mod_f_4 qconv_reduce_int32_mod_f_4(qconv_inner_int32 
 
 extern inline qconv_uint32_mod_f_4 qconv_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y);
 
-extern inline qconv_uint32_mod_f_4 qconv_short_mul_uint32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_uint32_mod_f_4 y);
+extern inline qconv_uint32_mod_f_4 qconv_forward_shift_uint32_mod_f_4(const qconv_uint32_mod_f_4 x,
+                                                                      const qconv_uint32_mod_f_4 y);
 
-extern inline qconv_uint32_mod_f_4 qconv_short_mul_int32_mod_f_4(const qconv_uint32_mod_f_4 x, const qconv_inner_int16 y);
+extern inline qconv_uint32_mod_f_4 qconv_inverse_shift_uint32_mod_f_4(const qconv_uint32_mod_f_4 x,
+                                                                      const qconv_inner_int16 y);
 
 extern inline qconv_uint32_mod_f_4 qconv_add_uint32_mod_f_4(qconv_uint32_mod_f_4 x, qconv_uint32_mod_f_4 y);
 
@@ -166,7 +168,7 @@ void qconv_DIF_r2_std2rev_precomp_1D_uint32_mod_f_4(const size_t size,
                 const qconv_uint32_mod_f_4 v = a[t2].mod_f_4;
                 a[t1].mod_f_4 = qconv_add_uint32_mod_f_4(u, v);
                 a[t2].mod_f_4 = qconv_subtract_uint32_mod_f_4(u, v);
-                a[t2].mod_f_4 = qconv_short_mul_uint32_mod_f_4(a[t2].mod_f_4, w);
+                a[t2].mod_f_4 = qconv_forward_shift_uint32_mod_f_4(a[t2].mod_f_4, w);
                 power_index++;
             }
         }
@@ -209,8 +211,7 @@ void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4_unsigned_powers(const size_t
                 const size_t t1 = r + j;
                 const size_t t2 = t1 + mh;
                 const qconv_uint32_mod_f_4 u = a[t1].mod_f_4;
-                qconv_uint32_mod_f_4 w = {.value = powers[power_index]};
-                const qconv_uint32_mod_f_4 v = qconv_mul_uint32_mod_f_4(a[t2].mod_f_4, w);
+                const qconv_uint32_mod_f_4 v = qconv_inverse_shift_uint32_mod_f_4(a[t2].mod_f_4, powers[power_index]);
                 a[t1].mod_f_4 = qconv_add_uint32_mod_f_4(u, v);
                 a[t2].mod_f_4 = qconv_subtract_uint32_mod_f_4(u, v);
                 power_index++;
@@ -248,7 +249,7 @@ void qconv_DIT_r2_rev2std_precomp_1D_uint32_mod_f_4_signed_powers(const size_t s
                 const size_t t1 = r + j;
                 const size_t t2 = t1 + mh;
                 const qconv_uint32_mod_f_4 u = a[t1].mod_f_4;
-                const qconv_uint32_mod_f_4 v = qconv_short_mul_int32_mod_f_4(a[t2].mod_f_4, powers[power_index]);
+                const qconv_uint32_mod_f_4 v = qconv_inverse_shift_uint32_mod_f_4(a[t2].mod_f_4, powers[power_index]);
                 a[t1].mod_f_4 = qconv_add_uint32_mod_f_4(u, v);
                 a[t2].mod_f_4 = qconv_subtract_uint32_mod_f_4(u, v);
                 power_index++;
